@@ -93,7 +93,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		selectedOrganism = baseOrganism;
 		if (lastSelectedOrganism != null)
 			repaint(lastSelectedOrganism.getCurrentFrame());
-		mainWindow.getInfoPanel().setSelectedOrganism(baseOrganism);
+		mainWindow.getInfoToolBar().setSelectedOrganism(baseOrganism);
 		if (selectedOrganism != null)
 			repaint(selectedOrganism.getCurrentFrame());
 		// Make sure to don't create the tool bar twice when starting the program
@@ -221,7 +221,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	@Override
 	public void eventOrganismAdded(AliveAgent child, Agent parent) {
 		if (parent == getSelectedOrganism())
-			mainWindow.getInfoPanel().changeNChildren();
+			mainWindow.getInfoToolBar().changeNChildren();
 	}
 	@Override
 	public void eventPopulationIncrease(int population) {
@@ -237,7 +237,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	public void eventOrganismHasDied(AliveAgent dyingOrganism,
 			Agent killingOrganism) {
 		if (killingOrganism == getSelectedOrganism())
-			mainWindow.getInfoPanel().changeNKills();
+			mainWindow.getInfoToolBar().changeNKills();
 		if (dyingOrganism == getSelectedOrganism())
 			mainWindow.getToolBar().selectActionArray("dead");
 		
@@ -246,7 +246,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	public void eventOrganismHasBeenInfected(AliveAgent infectedOrganism,
 			Agent infectingOrganism) {
 		if (infectingOrganism == getSelectedOrganism())
-			mainWindow.getInfoPanel().changeNInfected();
+			mainWindow.getInfoToolBar().changeNInfected();
 		
 	}
 	@Override

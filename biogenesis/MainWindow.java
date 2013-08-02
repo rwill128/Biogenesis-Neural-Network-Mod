@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2011  Joan Queralt Molina
+/* Copyright (C) 2006-2013  Joan Queralt Molina
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
  */
 package biogenesis;
 
-import gui.InfoToolbar;
+import gui.InfoToolBar;
 import gui.OrganismTracker;
 import gui.StatusBar;
 
@@ -31,7 +31,6 @@ import world.CurrentWorld;
 
 import aux.*;
 
-import java.io.*;
 import java.awt.*;
 
 /**
@@ -45,82 +44,115 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
 	 */
 	private static final long serialVersionUID = Utils.FILE_VERSION;
 
+	/**
+	 * A reference to the world currently displayed.
+	 */
 	private CurrentWorld currentWorld;
+	/**
+	 * The timer that controls the simulation process.
+	 */
 	private Process process;
-	private File gameFile = null;
-	private OrganismTracker scrollPane;
+	/**
+	 * The scroll panel that tracks the selected organism (if any).
+	 */
+	private OrganismTracker organismTracker;
+	/**
+	 * The main window tool bar.
+	 */
 	private MultipleToolBar toolBar = new MultipleToolBar(Messages.getInstance().getString("T_PROGRAM_NAME")); //$NON-NLS-1$
+	/**
+	 * The main window status bar.
+	 */
 	private StatusBar statusBar;
-	private InfoToolbar infoToolbar;
-		
-	public InfoToolbar getInfoPanel() {
-		return infoToolbar;
-	}
+	/**
+	 * The info tool bar shows information about the selected agent.
+	 */
+	private InfoToolBar infoToolBar;
 	
+	/** 
+	 * Getter for the tool bar, that shows different options depending
+	 * on the selected agent.
+	 * 
+	 * @return  The main window tool bar.
+	 */
+	public MultipleToolBar getToolBar() {
+		return toolBar;
+	}
+	/**
+	 * Getter for the info tool bar, that shows info about
+	 * the selected organisms.
+	 * 
+	 * @return  The main window info tool bar.
+	 */
+	public InfoToolBar getInfoToolBar() {
+		return infoToolBar;
+	}
+	/**
+	 * Getter for the status bar, used to show messages about the state
+	 * of the world or the application.
+	 * 
+	 * @return  The main window status bar.
+	 */
 	public StatusBar getStatusBar() {
 		return statusBar;
 	}
-	
+	/**
+	 * Getter for the organism tracker, the scroll panel that automatically
+	 * tracks the selected agent.
+	 * 
+	 * @return  The main window organism tracker.
+	 */
 	public OrganismTracker getOrganismTracker() {
-		return scrollPane;
+		return organismTracker;
 	}
-	
+	/**
+	 * Constructor that receives the current world and the process timer. The current
+	 * world will be used to get a reference to the active world every time is needed.
+	 * The process is used to know when to update the status bar and to activate or pause
+	 * the simulation when needed.
+	 * 
+	 * This constructor creates and sets up all the elements of the main window.
+	 * 
+	 * @param currentWorld  A reference to the current world for this instance of the application.
+	 * @param process  A reference to the process timer used.
+	 */
 	public MainWindow(CurrentWorld currentWorld, Process process) {
 		this.process = process;
 		this.currentWorld = currentWorld;
-		scrollPane = new OrganismTracker();
+		organismTracker = new OrganismTracker();
 		Messages.getInstance().addLocaleChangeListener(this);
 		setControls();
 		configureApp();
 	}
-
-	public MultipleToolBar getToolBar() {
-		return toolBar;
-	}
-	
+	/**
+	 * Starts a new simulation. Resets the world, the process timer and the main window controls.
+	 */
 	public void newGame() {
 		currentWorld.getWorld().genesis(AliveAgentFactory.getInstance());
-		scrollPane.setTrackedOrganism(null);
-		scrollPane.repaint();
-		//scrollPane.setViewportView(_visibleWorld);
+		organismTracker.setTrackedOrganism(null);
+		organismTracker.repaint();
 		process.resetNFrames();
 		process.activateProcess(true);
 		statusBar.setStatusMessage(Messages.getInstance().getString("T_NEW_WORLD_CREATED")); //$NON-NLS-1$
 	}
-	
-	public boolean quit() {
-		int save = JOptionPane.showConfirmDialog(this,Messages.getInstance().getString("T_SAVE_BEFORE_QUIT"), //$NON-NLS-1$
-				Messages.getInstance().getString("T_SAVE_WORLD"),JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
-		
-		if (save != JOptionPane.CANCEL_OPTION) {
-			if (save == JOptionPane.YES_OPTION) {
-				if (gameFile != null)
-					BioSaver.saveObject(currentWorld.getWorld(), gameFile);
-				else {
-					if (BioSaver.saveObjectAs(currentWorld.getWorld()) == null)
-						return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-
+	/**
+	 * Creates and configures the main window controls.
+	 */
 	private void setControls () {
 		JPanel centralPanel = new JPanel();
 		centralPanel.setLayout(new BorderLayout());
 		
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(10);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-        scrollPane.setMaxSpeed((int)Utils.MAX_VEL);
+        organismTracker.getHorizontalScrollBar().setUnitIncrement(10);
+        organismTracker.getVerticalScrollBar().setUnitIncrement(10);
+        organismTracker.setMaxSpeed((int)Utils.MAX_VEL);
         //scrollPane.addObserver(abortTrackingAction);
         setLocation(Utils.WINDOW_X, Utils.WINDOW_Y);
         setExtendedState(Utils.WINDOW_STATE);
         getContentPane().setLayout(new BorderLayout());
         
-        infoToolbar = new InfoToolbar(null, this);
-        centralPanel.add(scrollPane, BorderLayout.CENTER);
-        centralPanel.add(infoToolbar, BorderLayout.SOUTH);
+        infoToolBar = new InfoToolBar(null, this);
+        centralPanel.add(organismTracker, BorderLayout.CENTER);
+        centralPanel.add(infoToolBar, BorderLayout.SOUTH);
         
         getContentPane().add(centralPanel, BorderLayout.CENTER);
         
@@ -128,8 +160,10 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
         getContentPane().add(statusBar, BorderLayout.SOUTH);
         getContentPane().add(toolBar, BorderLayout.NORTH);
     }
-
-	public void configureApp() {
+	/**
+	 * Configure general options.
+	 */
+	private void configureApp() {
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setTitle(Messages.getInstance().getString("T_BIOGENESIS")); //$NON-NLS-1$
 		UIManager.put("OptionPane.yesButtonText", Messages.getInstance().getString("T_YES"));
@@ -149,20 +183,25 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
 		UIManager.put("OptionPane.cancelButtonText", Messages.getInstance().getString("T_CANCEL"));
 		setTitle(Messages.getInstance().getString("T_BIOGENESIS")); //$NON-NLS-1$
 	}
-	
+	/**
+	 * In addition to calling Window.dispose(), removes itself as locale listener and
+	 * cancels the process timer.
+	 */
 	@Override
 	public void dispose() {
 		Messages.getInstance().removeLocaleChangeListener(this);
 		process.cancel();
 		super.dispose();
 	}
-
+	/**
+	 * Updates the status bar, the info tool bar and the organism tracker.
+	 */
 	@Override
 	public void time() {
 		if (process.getNFrames() % 20 == 0) {
 			statusBar.updateStatusLabel();
-			getInfoPanel().recalculate();
+			getInfoToolBar().recalculate();
 		}
-		scrollPane.track();
+		organismTracker.track();
 	}
 }

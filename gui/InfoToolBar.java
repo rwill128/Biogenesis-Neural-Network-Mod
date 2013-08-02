@@ -38,7 +38,7 @@ import biogenesis.Utils;
 import aux.LocaleChangeListener;
 import aux.Messages;
 
-public class InfoToolbar extends JToolBar implements LocaleChangeListener {
+public class InfoToolBar extends JToolBar implements LocaleChangeListener {
 	private static final long serialVersionUID = Utils.FILE_VERSION;
 
 	private AliveAgent _selOrganism;
@@ -101,7 +101,7 @@ public class InfoToolbar extends JToolBar implements LocaleChangeListener {
 		_lInfected.setText(_selOrganism!=null?_nf.format(_selOrganism.getTotalInfected()):"0"); //$NON-NLS-1$
 	}
 	
-	public InfoToolbar(Organism selectedOrganism, Frame parent) {
+	public InfoToolBar(Organism selectedOrganism, Frame parent) {
 		Dimension dimension = new Dimension(60,10);
 		_selOrganism = selectedOrganism;
 		this.parent = parent;
@@ -207,7 +207,7 @@ public class InfoToolbar extends JToolBar implements LocaleChangeListener {
 		_buttonGenes.addActionListener(new ActionListener() {
             @Override
 			public void actionPerformed(ActionEvent evt) {
-            	new LabWindow(InfoToolbar.this.parent, _selOrganism.getGeneticCode());
+            	new LabWindow(InfoToolBar.this.parent, _selOrganism.getGeneticCode());
             }
 		});
 		_buttonGenes.setEnabled(_selOrganism != null);
