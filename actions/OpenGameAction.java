@@ -33,7 +33,7 @@ public class OpenGameAction extends StdAction {
 		World newWorld;
 		BioFileChooser fileChooser = BioFileChooser.getWorldChooser();
 		boolean processState = process.isProcessActive();
-		process.activateProcess(false);
+		process.setProcessActive(false);
 		try {
 			int returnVal = fileChooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -66,6 +66,6 @@ public class OpenGameAction extends StdAction {
 			System.err.println(ex.getMessage());
 			JOptionPane.showMessageDialog(null,Messages.getInstance().getString("T_PERMISSION_DENIED"),Messages.getInstance().getString("T_PERMISSION_DENIED"),JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		process.activateProcess(processState);
+		process.setProcessActive(processState);
 	}
 }

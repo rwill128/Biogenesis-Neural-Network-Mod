@@ -31,9 +31,9 @@ public class SaveGameAction extends StdAction {
 			BioSaver.saveObject(currentWorld.getWorld(), fileChooser.getLastFile());
 		else {
 			boolean processState = process.isProcessActive();
-			process.activateProcess(false);
+			process.setProcessActive(false);
 			BioSaver.saveObjectAs(currentWorld.getWorld());
-			process.activateProcess(processState);
+			process.setProcessActive(processState);
 		}
 	}
 		

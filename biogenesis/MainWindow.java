@@ -132,7 +132,7 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
 		organismTracker.setTrackedOrganism(null);
 		organismTracker.repaint();
 		process.resetNFrames();
-		process.activateProcess(true);
+		process.setProcessActive(true);
 		statusBar.setStatusMessage(Messages.getInstance().getString("T_NEW_WORLD_CREATED")); //$NON-NLS-1$
 	}
 	/**

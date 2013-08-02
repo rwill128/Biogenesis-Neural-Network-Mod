@@ -36,7 +36,7 @@ public class ImportAction extends StdAction {
 		GeneticCode g;
 		boolean processState = process.isProcessActive();
 		// Stop time
-    	process.activateProcess(false);
+    	process.setProcessActive(false);
     	try {
     		JFileChooser chooser = BioFileChooser.getGeneticCodeChooser();
     		int returnVal = chooser.showOpenDialog(null);
@@ -60,6 +60,6 @@ public class ImportAction extends StdAction {
     		System.err.println(ex.getMessage());
     		JOptionPane.showMessageDialog(null,Messages.getInstance().getString("T_PERMISSION_DENIED"),Messages.getInstance().getString("T_PERMISSION_DENIED"),JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
     	}
-    	process.activateProcess(processState);
+    	process.setProcessActive(processState);
 	}
 }

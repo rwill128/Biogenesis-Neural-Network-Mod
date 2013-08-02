@@ -41,10 +41,10 @@ public class StartStopAction extends StdAction implements PauseListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (process.isProcessActive()) {
-			process.activateProcess(false);
+			process.setProcessActive(false);
 			//statusBar.setStatusMessage(Messages.getInstance().getString("T_GAME_PAUSED")); //$NON-NLS-1$
 		} else {
-			process.activateProcess(true);
+			process.setProcessActive(true);
 	    	//statusBar.setStatusMessage(Messages.getInstance().getString("T_GAME_RESUMED")); //$NON-NLS-1$
 		}
 	}

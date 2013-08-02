@@ -37,7 +37,7 @@ public class SaveImageAction extends StdAction {
 		if (o != null && o.isAlive()) {
 			boolean processState =process.isProcessActive();
 			// Stop time while asking for a file name
-			process.activateProcess(false);
+			process.setProcessActive(false);
 			// Get the image to save
 			BufferedImage image = o.getImage();
 			try {
@@ -67,7 +67,7 @@ public class SaveImageAction extends StdAction {
 				System.err.println(ex.getMessage());
 				JOptionPane.showMessageDialog(null,Messages.getInstance().getString("T_PERMISSION_DENIED"),Messages.getInstance().getString("T_PERMISSION_DENIED"),JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			process.activateProcess(processState);
+			process.setProcessActive(processState);
 		}
 	}
 }

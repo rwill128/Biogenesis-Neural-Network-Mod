@@ -22,8 +22,8 @@ public class SaveGameAsAction extends StdAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean processState = process.isProcessActive();
-		process.activateProcess(false);
+		process.setProcessActive(false);
 		BioSaver.saveObjectAs(currentWorld.getWorld());
-		process.activateProcess(processState);
+		process.setProcessActive(processState);
 	}
 }
