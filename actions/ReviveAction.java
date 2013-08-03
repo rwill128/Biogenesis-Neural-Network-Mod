@@ -26,7 +26,7 @@ public class ReviveAction extends StdAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AliveAgent o = visibleWorld.getSelectedOrganism();
+		AliveAgent o = visibleWorld.getSelectedAgent();
 		if (o != null && !o.isAlive()) {
 			o.revive();
 			currentWorld.getWorld().increasePopulation();

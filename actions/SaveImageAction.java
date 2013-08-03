@@ -33,7 +33,7 @@ public class SaveImageAction extends StdAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AliveAgent o = selector.getSelectedOrganism();
+		AliveAgent o = selector.getSelectedAgent();
 		if (o != null && o.isAlive()) {
 			boolean processState =process.isProcessActive();
 			// Stop time while asking for a file name

@@ -23,7 +23,7 @@ public class FeedAction extends StdAction {
 		
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AliveAgent o = selector.getSelectedOrganism();
+		AliveAgent o = selector.getSelectedAgent();
 		Atmosphere atm = currentWorld.getWorld().getAtmosphere();
 		if (o != null && o.isAlive()) {
 			double q = Math.min(10, atm.getCO2());

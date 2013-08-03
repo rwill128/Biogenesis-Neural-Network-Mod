@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2010  Joan Queralt Molina
+/* Copyright (C) 2006-2013  Joan Queralt Molina
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,58 +49,66 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 * A reference to the {@link MainWindow} where the VisibleWorld is.
 	 */
 	private MainWindow mainWindow;
+	/**
+	 * The CurrentWorld to get a reference to the active world when needed.
+	 */
 	private CurrentWorld currentWorld;
-	
 	/**
 	 * The context menu showed when right clicking on a void place in the world.
 	 */
 	private JPopupMenu popupVoid;
-	
 	/**
-	 * This is the selected organism. It is drawn with an orange bounding rectangle
-	 * and, if there is an {@link InfoWindow}, it shows information about this organism. 
+	 * This is the selected agent. It is drawn with an orange bounding rectangle. 
 	 */
-	protected AliveAgent selectedOrganism = null;
+	private AliveAgent selectedAgent = null;
 	/**
 	 * X coordinate of the mouse pointer when the user clicks or right clicks on the
 	 * visible world.
 	 */
-	protected int mouseX;
+	private int mouseX;
 	/**
 	 * Y coordinate of the mouse pointer when the user clicks or right clicks on the
 	 * visible world.
 	 */
-	protected int mouseY;
+	private int mouseY;
 	
+	/**
+	 * Returns the x coordinate of the last place where the user has clicked.
+	 * 
+	 * @return  X coordinate of the mouse pointer.
+	 */
 	public int getMouseX() {
 		return mouseX;
 	}
-	
+	/**
+	 * Returns the y coordinate of the last place where the user has clicked.
+	 * 
+	 * @return  Y coordinate of the mouse pointer.
+	 */
 	public int getMouseY() {
 		return mouseY;
 	}
-	
 	/**
-	 * Sets an organism as the selected organism. If required, it creates an
-	 * {@link InfoWindow} with information of this organism.
+	 * Sets an agent as the selected agent. Tells the main window to update
+	 * the info tool bar with information about this agent. Changes the shown tool bar
+	 * in the main window depending on the selected agent.
 	 * 
-	 * @param baseOrganism  The new selected organism
-	 * @param showInfo  true if an InfoWindow should be created
+	 * @param agent  The new selected agent.
 	 */
 	@Override
-	public void setSelectedOrganism(AliveAgent baseOrganism) {
-		Agent lastSelectedOrganism = selectedOrganism;
-		selectedOrganism = baseOrganism;
-		if (lastSelectedOrganism != null)
-			repaint(lastSelectedOrganism.getCurrentFrame());
-		mainWindow.getInfoToolBar().setSelectedOrganism(baseOrganism);
-		if (selectedOrganism != null)
-			repaint(selectedOrganism.getCurrentFrame());
+	public void setSelectedAgent(AliveAgent agent) {
+		Agent lastSelectedAgent = selectedAgent;
+		selectedAgent = agent;
+		if (lastSelectedAgent != null)
+			repaint(lastSelectedAgent.getCurrentFrame());
+		mainWindow.getInfoToolBar().setSelectedOrganism(agent);
+		if (selectedAgent != null)
+			repaint(selectedAgent.getCurrentFrame());
 		// Make sure to don't create the tool bar twice when starting the program
 		// because this causes spurious exceptions.
-		if (selectedOrganism != lastSelectedOrganism) {
-			if (selectedOrganism != null) {
-				if (selectedOrganism.isAlive())
+		if (selectedAgent != lastSelectedAgent) {
+			if (selectedAgent != null) {
+				if (selectedAgent.isAlive())
 					mainWindow.getToolBar().selectActionArray("alive");
 				else
 					mainWindow.getToolBar().selectActionArray("dead");
@@ -110,20 +118,21 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		}
 	}
 	/**
-	 * Return the selected organism. 
+	 * Return the selected agent.
 	 * 
-	 * @return  The selected organism, if any.
+	 * @return  The selected agent, if any, or null.
 	 */
 	@Override
-	public AliveAgent getSelectedOrganism() {
-		return selectedOrganism;
+	public AliveAgent getSelectedAgent() {
+		return selectedAgent;
 	}
-	
 	/**
 	 * Creates a new VisibleWorld associated with a {@link MainWindow}.
-	 * Creates the menus and the MouseAdapter.
+	 * Creates the menus and the MouseAdapter. Adds itself as listener to
+	 * the world.
 	 * 
 	 * @param mainWindow  The MainWindow associated with this VisibleWorld.
+	 * @param currentWorld  The CurrentWorld object used to access to the current world.
 	 */
 	public VisibleWorld(MainWindow mainWindow, CurrentWorld currentWorld) {
 		this.mainWindow = mainWindow;
@@ -134,13 +143,11 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		setPreferredSize(new Dimension(Utils.WORLD_WIDTH,Utils.WORLD_HEIGHT));
 		setBackground(Color.BLACK);
 		mainWindow.getOrganismTracker().setViewportView(this);
-		//createActions();
-		//createPopupMenu();
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					setSelectedOrganism(findOrganismFromPosition(e.getX(),e.getY()));
+					setSelectedAgent(findAliveAgentFromPosition(e.getX(),e.getY()));
 				}
 			}
 			@Override
@@ -155,18 +162,18 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	}
 	
 	/**
-	 * Finds an organism that has the given coordinates inside its bounding box and
-	 * returns a reference to it. If more than on organism satisfies this condition,
-	 * if possible, an alive organism is returned. If non organism satisfies this
+	 * Finds an alive agent that has the given coordinates inside its bounding box and
+	 * returns a reference to it. If more than one agent satisfies this condition,
+	 * if possible, an agent that is alive is returned. If non alive agent satisfies this
 	 * condition, this method returns null.
 	 * 
 	 * @param x  X coordinate
 	 * @param y  Y coordinate
-	 * @return  An organism with the point (x,y) inside its bounding box, or null
-	 * if such organism doesn't exist.
+	 * @return  An alive agent with the point (x,y) inside its bounding box, or null
+	 * if such agent doesn't exist.
 	 */
-	private AliveAgent findOrganismFromPosition(int x, int y) {
-		return currentWorld.getWorld().findOrganismFromPosition(x, y);
+	private AliveAgent findAliveAgentFromPosition(int x, int y) {
+		return currentWorld.getWorld().findAliveAgentFromPosition(x, y);
 	}
 	/**
 	 * Calls World.draw to draw all world elements and paints the bounding rectangle
@@ -179,9 +186,9 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		Rectangle r;
 		super.paintComponent(g);
 		currentWorld.getWorld().draw(g);
-		if (getSelectedOrganism() != null) {
+		if (getSelectedAgent() != null) {
 			g.setColor(Color.ORANGE);
-			r = selectedOrganism.getCurrentFrame();
+			r = selectedAgent.getCurrentFrame();
 			g.drawRect(r.x, r.y,
 					r.width-1, r.height-1);
 		}
@@ -190,7 +197,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	
 	/**
 	 * This method is called when a mouse event occurs. If the mouse event is
-	 * a popup trigger, this method decide which popup menu is shown, based on
+	 * a pop up trigger, this method decide which pop up menu is shown, based on
 	 * the position of the mouse.
 	 * 
 	 * @param e
@@ -199,10 +206,10 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		if (e.isPopupTrigger()) {
 			mouseX = e.getX();
 			mouseY = e.getY();
-			AliveAgent b = findOrganismFromPosition(mouseX,mouseY);
-			if (b != null) {
-				setSelectedOrganism(b);
-				JPopupMenu menu = b.getPopupMenu();
+			AliveAgent aa = findAliveAgentFromPosition(mouseX,mouseY);
+			if (aa != null) {
+				setSelectedAgent(aa);
+				JPopupMenu menu = aa.getPopupMenu();
 				if (menu != null)
 					menu.show(e.getComponent(), mouseX, mouseY);
 			} else {
@@ -218,49 +225,58 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 			}
 		}
 	}
+	/**
+	 * When an alive agent is added, if is the selected agent, update the main window info toolbar.
+	 * Should the toolbar be the listener instead of the visible world?
+	 */
 	@Override
-	public void eventOrganismAdded(AliveAgent child, Agent parent) {
-		if (parent == getSelectedOrganism())
+	public void eventAliveAgentAdded(AliveAgent child, Agent parent) {
+		if (parent == getSelectedAgent())
 			mainWindow.getInfoToolBar().changeNChildren();
 	}
+	/**
+	 * When an agent dies, update the main window info tool bar or the tool bar.
+	 */
 	@Override
-	public void eventPopulationIncrease(int population) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void eventPopulationDecrease(int population) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void eventOrganismHasDied(AliveAgent dyingOrganism,
+	public void eventAgentHasDied(AliveAgent dyingOrganism,
 			Agent killingOrganism) {
-		if (killingOrganism == getSelectedOrganism())
+		if (killingOrganism == getSelectedAgent())
 			mainWindow.getInfoToolBar().changeNKills();
-		if (dyingOrganism == getSelectedOrganism())
+		if (dyingOrganism == getSelectedAgent())
 			mainWindow.getToolBar().selectActionArray("dead");
 		
 	}
+	/**
+	 * When and agent is infected, update the info tool bar, if necessary.
+	 */
 	@Override
-	public void eventOrganismHasBeenInfected(AliveAgent infectedOrganism,
+	public void eventAgentHasBeenInfected(AliveAgent infectedOrganism,
 			Agent infectingOrganism) {
-		if (infectingOrganism == getSelectedOrganism())
+		if (infectingOrganism == getSelectedAgent())
 			mainWindow.getInfoToolBar().changeNInfected();
 		
 	}
+	/**
+	 * If the selected agent is removed from the world, set it to null.
+	 */
 	@Override
-	public void eventOrganismRemoved(AliveAgent organism) {
-		if (getSelectedOrganism() == organism)
-			setSelectedOrganism(null);
+	public void eventAgentRemoved(AliveAgent organism) {
+		if (getSelectedAgent() == organism)
+			setSelectedAgent(null);
 	}
+	/**
+	 * When a new world is created, adapt the visible world size to the
+	 * new world's size and set the the selected organism to null.
+	 */
 	@Override
 	public void eventGenesis() {
-		setSelectedOrganism(null);
+		setSelectedAgent(null);
 		setPreferredSize(new Dimension(currentWorld.getWorld().getWidth(),
 				currentWorld.getWorld().getHeight()));
 	}
-	
+	/**
+	 * If the world changes, update listeners, size, and selected agent.
+	 */
 	@Override
 	public void eventCurrentWorldChanged(World oldWorld, World newWorld) {
 		oldWorld.deleteWorldEventListener(this);
@@ -268,7 +284,12 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		newWorld.addWorldEventListener(this);
 		newWorld.addWorldPaintListener(this);
 		setPreferredSize(new Dimension(Utils.WORLD_WIDTH,Utils.WORLD_HEIGHT));
-		setSelectedOrganism(null);
+		setSelectedAgent(null);
 		repaint();
+	}
+	@Override
+	public void eventPopulationChanged(int oldPopulation, int newPopulation) {
+		// nothing to do
+		
 	}
 }

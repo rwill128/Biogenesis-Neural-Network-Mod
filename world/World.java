@@ -137,8 +137,8 @@ public class World implements Serializable {
 	 * @return  An organism with the point (x,y) inside its bounding box, or null
 	 * if such organism doesn't exist.
 	 */
-	public AliveAgent findOrganismFromPosition(int x, int y) {
-		AliveAgent deadOrganism = null;
+	public AliveAgent findAliveAgentFromPosition(int x, int y) {
+		AliveAgent deadAgent = null;
 		AliveAgent aa;
 		
 		for (Agent o : agents) {
@@ -147,11 +147,11 @@ public class World implements Serializable {
 				if (aa.getCurrentFrame().contains(x,y)) {
 					if (aa.isAlive())
 						return aa;
-					deadOrganism = aa;
+					deadAgent = aa;
 				}
 			}
 		}
-		return deadOrganism;
+		return deadAgent;
 	}
 	/**
 	 * Returns the world's width.
@@ -420,7 +420,7 @@ public class World implements Serializable {
 		if (agent instanceof AliveAgent) {
 			AliveAgent aliveAgent = (AliveAgent) agent;
 			for (WorldEventListener listener : eventListeners)
-				listener.eventOrganismRemoved(aliveAgent);
+				listener.eventAgentRemoved(aliveAgent);
 			if (aliveAgent.isAlive())
 				decreasePopulation();
 		}
@@ -504,7 +504,7 @@ public class World implements Serializable {
 				AliveAgent aliveAgent = (AliveAgent) newAgent;
 				aliveAgent.setId(nextId++);
 				for (WorldEventListener listener : eventListeners)
-					listener.eventOrganismAdded(aliveAgent, parent);
+					listener.eventAliveAgentAdded(aliveAgent, parent);
 				if (parent != null) {
 					worldStatistics.eventOrganismBorn(aliveAgent, parent);
 				}
@@ -523,7 +523,7 @@ public class World implements Serializable {
 	public void organismHasDied(AliveAgent dyingOrganism, StatisticalAgent killingOrganism) {
 		worldStatistics.eventOrganismDie(dyingOrganism, killingOrganism);
 		for (WorldEventListener listener : eventListeners)
-			listener.eventOrganismHasDied(dyingOrganism, killingOrganism);
+			listener.eventAgentHasDied(dyingOrganism, killingOrganism);
 	}
 	/**
 	 * Informs the world of an infection event. This will update statistics.
@@ -534,7 +534,7 @@ public class World implements Serializable {
 	public void organismHasBeenInfected(AliveAgent infectedOrganism, StatisticalAgent infectingOrganism) {
 		worldStatistics.eventOrganismInfects(infectedOrganism, infectingOrganism);
 		for (WorldEventListener listener : eventListeners)
-			listener.eventOrganismHasBeenInfected(infectedOrganism, infectingOrganism);
+			listener.eventAgentHasBeenInfected(infectedOrganism, infectingOrganism);
 	}
 	
 	public void addWorldPaintListener(WorldPaintListener listener) {

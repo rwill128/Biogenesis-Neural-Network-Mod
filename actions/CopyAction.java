@@ -19,7 +19,7 @@ public class CopyAction extends StdAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AliveAgent o = selector.getSelectedOrganism();
+		AliveAgent o = selector.getSelectedAgent();
 		if (o != null && o.isAlive()) {
 			Clipboard.getInstance().setClippedGeneticCode(o.getGeneticCode());
 		}

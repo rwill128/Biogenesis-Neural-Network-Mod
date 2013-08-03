@@ -29,7 +29,7 @@ public class TrackAction extends StdAction implements OrganismTrackerObserver {
 		
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AliveAgent b = selector.getSelectedOrganism();
+		AliveAgent b = selector.getSelectedAgent();
 		if (b != null && b.isAlive()) {
 			if (tracker.getTrackedOrganism() == b)
 				tracker.setTrackedOrganism(null);
