@@ -2,12 +2,9 @@ package actions;
 
 import java.awt.event.ActionEvent;
 
-import biogenesis.Utils;
 import biogenesis.VisibleWorld;
 
-import organisms.BaseOrganism;
 import organisms.GeneticCode;
-import organisms.Organism;
 import world.CurrentWorld;
 import world.World;
 
@@ -30,10 +27,8 @@ public class PasteAction extends StdAction {
 		GeneticCode clippedGeneticCode = Clipboard.getInstance().getClippedGeneticCode();
 		if (clippedGeneticCode != null) {
 			World world = currentWorld.getWorld();
-			double energy = Math.min(Utils.getINITIAL_ENERGY(), world.getAtmosphere().getCO2());
-			BaseOrganism newOrganism = new Organism(world, clippedGeneticCode);
-			newOrganism.setEnergy(energy);
-			world.placeAt(newOrganism, visibleWorld.getMouseX(), visibleWorld.getMouseY());
+			world.createOrganismAtPosition(clippedGeneticCode, visibleWorld.getMouseX(), 
+					visibleWorld.getMouseY());
 		}
 	}
 }
