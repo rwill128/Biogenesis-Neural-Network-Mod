@@ -149,9 +149,9 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 		if (killingOrganism instanceof StatisticalAgent) {
 			StatisticalAgent stAgent = (StatisticalAgent) killingOrganism;
 			stAgent.increaseKills();
-			world.organismHasDied(this, stAgent);
+			world.agentHasDied(this, stAgent);
 		} else
-			world.organismHasDied(this, null);
+			world.agentHasDied(this, null);
 	}
 	
 	public boolean checkReproduce() {
@@ -479,7 +479,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 				if (energy <= Utils.tol) {
 					alive = false;
 					world.decreasePopulation();
-					world.organismHasDied(this, null);
+					world.agentHasDied(this, null);
 				}
 			}
 		} else {

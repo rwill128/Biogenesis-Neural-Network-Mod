@@ -112,7 +112,7 @@ public class CurrentWorld implements TimeListener {
 	 * When a timer tick is receive it is delegated to the active world.
 	 */
 	@Override
-	public void time() {
-		world.time();
+	public void tick() {
+		world.tick();
 	}
 }

@@ -23,7 +23,7 @@ public class WhiteSegment extends Segment {
 					thisAgent.useEnergy(Utils.getWHITE_ENERGY_CONSUMPTION())) {
 				otherAgent.setInfectedGeneticCode(thisAgent.getGeneticCode());
 				thisAgent.increaseInfected();
-				thisAgent.getWorld().organismHasBeenInfected(otherAgent, thisAgent);
+				thisAgent.getWorld().agentHasBeenInfected(otherAgent, thisAgent);
 				thisAgent.setColor(Color.WHITE);
 			}
 		}

@@ -99,7 +99,7 @@ public class Process implements Serializable {
 	    		nFrames++;
 	    		// notify listeners
 	    		for (TimeListener listener : timeListeners)
-	    			listener.time();
+	    			listener.tick();
 	    	}
 	    }
 	};

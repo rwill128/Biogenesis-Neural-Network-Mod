@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2011  Joan Queralt Molina
+/* Copyright (C) 2006-2013  Joan Queralt Molina
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,16 +17,16 @@
  */
 package world;
 
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Collections;
 import java.util.Set;
-import java.io.*;
-import java.awt.*;
-
-import biogenesis.Utils;
-import biogenesis.VisibleWorld;
 
 import organisms.Agent;
 import organisms.AliveAgent;
@@ -37,38 +37,72 @@ import organisms.MovingAgent;
 import organisms.Organism;
 import organisms.StatisticalAgent;
 
+import biogenesis.Utils;
+
 /**
  * This class contains all the information needed to run a world:
- * the organisms, the substances and the biological corridors. It
- * also contains a reference to the visible part of the world,
- * {@link VisibleWorld}, and its statistics {@link WorldStatistics}.
- * There are methods to do all needed operations to the world: manage
- * organisms and substances.
+ * a list of the agents in it, its atmosphere, and its statistics.
+ * 
+ * There are methods to add and remove agents, to make time pass,
+ * and to detect collisions between agents.
  */
 public class World implements Serializable {
 	/**
 	 * Version number of the class
 	 */
 	private static final long serialVersionUID = Utils.FILE_VERSION;
-	
+	/**
+	 * Constant returned by isInsideWorld() if an agent is completely
+	 * inside the world.
+	 */
+	public final static int INSIDE_WORLD = 0;
+	/**
+	 * Constant returned by isInsideWorld() if an agent is at least
+	 * partially outside the world, at the right.
+	 */
+	public final static int RIGHT_WORLD = 1;
+	/**
+	 * Constant returned by isInsideWorld() if an agent is at least
+	 * partially outside the world, at the left.
+	 */
+	public final static int LEFT_WORLD = 2;
+	/**
+	 * Constant returned by isInsideWorld() if an agent is at least
+	 * partially outside the world, at the top.
+	 */
+	public final static int UP_WORLD = 4;
+	/**
+	 * Constant returned by isInsideWorld() if an agent is at least
+	 * partially outside the world, at the bottom.
+	 */
+	public final static int DOWN_WORLD = 8;
+	/**
+	 * This world's atmosphere
+	 */
 	private Atmosphere atmosphere = new Atmosphere();
 	/**
-	 * World width
+	 * World width in pixels
 	 */
 	private int width;
 	/**
-	 * World height
+	 * World height in pixels
 	 */
 	private int height;
-	
-	private long time;
 	/**
-	 * A list of the agents in the world, even dead ones.
-	 * Note that this must be a synchronized list so it is mandatory to
-	 * manually synchronize when iterating over it. 
+	 * Tick counter for this world.
+	 */
+	private long tick;
+	/**
+	 * A list of the agents in the world. 
 	 */
 	private List<Agent> agents;
+	/**
+	 * List of agents to be removed at the end of one iteration.
+	 */
 	private List<Agent> removedAgents;
+	/**
+	 * List of agents to be added at the end of one iteration.
+	 */
 	private List<Agent> addedAgents;
 	/**
 	 * Number of living organisms in the world
@@ -83,8 +117,15 @@ public class World implements Serializable {
 	 * Reference to the object that keeps track of all world statistics. 
 	 */
 	private WorldStatistics worldStatistics;
-	
+	/**
+	 * The set of WorldPaintListener that will be notified of the parts of the world
+	 * that need repainting after every iteration.
+	 */
 	private transient Set<WorldPaintListener> paintListeners = new HashSet<WorldPaintListener>();
+	/**
+	 * The set of WorldEventListener that will be notified when an event occurs in this world,
+	 * such the addition of a new agent.
+	 */
 	private transient Set<WorldEventListener> eventListeners = new HashSet<WorldEventListener>();
 	/**
 	 * Called by the JRE when an instance of this class is read from a file
@@ -127,23 +168,23 @@ public class World implements Serializable {
 		return atmosphere;
 	}
 	/**
-	 * Finds an organism that has the given coordinates inside its bounding box and
-	 * returns a reference to it. If more than on organism satisfies this condition,
-	 * if possible, an alive organism is returned. If no organism satisfies this
+	 * Finds an alive agent that has the given coordinates inside its bounding box and
+	 * returns a reference to it. If more than one agent satisfies this condition,
+	 * if possible, an agent that's alive is returned. If no agent satisfies this
 	 * condition, this method returns null.
 	 * 
 	 * @param x  X coordinate
 	 * @param y  Y coordinate
-	 * @return  An organism with the point (x,y) inside its bounding box, or null
-	 * if such organism doesn't exist.
+	 * @return  An alive agent with the point (x,y) inside its bounding box, or null
+	 * if such agent doesn't exist.
 	 */
 	public AliveAgent findAliveAgentFromPosition(int x, int y) {
 		AliveAgent deadAgent = null;
 		AliveAgent aa;
 		
-		for (Agent o : agents) {
-			if (o instanceof AliveAgent) {
-				aa = (AliveAgent) o;
+		for (Agent a : agents) {
+			if (a instanceof AliveAgent) {
+				aa = (AliveAgent) a;
 				if (aa.getCurrentFrame().contains(x,y)) {
 					if (aa.isAlive())
 						return aa;
@@ -209,7 +250,7 @@ public class World implements Serializable {
 	 * Decrease the population counter by one.
 	 * 
 	 * This method should be called every time an organism dies.
-	 * Normally, it is called by Organism.die or Organism.breath,
+	 * Normally, it is called by BaseOrganism.die or BaseOrganism.breath,
 	 * but in some cases it may be used directly.
 	 */
 	public void decreasePopulation() {
@@ -218,9 +259,7 @@ public class World implements Serializable {
 	}
 	/**
 	 * Constructor of the World class. All internal structures are initialized and
-	 * the world's size is obtained from parameters.
-	 * 
-	 * @param visibleWorld  A reference to the visual representation of this world.
+	 * the world's size is obtained from preferences.
 	 */
 	public World() {
 		width = Utils.getWORLD_WIDTH();
@@ -233,6 +272,11 @@ public class World implements Serializable {
 	/**
 	 * Populate the word with a new set of organisms.
 	 * This is used to destroy a world and create a new one.
+	 * 
+	 * @param factory  The AliveAgentFactory that will create
+	 * this world's initial population. Different kinds of
+	 * factory can populate the world with different types of
+	 * agents.
 	 */
 	public void genesis(AliveAgentFactory factory) {
 		AliveAgent[] newAgents;
@@ -252,7 +296,7 @@ public class World implements Serializable {
 		newAgents = factory.initialPopulation(this);
 		for (AliveAgent agent : newAgents) {
 			double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
-			// Only add the new organism if it can be placed in the world
+			// Only add the new agent if it can be placed in the world
 			if (placeRandom(agent)) {
 				agent.setEnergy(energy);
 				addAgent(agent, null);
@@ -263,57 +307,58 @@ public class World implements Serializable {
 	}
 	
 	/**
-	 * Tries to find a spare place in the world for this organism and place it.
-	 * It also generates an identification number for the organism if it can be placed
+	 * Tries to find a spare place in the world for the given alive agent and place it.
+	 * It also generates an identification number for the agent if it can be placed
 	 * somewhere.
 	 * 
+	 * @param aa  The alive agent to place.
 	 * @return  true if a suitable place has been found, false if not.
 	 */
-	private boolean placeRandom(AliveAgent o) {
+	private boolean placeRandom(AliveAgent aa) {
 		int posx, posy;
-		/* We try to place the organism in 12 different positions. If all of them
+		/* We try to place the agent in 12 different positions. If all of them
 		 * are occupied, we return false.
 		 */
 		for (int i=12; i>0; i--) {
 			posx = Utils.random.nextInt(width+20)-10;
 			posy = Utils.random.nextInt(height+20)-10;
-			o.setPosition(posx,posy);
+			aa.setPosition(posx,posy);
 			// Check that the position is not occupied.
-			if (isInsideWorld(o)==INSIDE_WORLD && fastCheckHit(o) == null) {
+			if (isInsideWorld(aa)==INSIDE_WORLD && fastCheckHit(aa) == null) {
 				return true;
 			}
 		}
-		// If we get here, we haven't find a place for this organism.
+		// If we get here, we haven't find a place for this agent.
 		return false;
 	}
 	/**
-	 * Places the organism at the specified position in the world and initializes its
-	 * variables. The organism must has an assigned genetic code.
+	 * Places the given alive agent at the specified position, if possible.
 	 * 
-	 * @param posx  The x coordinate of the position in the world we want to put this organism.
-	 * @param posy  The y coordinate of the position in the world we want to put this organism.
+	 * @param aa  The alive agent to place.
+	 * @param posx  The x coordinate of the position in the world where we want to put this organism.
+	 * @param posy  The y coordinate of the position in the world where we want to put this organism.
 	 * @return  true if there were enough space to put the organism, false otherwise.
 	 */
-	public boolean pasteOrganism(AliveAgent o, int posx, int posy) {
-		o.setPosition(posx, posy);
+	public boolean placeAt(AliveAgent aa, int posx, int posy) {
+		aa.setPosition(posx, posy);
 		// Check that the position is inside the world
 		// Check that the organism will not overlap other organisms
-		if (isInsideWorld(o) == INSIDE_WORLD && checkHit(o) == null) {
-			addAgent(o, null);
-			atmosphere.decreaseCO2(o.getEnergy());
-			atmosphere.addO2(o.getEnergy());
+		if (isInsideWorld(aa) == INSIDE_WORLD && checkHit(aa) == null) {
+			addAgent(aa, null);
+			atmosphere.decreaseCO2(aa.getEnergy());
+			atmosphere.addO2(aa.getEnergy());
 			return true;
 		}
 		// It can't be placed		
 		return false;
 	}
 	/**
-	 * Checks if the organism is inside the world. If it is not, calculates its
-	 * speed after the collision with the world border.
-	 * This calculation should be updated to follow the parallel axis theorem, just
-	 * like the collision between two organisms.
+	 * Checks if an agent is inside the world.
 	 * 
-	 * @return  true if the organism is inside the world, false otherwise.
+	 * @param agent  The agent to check. It must be an agent contained in this world.
+	 * @return  INSIDE_WORLD if the agent is completely inside the world. Otherwise,
+	 * an OR operation between LEFT_WORLD, RIGHT_WORLD, UP_WORLD and/or DOWN_WORLD,
+	 * indicating the borders where the agent exceeds the world limits.
 	 */
 	public int isInsideWorld(Agent agent) {
 		Rectangle r = agent.getCurrentFrame();
@@ -328,40 +373,36 @@ public class World implements Serializable {
 			result |= DOWN_WORLD;
 		return result;
 	}
-	public final static int INSIDE_WORLD = 0;
-	public final static int RIGHT_WORLD = 1;
-	public final static int LEFT_WORLD = 2;
-	public final static int UP_WORLD = 4;
-	public final static int DOWN_WORLD = 8;
 	
+	// This should be taken out of here.
 	public boolean createOrganismAtPosition(int x, int y) {
 		double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
 		BaseOrganism o = new Organism(this);
 		o.setEnergy(energy);
-		return pasteOrganism(o, x, y);
+		return placeAt(o, x, y);
 	}
-	
+	// This should be taken out of here.
 	public boolean createOrganismAtPosition(GeneticCode gc, int x, int y) {
 		double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
 		BaseOrganism o = new Organism(this, gc);
 		o.setEnergy(energy);
-		return pasteOrganism(o, x, y);
+		return placeAt(o, x, y);
 	}
 	/**
-	 * Draws all visible components of the world to a graphic context.
-	 * This includes organisms and corridors. Called from {@link biogenesis.VisibleWorld.paintComponents}.
+	 * Draws all world's agents to a graphics context.
+	 * Called from {@link biogenesis.VisibleWorld.paintComponent}.
 	 * 
-	 * @param g  The graphic context to draw to.
+	 * @param g  The graphics context to draw to.
 	 */
 	public void draw(Graphics g) {			
-		for (Agent b : agents)
-			b.draw(g);
+		for (Agent a : agents)
+			a.draw(g);
 	}
 	/**
-	 * Determines the world's region that needs to be repainted in the associated
-	 * {@link biogenesis.VisualWorld} and instructs it to do it.
+	 * Determines the world's region that needs to be repainted. Notifies all
+	 * WorldPaintListener of this region.
 	 * 
-	 * For optimization, only paints organisms that has moved in the last frame.
+	 * For optimization, only paints agents that has moved in the last frame.
 	 */
 	public void setPaintingRegion() {
 		MovingAgent ma;
@@ -378,15 +419,12 @@ public class World implements Serializable {
 		}
 	}
 	/**
-	 * Executes a frame. This method iterates through all objects in the world
-	 * and make them to execute a movement. Here is the place where all action
+	 * Executes a tick. This method iterates through all agents in the world
+	 * and make them do a movement. Here is the place where all action
 	 * occurs: organism movement, interaction, birth and death.
-	 * 
-	 * Additionally, every 20 frames the {@link InfoWindow} is updated, if showed,
-	 * and every 256 frames the time counter is increased by 1.
 	 */
-	public void time() {
-		time++;
+	public void tick() {
+		tick++;
 		
 		for (Agent o : agents) {
 			if (!o.update()) {
@@ -402,12 +440,19 @@ public class World implements Serializable {
 		addedAgents.clear();
 		// paint again where needed
 		setPaintingRegion();
-		
-		if (time % 256 == 0) {
+		// 256 ticks is a time unit
+		if (tick % 256 == 0) {
 			worldStatistics.eventTime(population, atmosphere.getO2(), atmosphere.getCO2());
 		}
 	}
-	
+	/**
+	 * Remove an agent from the world. If it is an alive agent,
+	 * notify WorldEventListeners of this.
+	 * 
+	 * @param agent  The agent to remove.
+	 * @return  true if the agent was removed, that is, if the agent
+	 * was actually in this world. False otherwise.
+	 */
 	public boolean removeAgent(Agent agent) {
 		boolean removed = agents.contains(agent);
 		removedAgents.add(agent);
@@ -428,30 +473,30 @@ public class World implements Serializable {
 		return removed;
 	}
 	/**
-	 * Checks if an organism has a high probability of being in touch with
-	 * another organism. This is done by checking if the bounding rectangles
-	 * of both organisms overlaps. 
+	 * Checks if an agent has a high probability of being in touch with
+	 * another agent. This is done by checking if the bounding rectangles
+	 * of both agents overlaps. 
 	 * 
-	 * @param b1  The organism that is being checked.
-	 * @return  The organism which bounding rectangle is touching the bounding
-	 * rectangle of {@code b1} or null if there is no such organism. 
+	 * @param agent  The agent that is being checked.
+	 * @return  The agent which bounding rectangle is touching the bounding
+	 * rectangle of {@code agent} or null if there is no such agent. 
 	 */
-	public Agent fastCheckHit(Agent b1) {
-		for (Agent o : agents) {
-			if (b1 != o) {
-				if (b1.getCurrentFrame().intersects(o.getCurrentFrame())) {
-					return b1;
+	public Agent fastCheckHit(Agent agent) {
+		for (Agent a : agents) {
+			if (agent != a) {
+				if (agent.getCurrentFrame().intersects(a.getCurrentFrame())) {
+					return agent;
 				}
 			}
 		}
 		return null;
 	}
 	/**
-	 * Checks if an organism hits another organism.
+	 * Checks if an agent hits another agent.
 	 * 
-	 * @param agent  The organism to check.
-	 * @return  The organism that is touching {@code org1} or null if not such
-	 * organism exists. 
+	 * @param agent  The agent to check.
+	 * @return  The agent that is touching {@code agent} or null if not such
+	 * agent exists. 
 	 */
 	public Agent checkHit(Agent agent) {
 		for (Agent ag : agents) {
@@ -467,6 +512,14 @@ public class World implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * Adds an agent to the list of agents. Agents are inserted
+	 * using a binary search algorithm and are ordered according to
+	 * their z-order (so they can be drawn in the same order that are
+	 * stored).
+	 * 
+	 * @param newAgent  The agent to add.
+	 */
 	private void insertAgent(Agent newAgent) {
 		int left = 0;
 		int right = agents.size()-1;
@@ -489,13 +542,13 @@ public class World implements Serializable {
 	}
 	
 	/**
-	 * Adds an organism to the world. Once added, the new organism will move at every
-	 * frame and interact with other organisms in the world.
+	 * Adds an agent to the world. Once added, the new agent will move at every
+	 * frame and interact with other agents in the world.
 	 * 
-	 * Updates world statistics, population and the {@link biogenesis.InfoWindow}, if necessary.
+	 * Notifies WorldEventListeners.
 	 * 
-	 * @param newAgent  The organism that needs to be added.
-	 * @param parent  The parent of the added organism, or null if there is no parent.
+	 * @param newAgent  The agent that needs to be added.
+	 * @param parent  The parent of the added agent, or null if there is no parent.
 	 */
 	public void addAgent(Agent newAgent, StatisticalAgent parent) {
 		if (!agents.contains(newAgent)) {
@@ -515,48 +568,74 @@ public class World implements Serializable {
 	}
 	
 	/**
-	 * Informs the world of a defunction event. This will update statistics.
+	 * Informs the world of a death event. This will update statistics.
 	 * 
-	 * @param dyingOrganism  The organism that has just died.
-	 * @param killingOrganism  The organism that has killed the other organism, if any.
+	 * @param dyingAgent  The agent that has just died.
+	 * @param killingAgent  The agent that has killed the other agent, if any.
 	 */
-	public void organismHasDied(AliveAgent dyingOrganism, StatisticalAgent killingOrganism) {
-		worldStatistics.eventOrganismDie(dyingOrganism, killingOrganism);
+	public void agentHasDied(AliveAgent dyingAgent, StatisticalAgent killingAgent) {
+		worldStatistics.eventAgentHasDied(dyingAgent, killingAgent);
 		for (WorldEventListener listener : eventListeners)
-			listener.eventAgentHasDied(dyingOrganism, killingOrganism);
+			listener.eventAgentHasDied(dyingAgent, killingAgent);
 	}
 	/**
 	 * Informs the world of an infection event. This will update statistics.
 	 * 
-	 * @param infectedOrganism  The organism that has just been infected.
-	 * @param infectingOrganism  The organism that has infected the other organism.
+	 * @param infectedAgent  The agent that has just been infected.
+	 * @param infectingAgent  The agent that has infected the other agent.
 	 */
-	public void organismHasBeenInfected(AliveAgent infectedOrganism, StatisticalAgent infectingOrganism) {
-		worldStatistics.eventOrganismInfects(infectedOrganism, infectingOrganism);
+	public void agentHasBeenInfected(AliveAgent infectedAgent, StatisticalAgent infectingAgent) {
+		worldStatistics.eventAgentHasBeenInfected(infectedAgent, infectingAgent);
 		for (WorldEventListener listener : eventListeners)
-			listener.eventAgentHasBeenInfected(infectedOrganism, infectingOrganism);
+			listener.eventAgentHasBeenInfected(infectedAgent, infectingAgent);
 	}
-	
+	/**
+	 * Add a WorldPaintListener to this World, that will be notified of
+	 * the regions that need repainting at every frame.
+	 * 
+	 * @param listener  The WorldPaintListener to add.
+	 */
 	public void addWorldPaintListener(WorldPaintListener listener) {
 		paintListeners.add(listener);
 	}
-	
+	/**
+	 * Remove a WorldPaintListener from the list of listeners to be
+	 * notified by this world.
+	 * 
+	 * @param listener  The listener to remove.
+	 */
 	public void deleteWorldPaintListener(WorldPaintListener listener) {
 		paintListeners.remove(listener);
 	}
-	
+	/**
+	 * Remove all WorldPaintListener from the list of listeners to be
+	 * notified by this world.
+	 */
 	public void deleteWorldPaintListeners() {
 		paintListeners.clear();
 	}
-	
+	/**
+	 * Add a WorldEventListener to this World, that will be notified of
+	 * the events that occurs in this World.
+	 * 
+	 * @param listener  The WorldEventListener to add.
+	 */
 	public void addWorldEventListener(WorldEventListener listener) {
 		eventListeners.add(listener);
 	}
-	
+	/**
+	 * Remove a WorldEventListener from the list of listeners to be
+	 * notified by this world.
+	 * 
+	 * @param listener  The listener to remove.
+	 */
 	public void deleteWorldEventListener(WorldEventListener listener) {
 		eventListeners.remove(listener);
 	}
-	
+	/**
+	 * Remove all WorldEventListener from the list of listeners to be
+	 * notified by this world.
+	 */	
 	public void deleteWorldEventListeners() {
 		eventListeners.clear();
 	}

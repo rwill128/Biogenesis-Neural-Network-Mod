@@ -20,13 +20,13 @@ package aux;
 /**
  * A TimeListener is an object that reacts to a Process' ticks.
  * To use it, you should register the TimeListener with the Process
- * using its addTimeListener() method. After that, the time() method
+ * using its addTimeListener() method. After that, the tick() method
  * will be called every tick.
  */
 public interface TimeListener {
 	/**
-	 * The time() method will be called every tick when the TimeListener
+	 * The tick() method will be called every tick when the TimeListener
 	 * is registered for listening to a Process.
 	 */
-	public void time();
+	public void tick();
 }

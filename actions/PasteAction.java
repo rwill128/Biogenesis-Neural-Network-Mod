@@ -33,7 +33,7 @@ public class PasteAction extends StdAction {
 			double energy = Math.min(Utils.getINITIAL_ENERGY(), world.getAtmosphere().getCO2());
 			BaseOrganism newOrganism = new Organism(world, clippedGeneticCode);
 			newOrganism.setEnergy(energy);
-			world.pasteOrganism(newOrganism, visibleWorld.getMouseX(), visibleWorld.getMouseY());
+			world.placeAt(newOrganism, visibleWorld.getMouseX(), visibleWorld.getMouseY());
 		}
 	}
 }

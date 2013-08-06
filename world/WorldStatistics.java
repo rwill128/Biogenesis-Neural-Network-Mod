@@ -348,7 +348,7 @@ public class WorldStatistics implements Serializable {
 		birthLastTime++;
 	}
 
-	public void eventOrganismDie(AliveAgent dyingOrganism,
+	public void eventAgentHasDied(AliveAgent dyingOrganism,
 			StatisticalAgent killingOrganism) {
 		lastDeadBeing = dyingOrganism;
 		if (killingOrganism != null && killingOrganism.getTotalKills() > beingMostKillsNumber) {
@@ -360,7 +360,7 @@ public class WorldStatistics implements Serializable {
 		deathLastTime++;
 	}
 
-	public void eventOrganismInfects(AliveAgent infectedOrganism,
+	public void eventAgentHasBeenInfected(AliveAgent infectedOrganism,
 			StatisticalAgent infectingOrganism) {
 		lastInfectedBeing = infectedOrganism;
 		if (infectingOrganism != null && infectingOrganism.getTotalInfected() > beingMostInfectionsNumber) {

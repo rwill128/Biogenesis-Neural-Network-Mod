@@ -197,7 +197,7 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
 	 * Updates the status bar, the info tool bar and the organism tracker.
 	 */
 	@Override
-	public void time() {
+	public void tick() {
 		if (process.getNFrames() % 20 == 0) {
 			statusBar.updateStatusLabel();
 			getInfoToolBar().recalculate();
