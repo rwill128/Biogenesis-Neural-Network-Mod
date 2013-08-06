@@ -22,14 +22,11 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
-import organisms.AliveAgentFactory;
-
+import organisms.OrganismFactory;
 import actions.ActionFactory;
-
 import menu.MainMenu;
 import menu.MultipleToolBar;
 import net.NetServerThread;
-
 import world.CurrentWorld;
 import world.World;
 
@@ -103,11 +100,11 @@ public class Biogenesis {
 		
 		// create the main objects and link them together
 		process = new Process();
-		currentWorld = new CurrentWorld(new World());
+		currentWorld = new CurrentWorld(new World(new OrganismFactory()));
 		mainWindow = new MainWindow(currentWorld, process);
 		visibleWorld = new VisibleWorld(mainWindow, currentWorld);
 		mainWindow.setIconImage(imageIcon.getImage());
-		currentWorld.getWorld().genesis(AliveAgentFactory.getInstance());
+		currentWorld.getWorld().genesis();
 		netServer = new NetServerThread(currentWorld);
 		currentWorld.addListener(netServer);
 		// sets net server

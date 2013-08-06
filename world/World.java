@@ -30,7 +30,7 @@ import java.util.Set;
 
 import organisms.Agent;
 import organisms.AliveAgent;
-import organisms.AliveAgentFactory;
+import organisms.AliveAgentAbstractFactory;
 import organisms.BaseOrganism;
 import organisms.GeneticCode;
 import organisms.MovingAgent;
@@ -117,6 +117,7 @@ public class World implements Serializable {
 	 * Reference to the object that keeps track of all world statistics. 
 	 */
 	private WorldStatistics worldStatistics;
+	private AliveAgentAbstractFactory aliveAgentFactory;
 	/**
 	 * The set of WorldPaintListener that will be notified of the parts of the world
 	 * that need repainting after every iteration.
@@ -261,13 +262,14 @@ public class World implements Serializable {
 	 * Constructor of the World class. All internal structures are initialized and
 	 * the world's size is obtained from preferences.
 	 */
-	public World() {
+	public World(AliveAgentAbstractFactory aliveAgentFactory) {
 		width = Utils.getWORLD_WIDTH();
 		height = Utils.getWORLD_HEIGHT();
 		agents = new ArrayList<Agent>(Utils.getORGANISMS_VECTOR_SIZE());
 		addedAgents = new ArrayList<Agent>();
 		removedAgents = new ArrayList<Agent>();
 		worldStatistics = new WorldStatistics();
+		this.aliveAgentFactory = aliveAgentFactory;
 	}
 	/**
 	 * Populate the word with a new set of organisms.
@@ -278,7 +280,7 @@ public class World implements Serializable {
 	 * factory can populate the world with different types of
 	 * agents.
 	 */
-	public void genesis(AliveAgentFactory factory) {
+	public void genesis() {
 		AliveAgent[] newAgents;
 		// Reset atributs
 		nextId = 0;
@@ -293,7 +295,7 @@ public class World implements Serializable {
 		// Create statistics
 		worldStatistics = new WorldStatistics();
 		// Create organisms
-		newAgents = factory.initialPopulation(this);
+		newAgents = aliveAgentFactory.initialPopulation(this);
 		for (AliveAgent agent : newAgents) {
 			double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
 			// Only add the new agent if it can be placed in the world

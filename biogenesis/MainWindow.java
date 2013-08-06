@@ -23,8 +23,6 @@ import gui.StatusBar;
 
 import javax.swing.*;
 
-import organisms.AliveAgentFactory;
-
 import menu.MultipleToolBar;
 
 import world.CurrentWorld;
@@ -128,7 +126,7 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
 	 * Starts a new simulation. Resets the world, the process timer and the main window controls.
 	 */
 	public void newGame() {
-		currentWorld.getWorld().genesis(AliveAgentFactory.getInstance());
+		currentWorld.getWorld().genesis();
 		organismTracker.setTrackedOrganism(null);
 		organismTracker.repaint();
 		process.resetNFrames();
