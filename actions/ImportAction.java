@@ -46,7 +46,7 @@ public class ImportAction extends StdAction {
     				BioXMLParser parser = new BioXMLParser();
 					g = parser.parseGeneticCode(chooser.getSelectedFile());
 					// Create organism
-					currentWorld.getWorld().createOrganismAtPosition(g, visibleWorld.getMouseX(),
+					currentWorld.getWorld().createAliveAgentAtPosition(g, visibleWorld.getMouseX(),
 							visibleWorld.getMouseY());
     			} catch (SAXException ex) {
     				System.err.println(ex.getMessage());

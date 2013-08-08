@@ -19,7 +19,7 @@ public class RandomCreateAction extends StdAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		currentWorld.getWorld().createOrganismAtPosition(visibleWorld.getMouseX(),
+		currentWorld.getWorld().createAliveAgentAtPosition(visibleWorld.getMouseX(),
 				visibleWorld.getMouseY());
 	}
 }

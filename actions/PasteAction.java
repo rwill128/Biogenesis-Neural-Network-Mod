@@ -27,7 +27,7 @@ public class PasteAction extends StdAction {
 		GeneticCode clippedGeneticCode = Clipboard.getInstance().getClippedGeneticCode();
 		if (clippedGeneticCode != null) {
 			World world = currentWorld.getWorld();
-			world.createOrganismAtPosition(clippedGeneticCode, visibleWorld.getMouseX(), 
+			world.createAliveAgentAtPosition(clippedGeneticCode, visibleWorld.getMouseX(), 
 					visibleWorld.getMouseY());
 		}
 	}

@@ -31,10 +31,8 @@ import java.util.Set;
 import organisms.Agent;
 import organisms.AliveAgent;
 import organisms.AliveAgentAbstractFactory;
-import organisms.BaseOrganism;
 import organisms.GeneticCode;
 import organisms.MovingAgent;
-import organisms.Organism;
 import organisms.StatisticalAgent;
 
 import biogenesis.Utils;
@@ -341,14 +339,16 @@ public class World implements Serializable {
 	 * @param posy  The y coordinate of the position in the world where we want to put this organism.
 	 * @return  true if there were enough space to put the organism, false otherwise.
 	 */
-	public boolean placeAt(AliveAgent aa, int posx, int posy) {
+	private boolean placeAt(AliveAgent aa, int posx, int posy) {
 		aa.setPosition(posx, posy);
 		// Check that the position is inside the world
 		// Check that the organism will not overlap other organisms
 		if (isInsideWorld(aa) == INSIDE_WORLD && checkHit(aa) == null) {
+			double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
+			aa.setEnergy(energy);
 			addAgent(aa, null);
-			atmosphere.decreaseCO2(aa.getEnergy());
-			atmosphere.addO2(aa.getEnergy());
+			atmosphere.decreaseCO2(energy);
+			atmosphere.addO2(energy);
 			return true;
 		}
 		// It can't be placed		
@@ -375,20 +375,30 @@ public class World implements Serializable {
 			result |= DOWN_WORLD;
 		return result;
 	}
-	
-	// This should be taken out of here.
-	public boolean createOrganismAtPosition(int x, int y) {
-		double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
-		BaseOrganism o = new Organism(this);
-		o.setEnergy(energy);
-		return placeAt(o, x, y);
+	/**
+	 * Creates a new alive agent and put it at the specified coordinates, if possible.
+	 * 
+	 * @param x  X coordinate of the point where the new agent will be put.
+	 * @param y  Y coordinate of the point where the new agent will be put.
+	 * @return  true if the agent have been put, that is, if there were space enough
+	 * at the specified position, or false otherwise.
+	 */
+	public boolean createAliveAgentAtPosition(int x, int y) {
+		AliveAgent aa = aliveAgentFactory.createAliveAgent(this);
+		return placeAt(aa, x, y);
 	}
-	// This should be taken out of here.
-	public boolean createOrganismAtPosition(GeneticCode gc, int x, int y) {
-		double energy = Math.min(Utils.getINITIAL_ENERGY(), atmosphere.getCO2());
-		BaseOrganism o = new Organism(this, gc);
-		o.setEnergy(energy);
-		return placeAt(o, x, y);
+	/**
+	 * Creates a new alive agent and put it at the specified coordinates, if possible.
+	 * 
+	 * @param gc  Genetic code of the new agent.
+	 * @param x  X coordinate of the point where the new agent will be put.
+	 * @param y  Y coordinate of the point where the new agent will be put.
+	 * @return  true if the agent have been put, that is, if there were space enough
+	 * at the specified position, or false otherwise.
+	 */
+	public boolean createAliveAgentAtPosition(GeneticCode gc, int x, int y) {
+		AliveAgent aa = aliveAgentFactory.createAliveAgent(this, gc);
+		return placeAt(aa, x, y);
 	}
 	/**
 	 * Draws all world's agents to a graphics context.

@@ -52,7 +52,7 @@ public class InCorridor extends Corridor {
 	public boolean update() {
 		GeneticCode nextCode = pendingOrganisms.peek();
 		if (nextCode != null)
-			if (getWorld().createOrganismAtPosition(nextCode, x+Utils.random.nextInt(width),
+			if (getWorld().createAliveAgentAtPosition(nextCode, x+Utils.random.nextInt(width),
 					y+Utils.random.nextInt(height)))
 				pendingOrganisms.poll();
 		return true;
