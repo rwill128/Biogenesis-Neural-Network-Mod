@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.swing.*;
 
-import aux.Messages;
+import auxiliar.Messages;
 import biogenesis.Utils;
 
 public class NetConnectionsWindow extends JDialog {

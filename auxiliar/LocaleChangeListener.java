@@ -1,4 +1,4 @@
-package aux;
+package auxiliar;
 
 public interface LocaleChangeListener {
 	/**

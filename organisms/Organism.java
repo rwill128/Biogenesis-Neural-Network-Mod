@@ -23,10 +23,8 @@ import java.awt.geom.*;
 
 import segments.Segment;
 import segments.YellowSegment;
-
 import world.World;
-
-import aux.Vector2D;
+import auxiliar.Vector2D;
 import biogenesis.Utils;
 
 /**

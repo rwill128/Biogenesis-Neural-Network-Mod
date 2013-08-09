@@ -9,12 +9,10 @@ import java.io.ObjectInputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import aux.BioFileChooser;
-import aux.Messages;
-
+import auxiliar.BioFileChooser;
+import auxiliar.Messages;
 import world.CurrentWorld;
 import world.World;
-
 import biogenesis.Process;
 
 public class OpenGameAction extends StdAction {

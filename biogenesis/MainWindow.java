@@ -24,10 +24,8 @@ import gui.StatusBar;
 import javax.swing.*;
 
 import menu.MultipleToolBar;
-
 import world.CurrentWorld;
-
-import aux.*;
+import auxiliar.*;
 
 import java.awt.*;
 

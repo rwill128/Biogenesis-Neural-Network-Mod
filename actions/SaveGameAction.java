@@ -1,15 +1,14 @@
 package actions;
 
 import java.awt.event.ActionEvent;
+
 import javax.swing.KeyStroke;
 
 import biogenesis.Process;
-
 import world.CurrentWorld;
-
-import aux.BioFileChooser;
-import aux.BioSaver;
-import aux.Messages;
+import auxiliar.BioFileChooser;
+import auxiliar.BioSaver;
+import auxiliar.Messages;
 
 public class SaveGameAction extends StdAction {
 	private static final long serialVersionUID = 1L;

@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-package aux;
+package auxiliar;
 
 /**
  * A TimeListener is an object that reacts to a Process' ticks.

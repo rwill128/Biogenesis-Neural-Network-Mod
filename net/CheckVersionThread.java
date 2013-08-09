@@ -28,8 +28,7 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 
 import biogenesis.Utils;
-
-import aux.Messages;
+import auxiliar.Messages;
 
 public class CheckVersionThread extends Thread {
 	private Component parentFrame;

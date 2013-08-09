@@ -5,9 +5,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import aux.Messages;
-import aux.PauseListener;
-
+import auxiliar.Messages;
+import auxiliar.PauseListener;
 import biogenesis.Process;
 
 public class StartStopAction extends StdAction implements PauseListener {

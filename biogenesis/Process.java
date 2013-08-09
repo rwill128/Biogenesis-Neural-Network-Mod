@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import aux.PauseListener;
-import aux.TimeListener;
+import auxiliar.PauseListener;
+import auxiliar.TimeListener;
 
 /**
  * This class implements a timer. Methods are provided to pause the timer and to

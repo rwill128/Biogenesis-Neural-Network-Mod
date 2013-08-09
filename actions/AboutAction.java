@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import aux.Messages;
+import auxiliar.Messages;
 
 public class AboutAction extends StdAction {
 	private static final long serialVersionUID = 1L;

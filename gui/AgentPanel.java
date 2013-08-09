@@ -32,11 +32,9 @@ import javax.swing.JPopupMenu;
 
 import organisms.Agent;
 import organisms.AliveAgent;
-
 import biogenesis.Utils;
-
-import aux.Clipboard;
-import aux.Messages;
+import auxiliar.Clipboard;
+import auxiliar.Messages;
 
 public class AgentPanel extends JPanel {
 	private static final long serialVersionUID = Utils.FILE_VERSION;

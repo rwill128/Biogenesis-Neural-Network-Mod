@@ -6,8 +6,7 @@ import java.awt.Color;
 import javax.swing.JComboBox;
 
 import organisms.Pigment;
-
-import aux.Messages;
+import auxiliar.Messages;
 import biogenesis.Utils;
 
 

@@ -26,13 +26,11 @@ import org.xml.sax.SAXException;
 import organisms.Gene;
 import organisms.GeneticCode;
 import organisms.Pigment;
-
 import biogenesis.Utils;
-
-import aux.BioFileChooser;
-import aux.BioXMLParser;
-import aux.Clipboard;
-import aux.Messages;
+import auxiliar.BioFileChooser;
+import auxiliar.BioXMLParser;
+import auxiliar.Clipboard;
+import auxiliar.Messages;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

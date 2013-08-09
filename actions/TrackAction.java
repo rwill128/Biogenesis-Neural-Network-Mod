@@ -7,8 +7,7 @@ import gui.OrganismTrackerObserver;
 import java.awt.event.ActionEvent;
 
 import organisms.AliveAgent;
-
-import aux.Messages;
+import auxiliar.Messages;
 
 public class TrackAction extends StdAction implements OrganismTrackerObserver {
 	private static final long serialVersionUID = 1L;

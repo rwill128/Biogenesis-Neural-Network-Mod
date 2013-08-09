@@ -3,12 +3,10 @@ package actions;
 import java.awt.event.ActionEvent;
 
 import biogenesis.VisibleWorld;
-
 import organisms.GeneticCode;
 import world.CurrentWorld;
 import world.World;
-
-import aux.Clipboard;
+import auxiliar.Clipboard;
 
 public class PasteAction extends StdAction {
 	private static final long serialVersionUID = 1L;

@@ -13,10 +13,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import organisms.AliveAgent;
-
-import aux.BioFileChooser;
-import aux.Messages;
-
+import auxiliar.BioFileChooser;
+import auxiliar.Messages;
 import biogenesis.Process;
 
 public class SaveImageAction extends StdAction {

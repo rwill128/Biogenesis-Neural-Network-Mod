@@ -24,7 +24,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import aux.Messages;
+import auxiliar.Messages;
 import biogenesis.Utils;
 
 public class NetConfigWindow extends JDialog {

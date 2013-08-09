@@ -25,12 +25,10 @@ import java.util.List;
 
 import segments.Segment;
 import segments.SegmentFactory;
-
 import biogenesis.Utils;
-
-import aux.BioXMLParser;
-import aux.Vector2D;
-import aux.Writeable;
+import auxiliar.BioXMLParser;
+import auxiliar.Vector2D;
+import auxiliar.Writeable;
 
 /**
  * This class implements a full organism's genetic code. A genetic code is

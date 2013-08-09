@@ -2,7 +2,7 @@ package actions;
 
 import java.awt.event.ActionEvent;
 
-import aux.BioFileChooser;
+import auxiliar.BioFileChooser;
 import biogenesis.MainWindow;
 
 public class NewGameAction extends StdAction {

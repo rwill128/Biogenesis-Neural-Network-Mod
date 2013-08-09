@@ -20,7 +20,7 @@ package world;
 import java.util.ArrayList;
 import java.util.List;
 
-import aux.TimeListener;
+import auxiliar.TimeListener;
 
 /**
  * This class implements a simple way to keep track of which world

@@ -9,10 +9,8 @@ import javax.swing.border.EtchedBorder;
 
 import world.CurrentWorld;
 import world.World;
-
 import biogenesis.Process;
-
-import aux.Messages;
+import auxiliar.Messages;
 
 public class StatusBar extends JPanel implements StatusListener {
 	private static final long serialVersionUID = 1L;

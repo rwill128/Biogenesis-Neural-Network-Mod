@@ -3,9 +3,7 @@ package actions;
 import java.awt.event.ActionEvent;
 
 import world.CurrentWorld;
-
-import aux.BioSaver;
-
+import auxiliar.BioSaver;
 import biogenesis.Process;
 
 public class SaveGameAsAction extends StdAction {

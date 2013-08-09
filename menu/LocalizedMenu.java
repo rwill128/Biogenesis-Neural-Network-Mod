@@ -2,8 +2,8 @@ package menu;
 
 import javax.swing.JMenu;
 
-import aux.LocaleChangeListener;
-import aux.Messages;
+import auxiliar.LocaleChangeListener;
+import auxiliar.Messages;
 
 public class LocalizedMenu extends JMenu implements LocaleChangeListener {
 	private static final long serialVersionUID = 1L;

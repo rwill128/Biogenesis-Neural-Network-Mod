@@ -7,8 +7,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JOptionPane;
 
 import net.NetServerThread;
-
-import aux.Messages;
+import auxiliar.Messages;
 import biogenesis.MainWindow;
 import biogenesis.Utils;
 

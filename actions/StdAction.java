@@ -22,8 +22,8 @@ import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
-import aux.LocaleChangeListener;
-import aux.Messages;
+import auxiliar.LocaleChangeListener;
+import auxiliar.Messages;
 
 public abstract class StdAction extends AbstractAction implements LocaleChangeListener {
 	private static final long serialVersionUID = 1L;

@@ -19,13 +19,13 @@ package gui;
 
 
 import java.awt.event.*;
+
 import javax.swing.*;
 
 import biogenesis.MainWindow;
 import biogenesis.Biogenesis;
 import biogenesis.Utils;
-
-import aux.Messages;
+import auxiliar.Messages;
 
 public class MainApplet extends JApplet implements ActionListener {
 	private static final long serialVersionUID = Utils.FILE_VERSION;

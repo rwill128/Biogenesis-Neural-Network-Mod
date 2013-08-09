@@ -3,8 +3,7 @@ package actions;
 import java.awt.event.ActionEvent;
 
 import net.BareBonesBrowserLaunch;
-
-import aux.Messages;
+import auxiliar.Messages;
 
 public class ManualAction extends StdAction {
 	private static final long serialVersionUID = 1L;

@@ -23,8 +23,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
-import aux.Messages;
+import auxiliar.Messages;
 
 import java.awt.*;
 import java.awt.event.*;

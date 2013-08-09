@@ -35,10 +35,8 @@ import organisms.GeneticCode;
 import world.CurrentWorld;
 import world.World;
 import world.WorldStatistics;
-
 import biogenesis.Utils;
-
-import aux.Messages;
+import auxiliar.Messages;
 
 public class StatisticsWindow extends JDialog implements ActionListener {
 	private static final long serialVersionUID = Utils.FILE_VERSION;

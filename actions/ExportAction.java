@@ -5,8 +5,7 @@ import gui.OrganismSelector;
 import java.awt.event.ActionEvent;
 
 import organisms.AliveAgent;
-
-import aux.BioSaver;
+import auxiliar.BioSaver;
 
 public class ExportAction extends StdAction {
 	private static final long serialVersionUID = 1L;

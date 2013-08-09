@@ -25,12 +25,10 @@ import java.net.*;
 import java.util.*;
 
 import organisms.GeneticCode;
-
 import world.CurrentWorld;
 import world.CurrentWorldChangeListener;
 import world.World;
-
-import aux.Messages;
+import auxiliar.Messages;
 import biogenesis.Utils;
 
 public class NetServerThread extends Thread implements ConnectionListener, CurrentWorldChangeListener {

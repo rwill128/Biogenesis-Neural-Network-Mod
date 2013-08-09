@@ -32,11 +32,9 @@ import javax.swing.SwingConstants;
 
 import organisms.AliveAgent;
 import organisms.Organism;
-
 import biogenesis.Utils;
-
-import aux.LocaleChangeListener;
-import aux.Messages;
+import auxiliar.LocaleChangeListener;
+import auxiliar.Messages;
 
 public class InfoToolBar extends JToolBar implements LocaleChangeListener {
 	private static final long serialVersionUID = Utils.FILE_VERSION;

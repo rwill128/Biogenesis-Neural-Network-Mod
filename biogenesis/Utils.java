@@ -24,8 +24,7 @@ import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-
-import aux.Messages;
+import auxiliar.Messages;
 
 /**
  * This class contains all global program parameters and a few useful methods for

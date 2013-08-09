@@ -12,10 +12,9 @@ import biogenesis.VisibleWorld;
 import biogenesis.Process;
 import organisms.GeneticCode;
 import world.CurrentWorld;
-
-import aux.BioFileChooser;
-import aux.BioXMLParser;
-import aux.Messages;
+import auxiliar.BioFileChooser;
+import auxiliar.BioXMLParser;
+import auxiliar.Messages;
 
 public class ImportAction extends StdAction {
 	private static final long serialVersionUID = 1L;
