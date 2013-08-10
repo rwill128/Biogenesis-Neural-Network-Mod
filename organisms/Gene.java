@@ -24,11 +24,12 @@ import java.awt.*;
 import biogenesis.Utils;
 
 /**
- * This class implements a single organism's gene. A gene is a colored segment.
- * This segment is part of the organism's body and will be drawn several times
- * depending on the symmetry of the organism. Genes are always segments starting
- * at (0,0). The position in the organism's body depends on their gene neighbors
- * and the organism's symmetry and mirroring.
+ * This class implements a gene of an organism. A gene defines what colored
+ * segments are created (in GeneticCode.synthesize) to form an organism's body.
+ * The number of segments drawn from a single gene depends on the symmetry of
+ * the organism. The first segments are always drawn starting at (0,0). The
+ * position of later segments in the organism's body depends on the length and
+ * angle of earlier segments, and on the organism's symmetry and mirroring.
  */
 public class Gene implements Cloneable, Serializable {
 	/**

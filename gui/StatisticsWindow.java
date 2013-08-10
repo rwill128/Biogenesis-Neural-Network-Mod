@@ -336,12 +336,14 @@ class ColorPanel extends JPanel {
 		int height = getSize().height;
 		int x, lastX=0;
 		InfoAndColor infoAndColor;
-		for (Iterator<InfoAndColor> it = infoList.iterator(); it.hasNext();) {
-			infoAndColor = it.next();
-			x = width * infoAndColor.info / total;
-			g.setColor(infoAndColor.color);
-			g.fillRect(lastX, 0, x, height);
-			lastX += x;
+		if (total > 0) {
+			for (Iterator<InfoAndColor> it = infoList.iterator(); it.hasNext();) {
+				infoAndColor = it.next();
+				x = width * infoAndColor.info / total;
+				g.setColor(infoAndColor.color);
+				g.fillRect(lastX, 0, x, height);
+				lastX += x;
+			}
 		}
 	}
 }
