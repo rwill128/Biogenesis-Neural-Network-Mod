@@ -26,6 +26,8 @@ public class MenuWorld extends LocalizedMenu {
 		menuItem = new JMenuItem(actionFactory.getDecreaseCO2Action());
 		menuItem.setIcon(null);
 		add(menuItem);
+		add(new JMenuItem(actionFactory.getZoomInAction()));
+		add(new JMenuItem(actionFactory.getZoomOutAction()));
 		add(new JMenuItem(actionFactory.getKillAllAction()));
 		add(new JMenuItem(actionFactory.getDisperseAllAction()));
 		add(new JMenuItem(actionFactory.getParametersAction()));

@@ -1,5 +1,6 @@
 package actions;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import net.NetServerThread;
@@ -47,6 +48,8 @@ public class ActionFactory {
 	private StdAction randomCreateAction;
 	private StdAction importAction;
 	private StdAction createBallAction;
+	private StdAction zoomInAction;
+	private StdAction zoomOutAction;
 
 	public static ActionFactory getInstance() throws NullPointerException {
 		if (actionFactory == null)
@@ -152,6 +155,10 @@ public class ActionFactory {
 				"T_IMPORT", null, "T_IMPORT_GENETIC_CODE"); //$NON-NLS-1$ //$NON-NLS-2$
 		createBallAction = new CreateBallAction(visibleWorld, currentWorld,
 				"Create ball", null, "Create ball");
+		zoomInAction = new ZoomInAction(visibleWorld,
+				"T_ZOOM_IN", null, "T_ZOOM_IN"); //$NON-NLS-1$ //$NON-NLS-2$
+		zoomOutAction = new ZoomOutAction(visibleWorld,
+				"T_ZOOM_OUT", null, "T_ZOOM_OUT"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		abortTrackingAction.setEnabled(false);
 		// Only enable file management menu options if at least there is
@@ -307,5 +314,13 @@ public class ActionFactory {
 	
 	public StdAction getCreateBallAction() {
 		return createBallAction;
+	}
+
+	public StdAction getZoomInAction() {
+		return zoomInAction;
+	}
+
+	public StdAction getZoomOutAction() {
+		return zoomOutAction;
 	}
 }

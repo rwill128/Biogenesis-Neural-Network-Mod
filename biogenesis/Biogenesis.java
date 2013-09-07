@@ -149,7 +149,9 @@ public class Biogenesis {
 				actionFactory.getIncreaseCO2Action(),
 				actionFactory.getDecreaseCO2Action(),
 				actionFactory.getManageConnectionsAction(),
-				actionFactory.getAbortTrackingAction()};
+				actionFactory.getAbortTrackingAction(),
+				actionFactory.getZoomInAction(),
+				actionFactory.getZoomOutAction()};
 		Action[] aliveActions = {actionFactory.getFeedAction(),
 				actionFactory.getWeakenAction(),
 				actionFactory.getKillAction(),

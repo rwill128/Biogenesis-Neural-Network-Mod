@@ -72,6 +72,10 @@ public final class Utils {
 	 */
 	final static int DEF_WORLD_HEIGHT = 1000;
 	/**
+	 * This is the default zoom factor.
+	 */
+	final static double DEF_ZOOM_FACTOR = 1.0;
+	/**
 	 * This is the default maximum age than an organism can achieve. From it,
 	 * the organism quickly decays.
 	 */
@@ -255,6 +259,14 @@ public final class Utils {
 	 * This is the effective world's height for new worlds.
 	 */
 	static int WORLD_HEIGHT = DEF_WORLD_HEIGHT;
+	/**
+	 * This is the effective zoom factor.
+	 */
+	static double ZOOM_FACTOR = DEF_ZOOM_FACTOR;
+	/**
+	 * This is how much the zoom factor changes with a button click.
+	 */
+	static final double ZOOM_FACTOR_CHANGE = 1.3;
 	/**
 	 * This is the maximum age than an organism can achieve. From it, the organism
 	 * quickly decays.
@@ -540,23 +552,23 @@ public final class Utils {
 		return Math.max(Math.max(a,b),c);
 	}
 	/**
-	 * Return min if value<min, max if value>max and value otherwise.
+	 * Return min if value&lt;min, max if value&gt;max and value otherwise.
 	 * 
 	 * @param value
 	 * @param min
 	 * @param max
-	 * @return  min if value<min, max if value>max and value otherwise
+	 * @return  min if value&lt;min, max if value&gt;max and value otherwise
 	 */
 	public static final int between(int value, int min, int max) {
 		return Math.max(Math.min(max, value), min);
 	}
 	/**
-	 * Return min if value<min, max if value>max and value otherwise.
+	 * Return min if value&lt;min, max if value&gt;max and value otherwise.
 	 * 
 	 * @param value
 	 * @param min
 	 * @param max
-	 * @return  min if value<min, max if value>max and value otherwise
+	 * @return  min if value&lt;min, max if value&gt;max and value otherwise
 	 */
 	public static final double between(double value, double min, double max) {
 		return Math.max(Math.min(max, value), min);
@@ -603,6 +615,7 @@ public final class Utils {
 			prefs.putInt("ORGANISMS_VECTOR_SIZE",ORGANISMS_VECTOR_SIZE); //$NON-NLS-1$
 			prefs.putInt("WORLD_WIDTH",WORLD_WIDTH); //$NON-NLS-1$
 			prefs.putInt("WORLD_HEIGHT",WORLD_HEIGHT); //$NON-NLS-1$
+			prefs.putDouble("ZOOM_FACTOR",ZOOM_FACTOR); //$NON-NLS-1$
 			prefs.putInt("MAX_AGE",MAX_AGE); //$NON-NLS-1$
 			prefs.putDouble("RUBBING",RUBBING); //$NON-NLS-1$
 			prefs.putDouble("MUTATION_RATE",MUTATION_RATE); //$NON-NLS-1$
@@ -668,6 +681,7 @@ public final class Utils {
 			ORGANISMS_VECTOR_SIZE = prefs.getInt("ORGANISMS_VECTOR_SIZE",DEF_ORGANISMS_VECTOR_SIZE); //$NON-NLS-1$
 			WORLD_WIDTH = prefs.getInt("WORLD_WIDTH",DEF_WORLD_WIDTH); //$NON-NLS-1$
 			WORLD_HEIGHT = prefs.getInt("WORLD_HEIGHT",DEF_WORLD_HEIGHT); //$NON-NLS-1$
+			ZOOM_FACTOR = prefs.getDouble("ZOOM_FACTOR",DEF_ZOOM_FACTOR); //$NON-NLS-1$
 			MAX_AGE = prefs.getInt("MAX_AGE",DEF_MAX_AGE); //$NON-NLS-1$
 			RUBBING = prefs.getDouble("RUBBING",DEF_RUBBING); //$NON-NLS-1$
 			MUTATION_RATE = prefs.getDouble("MUTATION_RATE",DEF_MUTATION_RATE); //$NON-NLS-1$
@@ -802,6 +816,14 @@ public final class Utils {
 
 	public static int getWORLD_HEIGHT() {
 		return WORLD_HEIGHT;
+	}
+
+	public static double getZOOM_FACTOR() {
+		return ZOOM_FACTOR;
+	}
+
+	public static double getZOOM_FACTOR_CHANGE() {
+		return ZOOM_FACTOR_CHANGE;
 	}
 
 	public static int getMAX_AGE() {

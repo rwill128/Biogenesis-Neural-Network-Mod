@@ -177,7 +177,7 @@ public class World implements Serializable {
 	 * @return  An alive agent with the point (x,y) inside its bounding box, or null
 	 * if such agent doesn't exist.
 	 */
-	public AliveAgent findAliveAgentFromPosition(int x, int y) {
+	public AliveAgent findAliveAgentFromPosition(double x, double y) {
 		AliveAgent deadAgent = null;
 		AliveAgent aa;
 		

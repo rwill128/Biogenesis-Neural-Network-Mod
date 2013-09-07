@@ -63,17 +63,30 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	private AliveAgent selectedAgent = null;
 	/**
 	 * X coordinate of the mouse pointer when the user clicks or right clicks on the
-	 * visible world.
+	 * Visible World.
 	 */
 	private int mouseX;
 	/**
 	 * Y coordinate of the mouse pointer when the user clicks or right clicks on the
-	 * visible world.
+	 * Visible World.
 	 */
 	private int mouseY;
+	/**
+	 * Multiplication factor for how big or small the world should look.
+	 * (A zoomSize of 0.5 means the world and all in it appear at half size.)
+	 */
+	private double zoomSize;
+	/**
+	 * The width of the current world, used in determining the Visible Width.
+	 */
+	private int worldWidth;
+	/**
+	 * The height of the current world, used in determining the Visible Height.
+	 */
+	private int worldHeight;
 	
 	/**
-	 * Returns the x coordinate of the last place where the user has clicked.
+	 * Returns the x coordinate of the last place where the user has clicked, in Visible Coordinates.
 	 * 
 	 * @return  X coordinate of the mouse pointer.
 	 */
@@ -81,7 +94,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		return mouseX;
 	}
 	/**
-	 * Returns the y coordinate of the last place where the user has clicked.
+	 * Returns the y coordinate of the last place where the user has clicked, in Visible Coordinates.
 	 * 
 	 * @return  Y coordinate of the mouse pointer.
 	 */
@@ -140,14 +153,15 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		currentWorld.addListener(this);
 		currentWorld.getWorld().addWorldEventListener(this);
 		currentWorld.getWorld().addWorldPaintListener(this);
-		setPreferredSize(new Dimension(Utils.WORLD_WIDTH,Utils.WORLD_HEIGHT));
+		setZoomSize(Utils.ZOOM_FACTOR);
+		setWorldSize(Utils.WORLD_WIDTH, Utils.WORLD_HEIGHT);
 		setBackground(Color.BLACK);
 		mainWindow.getOrganismTracker().setViewportView(this);
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					setSelectedAgent(findAliveAgentFromPosition(e.getX(),e.getY()));
+					setSelectedAgent(findAliveAgentFromPosition(e.getX(), e.getY()));
 				}
 			}
 			@Override
@@ -172,9 +186,10 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 * @return  An alive agent with the point (x,y) inside its bounding box, or null
 	 * if such agent doesn't exist.
 	 */
-	private AliveAgent findAliveAgentFromPosition(int x, int y) {
-		return currentWorld.getWorld().findAliveAgentFromPosition(x, y);
+	private AliveAgent findAliveAgentFromPosition(double x, double y) {
+		return currentWorld.getWorld().findAliveAgentFromPosition(toWorldCoord(x), toWorldCoord(y));
 	}
+	
 	/**
 	 * Calls World.draw to draw all world elements and paints the bounding rectangle
 	 * of the selected organism.
@@ -185,11 +200,13 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	public void paintComponent (Graphics g) {
 		Rectangle r;
 		super.paintComponent(g);
-		currentWorld.getWorld().draw(g);
+		Graphics2D g2 = ((Graphics2D) g);
+		g2.scale(zoomSize, zoomSize);
+		currentWorld.getWorld().draw(g2);
 		if (getSelectedAgent() != null) {
-			g.setColor(Color.ORANGE);
+			g2.setColor(Color.ORANGE);
 			r = selectedAgent.getCurrentFrame();
-			g.drawRect(r.x, r.y,
+			g2.drawRect(r.x, r.y,
 					r.width-1, r.height-1);
 		}
     }
@@ -271,8 +288,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	@Override
 	public void eventGenesis() {
 		setSelectedAgent(null);
-		setPreferredSize(new Dimension(currentWorld.getWorld().getWidth(),
-				currentWorld.getWorld().getHeight()));
+		setWorldSize(currentWorld.getWorld().getWidth(), currentWorld.getWorld().getHeight());
 	}
 	/**
 	 * If the world changes, update listeners, size, and selected agent.
@@ -283,13 +299,65 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		oldWorld.deleteWorldPaintListener(this);
 		newWorld.addWorldEventListener(this);
 		newWorld.addWorldPaintListener(this);
-		setPreferredSize(new Dimension(Utils.WORLD_WIDTH,Utils.WORLD_HEIGHT));
+		setWorldSize(Utils.WORLD_WIDTH, Utils.WORLD_HEIGHT);
 		setSelectedAgent(null);
 		repaint();
+	}
+	private void setWorldSize(int width, int height) {
+		worldWidth = width;
+		worldHeight = height;
+		updatePreferredSize();
+	}
+	public double getZoomSize() {
+		return zoomSize;
+	}
+	public void setZoomSize(double zoomSize) {
+		this.zoomSize = zoomSize;
+		updatePreferredSize();
+	}
+	private void updatePreferredSize() {
+		double centerX, centerY;
+		//calculate center of scrollbar locations
+		centerX = mainWindow.getOrganismTracker().getHorizontalScrollBar().getValue() + 
+				mainWindow.getOrganismTracker().getWidth() / 2;
+		centerY = mainWindow.getOrganismTracker().getVerticalScrollBar().getValue() + 
+				mainWindow.getOrganismTracker().getHeight() / 2;
+		System.out.println(centerX + " " + centerY);
+		//this four similar lines are to convert the pre-zoom center into the correct post-zoom center
+		centerX /= getPreferredSize().getWidth();
+		centerY /= getPreferredSize().getHeight();
+		setPreferredSize(new Dimension(toVisibleCoord(worldWidth), toVisibleCoord(worldHeight)));
+		centerX *= getPreferredSize().getWidth();
+		centerY *= getPreferredSize().getHeight();
+		System.out.println(centerX + " " + centerY); //this output shows that conversion works correctly
+		mainWindow.getOrganismTracker().centerScrollBarsOn((int) centerX, (int) centerY); //Why doesn't this seem to do anything?
+		//TODO: decide which of the following lines are needed and why
+		//this.validate();
+		//mainWindow.getOrganismTracker().getVerticalScrollBar().validate();
+		mainWindow.getOrganismTracker().repaint(); //for cleaning up artifacts from zooming out. also seems to refresh scrollbars when they should appear/disappear. May be inefficient, since it repaints the whole thing.
 	}
 	@Override
 	public void eventPopulationChanged(int oldPopulation, int newPopulation) {
 		// nothing to do
 		
+	}
+	
+	@Override
+	public void repaint(Rectangle r) {
+		//TODO: for efficiency, only repaint what is within visible range?
+		super.repaint(new Rectangle(toVisibleCoord(r.x), toVisibleCoord(r.y), 
+				toVisibleCoord(r.width), toVisibleCoord(r.height)));
+	}
+	
+	public int toVisibleCoord(int worldCoord) {
+		return (int) (worldCoord * zoomSize);
+	}
+	
+	public double toVisibleCoord(double worldCoord) {
+		return worldCoord * zoomSize;
+	}
+
+	public double toWorldCoord(double visibleCoord) {
+		return visibleCoord / zoomSize;
 	}
 }

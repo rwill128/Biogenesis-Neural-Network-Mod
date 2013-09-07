@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import organisms.AliveAgent;
 
 import biogenesis.Utils;
+import biogenesis.VisibleWorld;
 
 public class OrganismTracker extends JScrollPane {
 	/**
@@ -35,16 +36,23 @@ public class OrganismTracker extends JScrollPane {
 				//abortTrackingAction.setEnabled(false);
 			}
 			else {
-				JScrollBar bar = getHorizontalScrollBar();
-				bar.setValue(Utils.between((int)trackedAgent.getCurrentFrame().getCenterX() - getWidth()/2,
-						bar.getValue()-2*maxSpeed,bar.getValue()+2*maxSpeed));
-				bar = getVerticalScrollBar();
-				bar.setValue(Utils.between((int)trackedAgent.getCurrentFrame().getCenterY() - getHeight()/2,
-						bar.getValue()-2*maxSpeed,bar.getValue()+2*maxSpeed));
+				VisibleWorld view = (VisibleWorld) getViewport().getView();
+				double agentLocationX = view.toVisibleCoord(trackedAgent.getCurrentFrame().getCenterX());
+				double agentLocationY = view.toVisibleCoord(trackedAgent.getCurrentFrame().getCenterY());
+				centerScrollBarsOn((int)agentLocationX, (int)agentLocationY);
 			}
 		}
 	}
 	
+	public void centerScrollBarsOn(int x, int y) {
+		JScrollBar bar = getHorizontalScrollBar();
+		bar.setValue(Utils.between(x - getWidth()/2,
+				bar.getValue()-2*maxSpeed,bar.getValue()+2*maxSpeed));
+		bar = getVerticalScrollBar();
+		bar.setValue(Utils.between(y - getHeight()/2,
+				bar.getValue()-2*maxSpeed,bar.getValue()+2*maxSpeed));
+	}
+
 	public AliveAgent getTrackedOrganism() {
 		return trackedAgent;
 	}
