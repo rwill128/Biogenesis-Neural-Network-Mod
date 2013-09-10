@@ -149,6 +149,7 @@ public class MainWindow extends JFrame implements TimeListener, LocaleChangeList
         infoToolBar = new InfoToolBar(null, this);
         centralPanel.add(organismTracker, BorderLayout.CENTER);
         centralPanel.add(infoToolBar, BorderLayout.SOUTH);
+        centralPanel.setBackground(Color.WHITE);
         
         getContentPane().add(centralPanel, BorderLayout.CENTER);
         

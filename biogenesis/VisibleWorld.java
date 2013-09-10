@@ -18,6 +18,7 @@
 package biogenesis;
 
 import gui.OrganismSelector;
+import gui.OrganismTracker;
 
 import javax.swing.*;
 
@@ -40,7 +41,8 @@ import world.WorldPaintListener;
  * the context menus management.
  */
 public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEventListener,
-													CurrentWorldChangeListener, OrganismSelector {
+													CurrentWorldChangeListener, OrganismSelector,
+													AdjustmentListener {
 	/**
 	 * The version of this class
 	 */
@@ -59,6 +61,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	private JPopupMenu popupVoid;
 	/**
 	 * This is the selected agent. It is drawn with an orange bounding rectangle. 
+	 * Note: Can change to Agent class if nonliving agents are made clickable.
 	 */
 	private AliveAgent selectedAgent = null;
 	/**
@@ -73,9 +76,9 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	private int mouseY;
 	/**
 	 * Multiplication factor for how big or small the world should look.
-	 * (A zoomSize of 0.5 means the world and all in it appear at half size.)
+	 * (A zoomFactor of 0.5 means the world and all in it appear at half size.)
 	 */
-	private double zoomSize;
+	private double zoomFactor;
 	/**
 	 * The width of the current world, used in determining the Visible Width.
 	 */
@@ -84,6 +87,11 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 * The height of the current world, used in determining the Visible Height.
 	 */
 	private int worldHeight;
+//	private int scrollTrigger;
+	private int scrollTriggerCenterY;
+	private int scrollTriggerCenterX;
+	private int prevMaxHoriz;
+	private int prevMaxVert;
 	
 	/**
 	 * Returns the x coordinate of the last place where the user has clicked, in Visible Coordinates.
@@ -153,8 +161,8 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		currentWorld.addListener(this);
 		currentWorld.getWorld().addWorldEventListener(this);
 		currentWorld.getWorld().addWorldPaintListener(this);
-		setZoomSize(Utils.ZOOM_FACTOR);
-		setWorldSize(Utils.WORLD_WIDTH, Utils.WORLD_HEIGHT);
+		setZoomFactor(Utils.ZOOM_FACTOR);
+		setWorldSize(currentWorld.getWorld().getWidth(), currentWorld.getWorld().getHeight());
 		setBackground(Color.BLACK);
 		mainWindow.getOrganismTracker().setViewportView(this);
 		addMouseListener(new MouseAdapter() {
@@ -178,7 +186,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	/**
 	 * Finds an alive agent that has the given coordinates inside its bounding box and
 	 * returns a reference to it. If more than one agent satisfies this condition,
-	 * if possible, an agent that is alive is returned. If non alive agent satisfies this
+	 * if possible, an agent that is alive is returned. If no alive agent satisfies this
 	 * condition, this method returns null.
 	 * 
 	 * @param x  X coordinate
@@ -201,7 +209,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		Rectangle r;
 		super.paintComponent(g);
 		Graphics2D g2 = ((Graphics2D) g);
-		g2.scale(zoomSize, zoomSize);
+		g2.scale(zoomFactor, zoomFactor);
 		currentWorld.getWorld().draw(g2);
 		if (getSelectedAgent() != null) {
 			g2.setColor(Color.ORANGE);
@@ -264,7 +272,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		
 	}
 	/**
-	 * When and agent is infected, update the info tool bar, if necessary.
+	 * When an agent is infected, update the info tool bar, if necessary.
 	 */
 	@Override
 	public void eventAgentHasBeenInfected(AliveAgent infectedOrganism,
@@ -299,7 +307,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		oldWorld.deleteWorldPaintListener(this);
 		newWorld.addWorldEventListener(this);
 		newWorld.addWorldPaintListener(this);
-		setWorldSize(Utils.WORLD_WIDTH, Utils.WORLD_HEIGHT);
+		setWorldSize(newWorld.getWidth(), newWorld.getHeight());
 		setSelectedAgent(null);
 		repaint();
 	}
@@ -308,56 +316,118 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		worldHeight = height;
 		updatePreferredSize();
 	}
-	public double getZoomSize() {
-		return zoomSize;
+	public double getZoomFactor() {
+		return zoomFactor;
 	}
-	public void setZoomSize(double zoomSize) {
-		this.zoomSize = zoomSize;
+	public void setZoomFactor(double zoomFactor) {
+		this.zoomFactor = zoomFactor;
 		updatePreferredSize();
 	}
+	
+	/**
+	 * Updates the visible world size, (according to the actual world size and the zoom factor,)
+	 * while maintaining the ScrollPane center as much as possible.
+	 */
 	private void updatePreferredSize() {
 		double centerX, centerY;
+		OrganismTracker scrollPane = mainWindow.getOrganismTracker();
+//		System.out.println("First, value=" + scrollPane.getHorizontalScrollBar().getValue()
+//				+ ", extent=" + scrollPane.getHorizontalScrollBar().getVisibleAmount()
+//				+ " while getHorizontalScrollBar().getWidth()=" + scrollPane.getHorizontalScrollBar().getWidth()
+//				+ " and max=" + scrollPane.getHorizontalScrollBar().getMaximum());
+		
 		//calculate center of scrollbar locations
-		centerX = mainWindow.getOrganismTracker().getHorizontalScrollBar().getValue() + 
-				mainWindow.getOrganismTracker().getWidth() / 2;
-		centerY = mainWindow.getOrganismTracker().getVerticalScrollBar().getValue() + 
-				mainWindow.getOrganismTracker().getHeight() / 2;
-		System.out.println(centerX + " " + centerY);
-		//this four similar lines are to convert the pre-zoom center into the correct post-zoom center
-		centerX /= getPreferredSize().getWidth();
-		centerY /= getPreferredSize().getHeight();
-		setPreferredSize(new Dimension(toVisibleCoord(worldWidth), toVisibleCoord(worldHeight)));
-		centerX *= getPreferredSize().getWidth();
-		centerY *= getPreferredSize().getHeight();
-		System.out.println(centerX + " " + centerY); //this output shows that conversion works correctly
-		mainWindow.getOrganismTracker().centerScrollBarsOn((int) centerX, (int) centerY); //Why doesn't this seem to do anything?
-		//TODO: decide which of the following lines are needed and why
-		//this.validate();
-		//mainWindow.getOrganismTracker().getVerticalScrollBar().validate();
-		mainWindow.getOrganismTracker().repaint(); //for cleaning up artifacts from zooming out. also seems to refresh scrollbars when they should appear/disappear. May be inefficient, since it repaints the whole thing.
+		centerX = scrollPane.getHorizontalScrollBar().getValue() + scrollPane.getWidth() / 2;
+		centerY = scrollPane.getVerticalScrollBar().getValue() + scrollPane.getHeight() / 2;
+		
+		//change the preferred size
+		Dimension oldSize = getPreferredSize();
+		Dimension newSize = new Dimension(toVisibleCoord(worldWidth), toVisibleCoord(worldHeight));
+		setPreferredSize(newSize);
+		
+		//keep center relative to size
+		if (oldSize.width > 0 && oldSize.height > 0)
+		{
+			centerX *= (double) newSize.width / oldSize.width;
+			centerY *= (double) newSize.height / oldSize.height;
+		}
+
+		setScrollTrigger((int) centerX, (int) centerY);
+		//scrollPane.centerScrollBarsOn((int) centerX, (int) centerY);
+//		System.out.println("After calling center scroll bars, value=" + scrollPane.getHorizontalScrollBar().getValue()
+//				+ ", extent=" + scrollPane.getHorizontalScrollBar().getVisibleAmount()
+//				+ " while getWidth()=" + scrollPane.getHorizontalScrollBar().getWidth()
+//				+ " and max=" + scrollPane.getHorizontalScrollBar().getMaximum());
+		repaint(); //cleans up artifacts
+		scrollPane.getViewport().invalidate(); //refreshes scrollbars
 	}
+	
+	private void setScrollTrigger(int centerX, int centerY) {
+		scrollTriggerCenterX = centerX;
+		scrollTriggerCenterY = centerY;
+//		scrollTrigger = 2;
+	}
+	
+	public void releaseScrollTrigger() {
+//		if (true) {
+//			System.out.println("Gotcha!");
+			mainWindow.getOrganismTracker().centerScrollBarsOn(scrollTriggerCenterX, scrollTriggerCenterY);
+//			scrollTrigger--;
+//		}
+	}
+	
 	@Override
 	public void eventPopulationChanged(int oldPopulation, int newPopulation) {
 		// nothing to do
 		
 	}
 	
+	/**
+	 * Marks the specified region for repainting, with a 1-pixel buffer on the 
+	 * bottom and right to account for conversion error.
+	 * @param r A rectangle given in world coordinates
+	 */
 	@Override
 	public void repaint(Rectangle r) {
-		//TODO: for efficiency, only repaint what is within visible range?
 		super.repaint(new Rectangle(toVisibleCoord(r.x), toVisibleCoord(r.y), 
-				toVisibleCoord(r.width), toVisibleCoord(r.height)));
+				toVisibleCoord(r.width) + 1, toVisibleCoord(r.height) + 1));
 	}
 	
+	/**
+	 * Converts horizontal or vertical locations from world coordinates (no zoom)
+	 * to visible coordinates (zoom factor applied)
+	 */
 	public int toVisibleCoord(int worldCoord) {
-		return (int) (worldCoord * zoomSize);
-	}
-	
-	public double toVisibleCoord(double worldCoord) {
-		return worldCoord * zoomSize;
+		return (int) (worldCoord * zoomFactor);
 	}
 
+	/**
+	 * Converts horizontal or vertical locations from world coordinates (no zoom)
+	 * to visible coordinates (zoom factor applied)
+	 */
+	public double toVisibleCoord(double worldCoord) {
+		return worldCoord * zoomFactor;
+	}
+
+	/**
+	 * Converts horizontal or vertical locations from visible coordinates (zoom factor applied)
+	 * to world coordinates (no zoom)
+	 */
 	public double toWorldCoord(double visibleCoord) {
-		return visibleCoord / zoomSize;
+		return visibleCoord / zoomFactor;
+	}
+	
+	/**
+	 * Listens for changes in the Organism Tracker scrollbars. 
+	 */
+	@Override
+	public void adjustmentValueChanged(AdjustmentEvent e) {
+//		System.out.println(e.getSource().toString());
+		//This code is tentative, and may not work as I expected when I wrote it.
+		if (mainWindow.getOrganismTracker().getHorizontalScrollBar().getMaximum() != prevMaxHoriz
+				|| mainWindow.getOrganismTracker().getVerticalScrollBar().getMaximum() != prevMaxVert)
+			releaseScrollTrigger();
+		prevMaxHoriz = mainWindow.getOrganismTracker().getHorizontalScrollBar().getMaximum();
+		prevMaxVert = mainWindow.getOrganismTracker().getVerticalScrollBar().getMaximum();
 	}
 }

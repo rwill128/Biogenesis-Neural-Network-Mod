@@ -12,10 +12,14 @@ import organisms.AliveAgent;
 import biogenesis.Utils;
 import biogenesis.VisibleWorld;
 
+/**
+ * OrganismTracker is a scroll pane that scrolls to follow the agent it is tracking.
+ * When not tracking anything, it allows the user to scroll manually.
+ * 
+ * Currently in Biogenesis, the view for the OrganismTracker's JViewport is set 
+ * (in the VisibleWorld constructor) as the VisibleWorld object.
+ */
 public class OrganismTracker extends JScrollPane {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private AliveAgent trackedAgent = null;
 	private List<OrganismTrackerObserver> observers = new ArrayList<OrganismTrackerObserver>();
@@ -29,6 +33,10 @@ public class OrganismTracker extends JScrollPane {
 		return maxSpeed;
 	}
 	
+	/**
+	 * If the tracked agent's isAlive() returns true, this scrolls the view toward it.
+	 * (Assumes that the view is a VisibleWorld, and uses its coordinate conversion function.)
+	 */
 	public void track() {
 		if (trackedAgent != null) {
 			if (!trackedAgent.isAlive()) {
@@ -39,12 +47,25 @@ public class OrganismTracker extends JScrollPane {
 				VisibleWorld view = (VisibleWorld) getViewport().getView();
 				double agentLocationX = view.toVisibleCoord(trackedAgent.getCurrentFrame().getCenterX());
 				double agentLocationY = view.toVisibleCoord(trackedAgent.getCurrentFrame().getCenterY());
-				centerScrollBarsOn((int)agentLocationX, (int)agentLocationY);
+				moveScrollBarsToward((int)agentLocationX, (int)agentLocationY);
 			}
 		}
 	}
 	
+	/**
+	 * Scrolls instantly to the given location in the view
+	 */
 	public void centerScrollBarsOn(int x, int y) {
+		JScrollBar bar = getHorizontalScrollBar();
+		bar.setValue(x - getWidth()/2);
+		bar = getVerticalScrollBar();
+		bar.setValue(y - getHeight()/2);
+	}
+	
+	/**
+	 * Scrolls (at max speed) toward the given location in the view
+	 */
+	private void moveScrollBarsToward(int x, int y) {
 		JScrollBar bar = getHorizontalScrollBar();
 		bar.setValue(Utils.between(x - getWidth()/2,
 				bar.getValue()-2*maxSpeed,bar.getValue()+2*maxSpeed));
@@ -59,6 +80,14 @@ public class OrganismTracker extends JScrollPane {
 	
 	public OrganismTracker() {
 		super();
+	}
+	
+	@Override
+	public void setViewportView(Component view) {
+		super.setViewportView(view);
+		VisibleWorld visibleWorldView = (VisibleWorld) view;
+		getHorizontalScrollBar().addAdjustmentListener(visibleWorldView);
+		getVerticalScrollBar().addAdjustmentListener(visibleWorldView);
 	}
 
 	public OrganismTracker(Component arg0, int arg1, int arg2) {
@@ -86,4 +115,6 @@ public class OrganismTracker extends JScrollPane {
 	public void deleteObserver(OrganismTrackerObserver observer) {
 		observers.remove(observer);
 	}
+	
+	
 }

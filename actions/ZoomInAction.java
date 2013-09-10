@@ -17,6 +17,6 @@ public class ZoomInAction extends StdAction {
 		
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		visibleWorld.setZoomSize(visibleWorld.getZoomSize() * Utils.getZOOM_FACTOR_CHANGE());
+		visibleWorld.setZoomFactor(visibleWorld.getZoomFactor() * Utils.getZOOM_FACTOR_CHANGE());
 	}
 }
