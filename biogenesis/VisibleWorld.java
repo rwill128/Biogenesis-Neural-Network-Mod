@@ -41,8 +41,7 @@ import world.WorldPaintListener;
  * the context menus management.
  */
 public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEventListener,
-													CurrentWorldChangeListener, OrganismSelector,
-													AdjustmentListener {
+													CurrentWorldChangeListener, OrganismSelector {
 	/**
 	 * The version of this class
 	 */
@@ -61,7 +60,9 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	private JPopupMenu popupVoid;
 	/**
 	 * This is the selected agent. It is drawn with an orange bounding rectangle. 
-	 * Note: Can change to Agent class if nonliving agents are made clickable.
+	 * 
+	 * Programmer's Note: If nonliving agents are ever made clickable we can change 
+	 * this to the Agent class without much trouble.
 	 */
 	private AliveAgent selectedAgent = null;
 	/**
@@ -75,7 +76,7 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 */
 	private int mouseY;
 	/**
-	 * Multiplication factor for how big or small the world should look.
+	 * Multiplication factor for how big the world should look.
 	 * (A zoomFactor of 0.5 means the world and all in it appear at half size.)
 	 */
 	private double zoomFactor;
@@ -87,11 +88,6 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 * The height of the current world, used in determining the Visible Height.
 	 */
 	private int worldHeight;
-//	private int scrollTrigger;
-	private int scrollTriggerCenterY;
-	private int scrollTriggerCenterX;
-	private int prevMaxHoriz;
-	private int prevMaxVert;
 	
 	/**
 	 * Returns the x coordinate of the last place where the user has clicked, in Visible Coordinates.
@@ -311,14 +307,27 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		setSelectedAgent(null);
 		repaint();
 	}
+
+	/**
+	 * Updates the world size fields and the world's visible size
+	 * @param width
+	 * @param height
+	 */
 	private void setWorldSize(int width, int height) {
 		worldWidth = width;
 		worldHeight = height;
 		updatePreferredSize();
 	}
+	
+	/**
+	 * @return the zoom factor (how big the world should look)
+	 */
 	public double getZoomFactor() {
 		return zoomFactor;
 	}
+	/**
+	 * @param zoomFactor How big the world should look relative to its actual size
+	 */
 	public void setZoomFactor(double zoomFactor) {
 		this.zoomFactor = zoomFactor;
 		updatePreferredSize();
@@ -331,10 +340,6 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	private void updatePreferredSize() {
 		double centerX, centerY;
 		OrganismTracker scrollPane = mainWindow.getOrganismTracker();
-//		System.out.println("First, value=" + scrollPane.getHorizontalScrollBar().getValue()
-//				+ ", extent=" + scrollPane.getHorizontalScrollBar().getVisibleAmount()
-//				+ " while getHorizontalScrollBar().getWidth()=" + scrollPane.getHorizontalScrollBar().getWidth()
-//				+ " and max=" + scrollPane.getHorizontalScrollBar().getMaximum());
 		
 		//calculate center of scrollbar locations
 		centerX = scrollPane.getHorizontalScrollBar().getValue() + scrollPane.getWidth() / 2;
@@ -350,36 +355,16 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		{
 			centerX *= (double) newSize.width / oldSize.width;
 			centerY *= (double) newSize.height / oldSize.height;
+			scrollPane.centerScrollBarsOn((int) centerX, (int) centerY);
+			repaint(); //cleans up artifacts
+			scrollPane.getViewport().invalidate(); //refreshes scrollbars
 		}
 
-		setScrollTrigger((int) centerX, (int) centerY);
-		//scrollPane.centerScrollBarsOn((int) centerX, (int) centerY);
-//		System.out.println("After calling center scroll bars, value=" + scrollPane.getHorizontalScrollBar().getValue()
-//				+ ", extent=" + scrollPane.getHorizontalScrollBar().getVisibleAmount()
-//				+ " while getWidth()=" + scrollPane.getHorizontalScrollBar().getWidth()
-//				+ " and max=" + scrollPane.getHorizontalScrollBar().getMaximum());
-		repaint(); //cleans up artifacts
-		scrollPane.getViewport().invalidate(); //refreshes scrollbars
-	}
-	
-	private void setScrollTrigger(int centerX, int centerY) {
-		scrollTriggerCenterX = centerX;
-		scrollTriggerCenterY = centerY;
-//		scrollTrigger = 2;
-	}
-	
-	public void releaseScrollTrigger() {
-//		if (true) {
-//			System.out.println("Gotcha!");
-			mainWindow.getOrganismTracker().centerScrollBarsOn(scrollTriggerCenterX, scrollTriggerCenterY);
-//			scrollTrigger--;
-//		}
 	}
 	
 	@Override
 	public void eventPopulationChanged(int oldPopulation, int newPopulation) {
 		// nothing to do
-		
 	}
 	
 	/**
@@ -415,19 +400,5 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 */
 	public double toWorldCoord(double visibleCoord) {
 		return visibleCoord / zoomFactor;
-	}
-	
-	/**
-	 * Listens for changes in the Organism Tracker scrollbars. 
-	 */
-	@Override
-	public void adjustmentValueChanged(AdjustmentEvent e) {
-//		System.out.println(e.getSource().toString());
-		//This code is tentative, and may not work as I expected when I wrote it.
-		if (mainWindow.getOrganismTracker().getHorizontalScrollBar().getMaximum() != prevMaxHoriz
-				|| mainWindow.getOrganismTracker().getVerticalScrollBar().getMaximum() != prevMaxVert)
-			releaseScrollTrigger();
-		prevMaxHoriz = mainWindow.getOrganismTracker().getHorizontalScrollBar().getMaximum();
-		prevMaxVert = mainWindow.getOrganismTracker().getVerticalScrollBar().getMaximum();
 	}
 }

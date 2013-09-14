@@ -56,10 +56,11 @@ public class OrganismTracker extends JScrollPane {
 	 * Scrolls instantly to the given location in the view
 	 */
 	public void centerScrollBarsOn(int x, int y) {
-		JScrollBar bar = getHorizontalScrollBar();
-		bar.setValue(x - getWidth()/2);
-		bar = getVerticalScrollBar();
-		bar.setValue(y - getHeight()/2);
+		int newValue = x - getWidth()/2;
+		getHorizontalScrollBar().setValue(newValue);
+		
+		newValue = y - getHeight()/2;
+		getVerticalScrollBar().setValue(newValue);
 	}
 	
 	/**
@@ -85,9 +86,6 @@ public class OrganismTracker extends JScrollPane {
 	@Override
 	public void setViewportView(Component view) {
 		super.setViewportView(view);
-		VisibleWorld visibleWorldView = (VisibleWorld) view;
-		getHorizontalScrollBar().addAdjustmentListener(visibleWorldView);
-		getVerticalScrollBar().addAdjustmentListener(visibleWorldView);
 	}
 
 	public OrganismTracker(Component arg0, int arg1, int arg2) {
@@ -115,6 +113,5 @@ public class OrganismTracker extends JScrollPane {
 	public void deleteObserver(OrganismTrackerObserver observer) {
 		observers.remove(observer);
 	}
-	
 	
 }
