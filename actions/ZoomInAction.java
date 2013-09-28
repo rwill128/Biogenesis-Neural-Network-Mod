@@ -1,13 +1,12 @@
 package actions;
 
 import java.awt.event.ActionEvent;
-
-import biogenesis.Utils;
 import biogenesis.VisibleWorld;
 
 public class ZoomInAction extends StdAction {
 	private static final long serialVersionUID = 1L;
 	private VisibleWorld visibleWorld;
+	static final double ZOOM_FACTOR_CHANGE = 1.3;
 	
 	public ZoomInAction(VisibleWorld visibleWorld,
 			String text_key, String icon_path, String desc) {
@@ -17,6 +16,6 @@ public class ZoomInAction extends StdAction {
 		
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		visibleWorld.setZoomFactor(visibleWorld.getZoomFactor() * Utils.getZOOM_FACTOR_CHANGE());
+		visibleWorld.setZoomFactor(visibleWorld.getZoomFactor() * ZOOM_FACTOR_CHANGE);
 	}
 }

@@ -264,10 +264,6 @@ public final class Utils {
 	 */
 	static double ZOOM_FACTOR = DEF_ZOOM_FACTOR;
 	/**
-	 * This is how much the zoom factor changes with a button click.
-	 */
-	static final double ZOOM_FACTOR_CHANGE = 1.3;
-	/**
 	 * This is the maximum age than an organism can achieve. From it, the organism
 	 * quickly decays.
 	 */
@@ -820,10 +816,6 @@ public final class Utils {
 
 	public static double getZOOM_FACTOR() {
 		return ZOOM_FACTOR;
-	}
-
-	public static double getZOOM_FACTOR_CHANGE() {
-		return ZOOM_FACTOR_CHANGE;
 	}
 
 	public static int getMAX_AGE() {

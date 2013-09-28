@@ -158,7 +158,9 @@ public class Biogenesis {
 				actionFactory.getCopyAction(),
 				actionFactory.getSaveImageAction(),
 				actionFactory.getTrackAction(),
-				actionFactory.getAbortTrackingAction()};
+				actionFactory.getAbortTrackingAction(),
+				actionFactory.getZoomInAction(),
+				actionFactory.getZoomOutAction()};
 		Action[] deadActions = {actionFactory.getReviveAction(),
 				actionFactory.getDisperseAction()};
 		

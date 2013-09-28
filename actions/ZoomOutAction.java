@@ -1,8 +1,6 @@
 package actions;
 
 import java.awt.event.ActionEvent;
-
-import biogenesis.Utils;
 import biogenesis.VisibleWorld;
 
 public class ZoomOutAction extends StdAction {
@@ -17,6 +15,6 @@ public class ZoomOutAction extends StdAction {
 		
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		visibleWorld.setZoomFactor(visibleWorld.getZoomFactor() / Utils.getZOOM_FACTOR_CHANGE());
+		visibleWorld.setZoomFactor(visibleWorld.getZoomFactor() / ZoomInAction.ZOOM_FACTOR_CHANGE);
 	}
 }
