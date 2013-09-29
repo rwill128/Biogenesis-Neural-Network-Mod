@@ -371,6 +371,12 @@ public class WorldStatistics implements Serializable {
 		infectionsSum++;
 	}
 
+	/**
+	 * Updates the event statistics of the world, and adds 1 to the stored world time.
+	 * @param population Number of living organisms in the world
+	 * @param O2 How much O2 there is in the world
+	 * @param CO2 How much CO2 there is in the world
+	 */
 	public void eventTime(int population, double O2, double CO2) {
 		time++;
 		if (deathLastTime > 1.5 * getAverageDeaths()) {

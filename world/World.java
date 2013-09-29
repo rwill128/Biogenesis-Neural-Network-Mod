@@ -405,10 +405,12 @@ public class World implements Serializable {
 	 * Called from {@link biogenesis.VisibleWorld.paintComponent}.
 	 * 
 	 * @param g  The graphics context to draw to.
+	 * @param visibleRect 
 	 */
-	public void draw(Graphics g) {			
+	public void draw(Graphics g, Rectangle visibleRect) {			
 		for (Agent a : agents)
-			a.draw(g);
+			if (a.getCurrentFrame().intersects(visibleRect))
+				a.draw(g);
 	}
 	/**
 	 * Determines the world's region that needs to be repainted. Notifies all

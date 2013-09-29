@@ -136,8 +136,8 @@ public class Process implements Serializable {
 		pauseListeners.add(listener);
 	}
 	/**
-	 * Sets the timer to run at the specified delay and starts it if it were
-	 * not started yet.
+	 * Creates a task to run the life-process. Schedules the task to repeat with the given 
+	 * delay. The task will also adjust the delay as needed to stabilize program speed.
 	 * 
 	 * @param delay  The time between executions, in milliseconds.
 	 */

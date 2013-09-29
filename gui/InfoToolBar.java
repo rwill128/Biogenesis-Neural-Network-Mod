@@ -79,7 +79,9 @@ public class InfoToolBar extends JToolBar implements LocaleChangeListener {
 		setVisible(_selOrganism != null);
 	}
 	
-	// Recalculate continuously changing parameters
+	/**
+	 *  Recalculate continuously changing parameters
+	 */
 	public void recalculate() {
 		_lEnergy.setText(_selOrganism!=null?_nf.format(_selOrganism.getEnergy()):"0"); //$NON-NLS-1$
 		_lAge.setText(_selOrganism!=null?_nf.format(_selOrganism.getAge()>>8):"0"); //$NON-NLS-1$

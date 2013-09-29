@@ -206,7 +206,11 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 		super.paintComponent(g);
 		Graphics2D g2 = ((Graphics2D) g);
 		g2.scale(zoomFactor, zoomFactor);
-		currentWorld.getWorld().draw(g2);
+		
+//		g2.setColor(Color.RED);
+//		g2.draw(toWorldCoord(getVisibleRect()));
+		
+		currentWorld.getWorld().draw(g2, toWorldCoord(getVisibleRect()));
 		if (getSelectedAgent() != null) {
 			g2.setColor(Color.ORANGE);
 			r = selectedAgent.getCurrentFrame();
@@ -400,5 +404,27 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 */
 	public double toWorldCoord(double visibleCoord) {
 		return visibleCoord / zoomFactor;
+	}
+
+	/**
+	 * Converts horizontal or vertical locations from visible coordinates (zoom factor applied)
+	 * to world coordinates (no zoom)
+	 */
+	public int toWorldCoord(int visibleCoord) {
+		return (int) ((double)visibleCoord / zoomFactor);
+	}
+
+
+	/**
+	 * Converts a rectangle from visible coordinates (zoom factor applied)
+	 * to world coordinates (no zoom)
+	 */
+	public Rectangle toWorldCoord(Rectangle visibleRect) {
+		Rectangle result = new Rectangle();
+		result.x = toWorldCoord(visibleRect.x);
+		result.y = toWorldCoord(visibleRect.y);
+		result.width = toWorldCoord(visibleRect.width);
+		result.height = toWorldCoord(visibleRect.height);
+		return result;
 	}
 }
