@@ -17,6 +17,7 @@ import world.World;
 public abstract class SegmentBasedOrganism extends BaseOrganism {
 	private static final long serialVersionUID = 1L;
 	private Segment[] segments;
+	private int numSegmentsPerAppendage;
 	/**
 	 * Last frame angle, used to avoid calculating point rotations when the angle doesn't
 	 * change between two consecutive frames.
@@ -47,6 +48,7 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 		super(world, geneticCode, parent);
 		// initialize body
 		segments = geneticCode.synthesize(this);
+		numSegmentsPerAppendage = segments.length / geneticCode.getSymmetry();
 	}
 	
 	public Segment[] getSegments() {
@@ -145,12 +147,24 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 	protected void calculateBounds(boolean force) {
 		double left=java.lang.Double.MAX_VALUE, right=java.lang.Double.MIN_VALUE, 
 		top=java.lang.Double.MAX_VALUE, bottom=java.lang.Double.MIN_VALUE;
+		double lastCalc=0;
+		int segmentNum=0;
 		for (Segment s : getSegments()) {
 			/* Save calculation: if rotation hasn't changed and it is not forced,
 			 * don't calculate points again.
 			 */
 			if (lastTheta != getTheta() || force)
-				s.recalculate(getTheta(), getPosX(), getPosY());
+				if (Utils.isEFFICIENCY_MODE()) {
+					/* Save results internal to recalculate for reuse in the next segment
+					 */
+					if (segmentNum % numSegmentsPerAppendage == 0)
+						lastCalc = s.recalculate(getTheta(), getPosX(), getPosY(), 0.0);
+					else
+						lastCalc = s.recalculate(getTheta(), getPosX(), getPosY(), lastCalc);
+					segmentNum++;
+				} else {
+					s.recalculate(getTheta(), getPosX(), getPosY());
+				}
 			else
 				s.setCenter(getPosX(), getPosY());
 			// Finds the rectangle that comprises the organism

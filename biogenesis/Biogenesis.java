@@ -151,7 +151,8 @@ public class Biogenesis {
 				actionFactory.getManageConnectionsAction(),
 				actionFactory.getAbortTrackingAction(),
 				actionFactory.getZoomInAction(),
-				actionFactory.getZoomOutAction()};
+				actionFactory.getZoomOutAction(),
+				actionFactory.getToggleEfficiencyModeAction()};
 		Action[] aliveActions = {actionFactory.getFeedAction(),
 				actionFactory.getWeakenAction(),
 				actionFactory.getKillAction(),

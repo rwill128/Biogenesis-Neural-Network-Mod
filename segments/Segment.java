@@ -122,12 +122,19 @@ public abstract class Segment extends Line2D.Double {
 	}
 
 	public void recalculate(double inclination, double centerX, double centerY) {
+		recalculate(inclination, centerX, centerY, 
+				Math.atan2(startingPoint.y, startingPoint.x));
+	}
+	public double recalculate(double inclination, double centerX, double centerY, 
+			double atanStart) {
 		double theta;
+		double endPointAngle;
 		
-		theta = inclination + Math.atan2(startingPoint.y ,startingPoint.x);
+		theta = inclination + atanStart;
 		x1 = _m1*Math.cos(theta);
 		y1 = _m1*Math.sin(theta);
-		theta = inclination + Math.atan2(endingPoint.y, endingPoint.x);
+		endPointAngle = Math.atan2(endingPoint.y, endingPoint.x);
+		theta = inclination + endPointAngle;
 		x2 = _m2*Math.cos(theta);
 		y2 = _m2*Math.sin(theta);
 		
@@ -138,6 +145,8 @@ public abstract class Segment extends Line2D.Double {
 		
 		this.centerX = centerX;
 		this.centerY = centerY;
+		
+		return endPointAngle;
 	}
 	public void updateMass() {
 		_m1 = startingPoint.distance(0, 0);

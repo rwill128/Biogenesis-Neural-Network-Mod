@@ -88,7 +88,18 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 * The height of the current world, used in determining the Visible Height.
 	 */
 	private int worldHeight;
+	/**
+	 * When set to true, the entire world is not drawn.
+	 */
+	private boolean noDrawMode;
 	
+	/**
+	 * Turns drawing (of the world) on or off.
+	 * @param noDrawMode Whether to skip drawing the world from now on.
+	 */
+	public void setNoDrawMode(boolean noDrawMode) {
+		this.noDrawMode = noDrawMode;
+	}
 	/**
 	 * Returns the x coordinate of the last place where the user has clicked, in Visible Coordinates.
 	 * 
@@ -202,14 +213,12 @@ public class VisibleWorld extends JPanel implements WorldPaintListener, WorldEve
 	 */
 	@Override
 	public void paintComponent (Graphics g) {
-		Rectangle r;
 		super.paintComponent(g);
+		if (noDrawMode)
+			return;
+		Rectangle r;
 		Graphics2D g2 = ((Graphics2D) g);
 		g2.scale(zoomFactor, zoomFactor);
-		
-//		g2.setColor(Color.RED);
-//		g2.draw(toWorldCoord(getVisibleRect()));
-		
 		currentWorld.getWorld().draw(g2, toWorldCoord(getVisibleRect()));
 		if (getSelectedAgent() != null) {
 			g2.setColor(Color.ORANGE);

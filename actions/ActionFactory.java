@@ -50,6 +50,7 @@ public class ActionFactory {
 	private StdAction createBallAction;
 	private StdAction zoomInAction;
 	private StdAction zoomOutAction;
+	private StdAction toggleEfficiencyModeAction;
 
 	public static ActionFactory getInstance() throws NullPointerException {
 		if (actionFactory == null)
@@ -159,6 +160,9 @@ public class ActionFactory {
 				"T_ZOOM_IN", null, "T_ZOOM_IN"); //$NON-NLS-1$ //$NON-NLS-2$
 		zoomOutAction = new ZoomOutAction(visibleWorld,
 				"T_ZOOM_OUT", null, "T_ZOOM_OUT"); //$NON-NLS-1$ //$NON-NLS-2$
+		toggleEfficiencyModeAction = new ToggleEfficiencyModeAction(visibleWorld, 
+				"T_TURN_ON_EFFICIENCY_MODE", "T_TURN_OFF_EFFICIENCY_MODE", null, //$NON-NLS-1$ //$NON-NLS-2$
+				"T_TURN_ON_EFFICIENCY_MODE", "T_TURN_OFF_EFFICIENCY_MODE"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		abortTrackingAction.setEnabled(false);
 		// Only enable file management menu options if at least there is
@@ -322,5 +326,9 @@ public class ActionFactory {
 
 	public StdAction getZoomOutAction() {
 		return zoomOutAction;
+	}
+	
+	public StdAction getToggleEfficiencyModeAction() {
+		return toggleEfficiencyModeAction;
 	}
 }

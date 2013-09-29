@@ -199,6 +199,10 @@ public final class Utils {
 	 */
 	final static int DEF_DELAY = 50;
 	/**
+	 * This is the default for having efficiency mode on or off.
+	 */
+	final static boolean DEF_EFFICIENCY_MODE = false;
+	/**
 	 * This is the default port where the net server will listen for connections.
 	 */
 	final static int DEF_LOCAL_PORT = 8888;
@@ -386,6 +390,10 @@ public final class Utils {
 	 * This is the number of miliseconds that pas between frames.
 	 */
 	static int DELAY = DEF_DELAY;
+	/**
+	 * This is the value for running in efficiency mode or not.
+	 */
+	static boolean EFFICIENCY_MODE = DEF_EFFICIENCY_MODE;
 	/**
 	 * This is the port where the net server will listen for connections.
 	 */
@@ -639,6 +647,7 @@ public final class Utils {
 			prefs.putDouble("MAX_ROT",MAX_ROT); //$NON-NLS-1$
 			prefs.putDouble("ELASTICITY",ELASTICITY); //$NON-NLS-1$
 			prefs.putInt("DELAY",DELAY); //$NON-NLS-1$
+			prefs.putBoolean("EFFICIENCY_MODE", EFFICIENCY_MODE); //$NON_NLS_1$
 			prefs.putInt("LOCAL_PORT",LOCAL_PORT); //$NON-NLS-1$
 			prefs.putBoolean("ACCEPT_CONNECTIONS",ACCEPT_CONNECTIONS); //$NON-NLS-1$
 			prefs.putBoolean("CONNECT_TO_SERVER",CONNECT_TO_SERVER); //$NON-NLS-1$
@@ -705,6 +714,7 @@ public final class Utils {
 			MAX_ROT = prefs.getDouble("MAX_ROT",DEF_MAX_ROT); //$NON-NLS-1$
 			ELASTICITY = prefs.getDouble("ELASTICITY",DEF_ELASTICITY); //$NON-NLS-1$
 			DELAY = prefs.getInt("DELAY",DEF_DELAY); //$NON-NLS-1$
+			EFFICIENCY_MODE = prefs.getBoolean("EFFICIENCY_MODE",EFFICIENCY_MODE); //$NON_NLS_1$
 			LOCAL_PORT = prefs.getInt("LOCAL_PORT",DEF_LOCAL_PORT); //$NON-NLS-1$
 			MAX_CONNECTIONS = prefs.getInt("MAX_CONNECTIONS",DEF_MAX_CONNECTIONS); //$NON-NLS-1$
 			ACCEPT_CONNECTIONS = prefs.getBoolean("ACCEPT_CONNECTIONS",DEF_ACCEPT_CONNECTIONS); //$NON-NLS-1$
@@ -926,6 +936,10 @@ public final class Utils {
 		return DELAY;
 	}
 
+	public static boolean isEFFICIENCY_MODE() {
+		return EFFICIENCY_MODE;
+	}
+
 	public static int getLOCAL_PORT() {
 		return LOCAL_PORT;
 	}
@@ -968,6 +982,11 @@ public final class Utils {
 	
 	public static void setAcceptConnections(boolean acceptConnections) {
 		ACCEPT_CONNECTIONS = acceptConnections;
+	}
+	
+	public static boolean toggleEFFICIENCY_MODE() {
+		EFFICIENCY_MODE = !EFFICIENCY_MODE;
+		return EFFICIENCY_MODE;
 	}
 
 }
