@@ -110,9 +110,13 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 		return symmetry;
 	}
         
-        //Used by extending classes to set base organism
-        public void setRandomSymmetry(int symmetry) {
+        //Used by extending classes to set base organism random symmetry.
+        public void setRandomSymmetry() {
             randomSymmetry();
+        }
+        
+        public void setSymmetry(int symmetry) {
+            this.symmetry = symmetry;
         }
 	/**
 	 * Returns if mirroring is applied to organisms with this genetic code
@@ -123,9 +127,13 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 		return mirror;
 	}
         
-        public void setMirror(boolean mirror) {
-		this.mirror = mirror;
+        public void setRandomMirror() {
+		randomMirror();
 	}
+        
+        public void setMirror(boolean mirror) {
+            this.mirror = mirror;
+        }
 	/**
 	 * Returns if organisms with this genetic code will disperse their children or not.
 	 * 
@@ -161,6 +169,24 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	public Gene getGene(int i) {
 		return genes[i];
 	}
+        
+        public void setGenes(Gene[] genes) {
+            this.genes = genes;
+        }
+        
+        public void setGene(int i, Gene gene) {
+            genes[i] = gene;
+        }
+        
+        public void randomizeGene(int i) {
+            genes[i].randomize();
+        }
+        
+        public void randomizeGeneLength(int i) {
+            genes[i].randomizeLength();
+        }
+        
+        public void setGeneLength(int)
 	/**
 	 * Return the number of genes of this code
 	 * 

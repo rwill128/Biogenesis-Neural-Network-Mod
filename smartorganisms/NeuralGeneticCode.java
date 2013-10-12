@@ -4,11 +4,9 @@
  */
 package smartorganisms;
 
-import biogenesis.STUtils;
 import organisms.Gene;
-import stbiogenesis.STSTUtils;
+import stbiogenesis.STUtils;
 import organisms.GeneticCode;
-import organisms.Pigment;
 
 /**
  *
@@ -16,12 +14,12 @@ import organisms.Pigment;
  */
 public class NeuralGeneticCode extends GeneticCode
 {
-        /**
-	 * Creates a new genetic code based on the father genetic code but
-	 * applying random mutations to it.
-	 * 
-	 * @param parentCode  The genetic code that this code will be based on.
-	 */
+       /**
+	* Creates a new genetic code based on the father genetic code but
+	* applying random mutations to it.
+	* 
+	* @param parentCode  The genetic code that this code will be based on.
+	*/
 	public NeuralGeneticCode(GeneticCode parentCode) {
 		int i,j;
 		int addedGene = -1;
@@ -35,20 +33,21 @@ public class NeuralGeneticCode extends GeneticCode
 		if (STUtils.randomMutation())
 			randomMirror();
 		else
-			super.setMirror(parentCode.getMirror());
-		if (STUtils.randomMutation()) {
+			setMirror(parentCode.getMirror());
+		
+                if (STUtils.randomMutation()) {
 			// change symmetry
 			if (STUtils.random.nextInt(10) < 2)
 				randomSymmetry();
 			else
-				symmetry = STUtils.between(symmetry+STUtils.randomSign(), 1, 8);
+				setSymmetry(STUtils.between(getSymmetry()+STUtils.randomSign(), 1, 8));
 			nGenes = parentCode.getNGenes();
-			if (nGenes * symmetry > MAX_SEGMENTS) {
-				symmetry = parentCode.getSymmetry();
+			if (nGenes * getSymmetry() > MAX_SEGMENTS) {
+				setSymmetry(parentCode.getSymmetry());
 			}
 		} else {
 			// keep symmetry
-			symmetry = parentCode.getSymmetry();
+			setSymmetry(parentCode.getSymmetry());
 			if (STUtils.randomMutation()) {
 			// change number of segments
 				if (STUtils.random.nextBoolean()) {
@@ -74,15 +73,15 @@ public class NeuralGeneticCode extends GeneticCode
 			}
 		}
 		// Create genes
-		genes = new Gene[nGenes];
+		setGenes(new NeuralGene[nGenes]);
 		for (i=0,j=0; i<nGenes; i++,j++) {
 			if (removedGene == j) {
 				i--;
 				continue;
 			}
 			if (addedGene == i) {
-				genes[i] = new Gene();
-				genes[i].randomize();
+				setGene(i,  new Gene());
+				randomizeGene(i);
 				j--;
 				continue;
 			}
@@ -96,9 +95,9 @@ public class NeuralGeneticCode extends GeneticCode
 			if (STUtils.randomMutation())
 				randomBack = true;
 			if (randomLength || randomTheta || randomColor || randomBack) {
-				genes[i] = new Gene();
+				setGene(i, new Gene());
 				if (randomLength)
-					genes[i].randomizeLength();
+					randomizeGeneLength(i);
 				else
 					genes[i].setLength(parentCode.getGene(j).getLength());
 				if (randomTheta)
