@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 import auxiliar.BioFileChooser;
 import auxiliar.Messages;
 import biogenesis.Process;

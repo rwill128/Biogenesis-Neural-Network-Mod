@@ -1,4 +1,4 @@
-package organisms;
+package agents;
 
 public interface StatisticalAgent extends Agent {
 	public int getTotalChildren();

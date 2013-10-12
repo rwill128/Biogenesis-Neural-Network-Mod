@@ -23,9 +23,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import organisms.Agent;
-import organisms.AliveAgent;
-import organisms.MovingAgent;
+import agents.Agent;
+import agents.AliveAgent;
+import agents.MovingAgent;
 import world.World;
 
 import biogenesis.Utils;

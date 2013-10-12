@@ -18,6 +18,7 @@
 package organisms;
 
 
+import agents.AliveAgent;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.*;
@@ -108,6 +109,11 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	public int getSymmetry() {
 		return symmetry;
 	}
+        
+        //Used by extending classes to set base organism
+        public void setRandomSymmetry(int symmetry) {
+            randomSymmetry();
+        }
 	/**
 	 * Returns if mirroring is applied to organisms with this genetic code
 	 * 
@@ -115,6 +121,10 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	 */
 	public boolean getMirror() {
 		return mirror;
+	}
+        
+        public void setMirror(boolean mirror) {
+		this.mirror = mirror;
 	}
 	/**
 	 * Returns if organisms with this genetic code will disperse their children or not.

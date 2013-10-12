@@ -21,7 +21,6 @@ package biogenesis;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
-
 import organisms.OrganismFactory;
 import actions.ActionFactory;
 import menu.MainMenu;

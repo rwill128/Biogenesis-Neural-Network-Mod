@@ -1,6 +1,6 @@
 package segments;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 import organisms.Pigment;
 
 public class SegmentFactory {

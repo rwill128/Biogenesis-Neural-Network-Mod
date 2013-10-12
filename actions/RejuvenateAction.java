@@ -4,7 +4,7 @@ import gui.OrganismSelector;
 
 import java.awt.event.ActionEvent;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 public class RejuvenateAction extends StdAction {
 	private static final long serialVersionUID = 1L;

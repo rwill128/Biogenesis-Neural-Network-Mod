@@ -1,5 +1,7 @@
 package organisms;
 
+import agents.AliveAgentAbstractFactory;
+import agents.AliveAgent;
 import biogenesis.Utils;
 import world.World;
 

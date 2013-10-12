@@ -30,8 +30,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import organisms.Agent;
-import organisms.AliveAgent;
+import agents.Agent;
+import agents.AliveAgent;
 import biogenesis.Utils;
 import auxiliar.Clipboard;
 import auxiliar.Messages;

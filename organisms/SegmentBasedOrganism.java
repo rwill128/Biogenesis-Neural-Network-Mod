@@ -1,5 +1,7 @@
 package organisms;
 
+import agents.Agent;
+import agents.AliveAgent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

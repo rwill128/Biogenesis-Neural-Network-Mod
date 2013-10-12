@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 import organisms.Organism;
 import biogenesis.Utils;
 import auxiliar.LocaleChangeListener;

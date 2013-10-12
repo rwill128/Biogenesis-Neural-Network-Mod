@@ -29,8 +29,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import organisms.Agent;
-import organisms.AliveAgent;
+import agents.Agent;
+import agents.AliveAgent;
 import organisms.GeneticCode;
 import world.CurrentWorld;
 import world.World;

@@ -3,8 +3,8 @@ package actions;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-import organisms.Agent;
-import organisms.AliveAgent;
+import agents.Agent;
+import agents.AliveAgent;
 
 import world.CurrentWorld;
 	

@@ -28,12 +28,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import organisms.Agent;
-import organisms.AliveAgent;
-import organisms.AliveAgentAbstractFactory;
+import agents.Agent;
+import agents.AliveAgent;
+import agents.AliveAgentAbstractFactory;
 import organisms.GeneticCode;
-import organisms.MovingAgent;
-import organisms.StatisticalAgent;
+import agents.MovingAgent;
+import agents.StatisticalAgent;
 
 import biogenesis.Utils;
 

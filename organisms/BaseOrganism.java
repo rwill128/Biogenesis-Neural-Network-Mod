@@ -1,5 +1,8 @@
 package organisms;
 
+import agents.Agent;
+import agents.StatisticalAgent;
+import agents.AliveAgent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;

@@ -27,8 +27,8 @@ import actions.ActionFactory;
 import java.awt.*;
 import java.awt.event.*;
 
-import organisms.Agent;
-import organisms.AliveAgent;
+import agents.Agent;
+import agents.AliveAgent;
 import world.CurrentWorld;
 import world.CurrentWorldChangeListener;
 import world.World;

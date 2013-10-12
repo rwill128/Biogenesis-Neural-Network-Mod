@@ -17,8 +17,8 @@
  */
 package world;
 
-import organisms.Agent;
-import organisms.AliveAgent;
+import agents.Agent;
+import agents.AliveAgent;
 
 /**
  * This interface defines the methods that should implement classes that need to listen

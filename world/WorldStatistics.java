@@ -25,9 +25,9 @@ import java.util.List;
 
 import biogenesis.Utils;
 
-import organisms.Agent;
-import organisms.AliveAgent;
-import organisms.StatisticalAgent;
+import agents.Agent;
+import agents.AliveAgent;
+import agents.StatisticalAgent;
 
 
 public class WorldStatistics implements Serializable {

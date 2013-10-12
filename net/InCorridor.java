@@ -25,7 +25,7 @@ import java.util.Queue;
 
 import javax.swing.SwingUtilities;
 
-import organisms.Agent;
+import agents.Agent;
 import organisms.GeneticCode;
 import world.World;
 

@@ -1,5 +1,7 @@
 package organisms;
 
+import agents.MovingAgent;
+import agents.Agent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;

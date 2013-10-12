@@ -1,6 +1,6 @@
 package gui;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 public interface OrganismSelector {
 	public void setSelectedAgent(AliveAgent baseOrganism);

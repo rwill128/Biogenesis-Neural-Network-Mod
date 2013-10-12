@@ -6,7 +6,7 @@ import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 import biogenesis.Utils;
 

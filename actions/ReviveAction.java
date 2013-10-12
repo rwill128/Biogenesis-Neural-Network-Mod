@@ -2,7 +2,7 @@ package actions;
 
 import java.awt.event.ActionEvent;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 import world.CurrentWorld;
 

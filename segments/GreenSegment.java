@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import biogenesis.Utils;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 import world.Atmosphere;
 
 public class GreenSegment extends Segment {

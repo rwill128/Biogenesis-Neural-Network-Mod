@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 import biogenesis.Utils;
 import biogenesis.VisibleWorld;

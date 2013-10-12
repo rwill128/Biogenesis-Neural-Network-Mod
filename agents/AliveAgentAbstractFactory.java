@@ -15,9 +15,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-package organisms;
+package agents;
 
 import java.io.Serializable;
+import organisms.GeneticCode;
 
 import world.World;
 
@@ -37,7 +38,7 @@ public interface AliveAgentAbstractFactory extends Serializable {
 	 * the agent will keep a reference to this world, so it can notify it of the different events
 	 * that may occur, as when the agent dies.
 	 * 
-	 * Implementing this is usually as simple as calling an appropiate constructor of the
+	 * Implementing this is usually as simple as calling an appropriate constructor of the
 	 * concrete AliveAgent class.
 	 * 
 	 * @param world  The world where the agent will live.

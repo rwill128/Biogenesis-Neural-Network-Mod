@@ -4,7 +4,7 @@ import gui.OrganismSelector;
 
 import java.awt.event.ActionEvent;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 import auxiliar.Clipboard;
 
 public class CopyAction extends StdAction {

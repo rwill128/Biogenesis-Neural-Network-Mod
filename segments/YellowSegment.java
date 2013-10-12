@@ -2,7 +2,7 @@ package segments;
 
 import java.awt.Color;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 public class YellowSegment extends Segment {
 	private static final long serialVersionUID = 1L;

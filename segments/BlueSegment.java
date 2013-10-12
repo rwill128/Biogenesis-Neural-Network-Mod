@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import biogenesis.Utils;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 
 public class BlueSegment extends Segment {
 	private static final long serialVersionUID = 1L;

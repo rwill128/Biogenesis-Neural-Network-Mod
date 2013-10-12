@@ -22,8 +22,8 @@ import java.awt.Rectangle;
 
 import javax.swing.JPopupMenu;
 
-import organisms.Agent;
-import organisms.AliveAgent;
+import agents.Agent;
+import agents.AliveAgent;
 import world.World;
 
 import biogenesis.Utils;

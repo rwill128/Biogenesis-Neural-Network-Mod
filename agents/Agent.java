@@ -1,4 +1,4 @@
-package organisms;
+package agents;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;

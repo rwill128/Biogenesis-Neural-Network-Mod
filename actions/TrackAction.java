@@ -6,7 +6,7 @@ import gui.OrganismTrackerObserver;
 
 import java.awt.event.ActionEvent;
 
-import organisms.AliveAgent;
+import agents.AliveAgent;
 import auxiliar.Messages;
 
 public class TrackAction extends StdAction implements OrganismTrackerObserver {
