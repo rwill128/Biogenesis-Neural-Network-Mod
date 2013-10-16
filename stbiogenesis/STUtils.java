@@ -114,6 +114,10 @@ public final class STUtils {
 	 * is added to the atmospheric CO2. The rest is added to the attacker's energy.
 	 */
 	final static double DEF_ORGANIC_SUBS_PRODUCED = 0.1d;
+        
+        //Default eye energy consumption.
+        final static double DEF_EYE_ENERGY_CONSUMPTION = 0d;
+
 	/**
 	 * This is the default energy that is consumed when a red segment is used.
 	 */
@@ -158,6 +162,11 @@ public final class STUtils {
 	 * This is the default probability for a new segment to be cyan.
 	 */
 	final static int DEF_CYAN_PROB = 20;
+        
+        
+        final static int DEF_EYE_PROB = 20;
+
+        
 	/**
 	 * This is the default probability for a new segment to be white.
 	 */
@@ -306,7 +315,11 @@ public final class STUtils {
 	 * is added to the atmospheric CO2. The rest is added to the attacker's energy.
 	 */
 	static double ORGANIC_SUBS_PRODUCED = DEF_ORGANIC_SUBS_PRODUCED;
-	/**
+	
+        //Energy consumed by eye segments.
+	static double EYE_ENERGY_CONSUMPTION = DEF_EYE_ENERGY_CONSUMPTION;
+
+        /**
 	 * This is the energy that is consumed when a red segment is used.
 	 */
 	static double RED_ENERGY_CONSUMPTION = DEF_RED_ENERGY_CONSUMPTION;
@@ -350,6 +363,10 @@ public final class STUtils {
 	 * This is the probability for a new segment to be cyan.
 	 */
 	static int CYAN_PROB = DEF_CYAN_PROB;
+        
+        
+        static int EYE_PROB = DEF_EYE_PROB;
+
 	/**
 	 * This is the probability for a new segment to be white.
 	 */
@@ -848,6 +865,10 @@ public final class STUtils {
 	public static double getORGANIC_OBTAINED_ENERGY() {
 		return ORGANIC_OBTAINED_ENERGY;
 	}
+        
+        public static double getEYE_ENERGY_CONSUMPTION() {
+		return EYE_ENERGY_CONSUMPTION;
+	}
 
 	public static int getGREEN_OBTAINED_ENERGY_DIVISOR() {
 		return GREEN_OBTAINED_ENERGY_DIVISOR;
@@ -899,6 +920,10 @@ public final class STUtils {
 
 	public static int getCYAN_PROB() {
 		return CYAN_PROB;
+	}
+        
+        public static int getEYE_PROB() {
+		return EYE_PROB;
 	}
 
 	public static int getWHITE_PROB() {

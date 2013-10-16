@@ -18,7 +18,7 @@
 package agents;
 
 import java.io.Serializable;
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 
 import world.World;
 

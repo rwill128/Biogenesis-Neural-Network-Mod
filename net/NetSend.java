@@ -21,7 +21,7 @@ package net;
 import java.net.*;
 import java.io.*;
 
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 
 import biogenesis.Utils;
 

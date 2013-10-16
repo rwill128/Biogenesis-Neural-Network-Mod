@@ -3,7 +3,7 @@ package actions;
 import java.awt.event.ActionEvent;
 
 import biogenesis.VisibleWorld;
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 import world.CurrentWorld;
 import world.World;
 import auxiliar.Clipboard;

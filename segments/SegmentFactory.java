@@ -1,6 +1,8 @@
 package segments;
 
 import agents.AliveAgent;
+import eyes.SegmentEye;
+import intentionalmover.BCyanSegment;
 import organisms.Pigment;
 
 public class SegmentFactory {
@@ -31,6 +33,12 @@ public class SegmentFactory {
 			segment = new WhiteSegment(agent);
 		if (pigment == Pigment.YELLOW)
 			segment = new YellowSegment(agent);
+                if (pigment == Pigment.BCYAN)
+			segment = new BCyanSegment(agent);
+                if (pigment == Pigment.EYE)
+			segment = new SegmentEye(agent);
+                if (pigment == Pigment.SUPERMAGENTA)
+			segment = new SegmentEye(agent);
 		return segment;
 	}
 

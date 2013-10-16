@@ -15,13 +15,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-package organisms;
+package genes;
 
 
 import java.io.*;
 import java.awt.*;
 
 import biogenesis.Utils;
+import organisms.Pigment;
 
 /**
  * This class implements a gene of an organism. A gene defines what colored
@@ -39,11 +40,11 @@ public class Gene implements Cloneable, Serializable {
 	/**
 	 * Total segment length
 	 */
-	private double length = 0;
+	protected double length = 0;
 	/**
 	 * Inclination degree
 	 */
-	private double theta = 0;
+	protected double theta = 0;
 	/**
 	 * Segment's color
 	 */

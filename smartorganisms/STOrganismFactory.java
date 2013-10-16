@@ -2,7 +2,9 @@ package smartorganisms;
 
 import agents.AliveAgent;
 import agents.AliveAgentAbstractFactory;
-import organisms.GeneticCode;
+import biogenesis.Utils;
+import geneticcodes.NeuralGeneticCode;
+import geneticcodes.GeneticCode;
 import organisms.Organism;
 import stbiogenesis.STUtils;
 import world.World;

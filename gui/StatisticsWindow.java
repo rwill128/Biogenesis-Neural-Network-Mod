@@ -31,7 +31,7 @@ import javax.swing.border.*;
 
 import agents.Agent;
 import agents.AliveAgent;
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 import world.CurrentWorld;
 import world.World;
 import world.WorldStatistics;

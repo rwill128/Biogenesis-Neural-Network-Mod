@@ -1,5 +1,6 @@
-package actions;
+package stbiogenesis;
 
+import actions.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
@@ -16,13 +17,13 @@ import auxiliar.BioFileChooser;
 import auxiliar.BioXMLParser;
 import auxiliar.Messages;
 
-public class ImportAction extends StdAction {
+public class STImportAction extends StdAction {
 	private static final long serialVersionUID = 1L;
 	private Process process;
 	private CurrentWorld currentWorld;
 	private VisibleWorld visibleWorld;
 	
-	public ImportAction(Process process, CurrentWorld currentWorld, VisibleWorld visibleWorld,
+	public STImportAction(Process process, CurrentWorld currentWorld, VisibleWorld visibleWorld,
 			String text_key, String icon_path, String desc) {
 		super(text_key, icon_path, desc);
 		this.process = process;
@@ -42,7 +43,7 @@ public class ImportAction extends StdAction {
     		if (returnVal == JFileChooser.APPROVE_OPTION) {
     			try {
     				// Read XML code from file
-    				BioXMLParser parser = new BioXMLParser();
+    				STBioXMLParser parser = new STBioXMLParser();
 					g = parser.parseGeneticCode(chooser.getSelectedFile());
 					// Create organism
 					currentWorld.getWorld().createAliveAgentAtPosition(g, visibleWorld.getMouseX(),

@@ -15,9 +15,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-package organisms;
+package geneticcodes;
 
 
+import genes.Gene;
 import agents.AliveAgent;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -30,6 +31,7 @@ import biogenesis.Utils;
 import auxiliar.BioXMLParser;
 import auxiliar.Vector2D;
 import auxiliar.Writeable;
+import eyes.Eye;
 
 /**
  * This class implements a full organism's genetic code. A genetic code is
@@ -73,48 +75,46 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	 * Array with the genes. Every gene is represented by symmetry
 	 * segments when drawing the organism.
 	 */
-	private Gene[] genes;
+	protected Gene[] genes;
 	/**
 	 * The symmetry used when drawing the organism. Possible values are
 	 * 2, 4 or 8. 
 	 */
-	private int symmetry;
+	protected int symmetry;
 	/**
 	 * Mirroring indicates if symmetric segments are drawn in the same
 	 * way than the original, only changing their angle, or if they are
 	 * drawn like in a mirror. 0 = not mirrored, 1 = mirrored
 	 */
-	private boolean mirror;
+	protected boolean mirror;
 	/**
 	 * Indicates if children will be placed moving towards the same
 	 * direction than the father or to a different direction to move
 	 * away.
 	 */
-	private boolean disperseChildren;
+	protected boolean disperseChildren;
 	/**
 	 * Minimum required energy to reproduce this genetic code.
 	 * More genes, means more energy is needed. 
 	 */
-	private int reproduceEnergy;
+	protected int reproduceEnergy;
 	/**
 	 * The maximum time that the organism can be alive.
 	 * At the moment, this is the same for all organisms.
 	 */
-	private int maxAge;
+	protected int maxAge;
 	/**
 	 * Returns the symmetry applied to organisms with this genetic code
 	 * 
 	 * @return  a value of 2, 4 or 8.
 	 */
-	public int getSymmetry() {
-		return symmetry;
-	}
+	public int getSymmetry() { return symmetry; }
         
-        //Used by extending classes to set base organism random symmetry.
-        public void setRandomSymmetry() {
-            randomSymmetry();
-        }
-        
+//        //Used by extending classes to set base organism random symmetry.
+//        public void setRandomSymmetry() {
+//            randomSymmetry();
+//        }
+//        
         public void setSymmetry(int symmetry) {
             this.symmetry = symmetry;
         }
@@ -126,14 +126,14 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	public boolean getMirror() {
 		return mirror;
 	}
-        
-        public void setRandomMirror() {
-		randomMirror();
-	}
-        
-        public void setMirror(boolean mirror) {
-            this.mirror = mirror;
-        }
+//        
+//        public void setRandomMirror() {
+//		randomMirror();
+//	}
+//        
+//        public void setMirror(boolean mirror) {
+//            this.mirror = mirror;
+//        }
 	/**
 	 * Returns if organisms with this genetic code will disperse their children or not.
 	 * 
@@ -170,24 +170,7 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 		return genes[i];
 	}
         
-        public void setGenes(Gene[] genes) {
-            this.genes = genes;
-        }
-        
-        public void setGene(int i, Gene gene) {
-            genes[i] = gene;
-        }
-        
-        public void randomizeGene(int i) {
-            genes[i].randomize();
-        }
-        
-        public void randomizeGeneLength(int i) {
-            genes[i].randomizeLength();
-        }
-        
-        public void setGeneLength(int)
-	/**
+        /**
 	 * Return the number of genes of this code
 	 * 
 	 * @return  The number of genes
@@ -198,13 +181,13 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	/**
 	 * Gives mirror a random value (0 or 1)
 	 */
-	private void randomMirror() {
+	protected void randomMirror() {
 		mirror = Utils.random.nextBoolean();
 	}
 	/**
 	 * Gives symmetry a random value (2, 4 or 8)
 	 */
-	private void randomSymmetry() {
+	protected void randomSymmetry() {
 		symmetry = Utils.random.nextInt(8)+1;
 	}
 	/**
@@ -212,7 +195,7 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	 * MIN_SEGMENTS and less or equal than MAX_SEGMENTS segments.
 	 * It needs symmetry to have a valid value. 
 	 */
-	private void randomGenes() {
+	protected void randomGenes() {
 		int nSegments = MIN_SEGMENTS + Utils.random.nextInt(MAX_SEGMENTS-MIN_SEGMENTS+1); // 4 - 64
 		if (nSegments % symmetry != 0)
 		    nSegments += (symmetry - (nSegments % symmetry));
@@ -227,14 +210,14 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	 * Decide randomly if organisms with this genetic code will try to
 	 * disperse their children or not.
 	 */
-	private void randomDisperseChildren() {
+	protected void randomDisperseChildren() {
 		disperseChildren =  Utils.random.nextBoolean();
 	}
 	/**
 	 * Calculates the energy required to reproduce this genetic code.
 	 * This energy is 40 plus 3 for each segment.
 	 */
-	private void calculateReproduceEnergy() {
+	protected void calculateReproduceEnergy() {
 		reproduceEnergy = 40 + 3 * genes.length * symmetry;
 	}
 	/**
@@ -459,7 +442,8 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 		}
 	}
 	@Override
-	public boolean write(File f) {
+	public boolean write(File f) 
+        {
 		try {
 			BioXMLParser.writeGeneticCode(new PrintStream(f), this);
 		} catch (FileNotFoundException ex) {
@@ -469,7 +453,8 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 		return true;
 	}
 	
-	public Segment[] synthesize(AliveAgent agent) {
+	public Segment[] synthesize(AliveAgent agent)
+        {
 		Segment[] segments = new Segment[getNGenes() * getSymmetry()];
 		SegmentFactory factory = SegmentFactory.getInstance();
 		
@@ -477,5 +462,6 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 			segments[i] = factory.createSegment(agent, getGene(i%getNGenes()).getPigment());
 		return segments;
 	}
+       
 }
 

@@ -12,6 +12,7 @@ import javax.swing.JPopupMenu;
 import world.World;
 
 import biogenesis.Utils;
+import geneticcodes.GeneticCode;
 
 public abstract class BaseOrganism extends Rectangle implements Agent, StatisticalAgent, AliveAgent {
 	/**
@@ -64,7 +65,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 	 * Indicates if it has moved at the last frame. If it has moved it is necessary
 	 * to repaint it.
 	 */
-	private boolean moved = true;
+	protected boolean moved = true;
 	/**
 	 * The place that this organism occupies at the last frame. If the organism
 	 * moves, this rectangle must be painted too.
@@ -95,7 +96,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 	/**
 	 * Reference to the world where the organism lives.
 	 */
-	private World world;
+	protected World world;
 
 	/**
 	 * Color used to draw the organism when a collision occurs. We save the color that
@@ -113,7 +114,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 	 * Number of frame that need to pass between two reproductions, even if they are not
 	 * successfully.
 	 */
-	private int timeToReproduce = 0;
+	protected int timeToReproduce = 0;
 	
 	public BaseOrganism(World world, GeneticCode geneticCode, BaseOrganism parent) {
 		this.world = world;

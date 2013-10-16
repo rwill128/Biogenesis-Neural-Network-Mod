@@ -24,7 +24,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 import world.CurrentWorld;
 import world.CurrentWorldChangeListener;
 import world.World;

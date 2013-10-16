@@ -2,7 +2,7 @@ package agents;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 
 import world.World;
 

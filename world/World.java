@@ -31,7 +31,7 @@ import java.util.Set;
 import agents.Agent;
 import agents.AliveAgent;
 import agents.AliveAgentAbstractFactory;
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 import agents.MovingAgent;
 import agents.StatisticalAgent;
 

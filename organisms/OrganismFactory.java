@@ -3,6 +3,7 @@ package organisms;
 import agents.AliveAgentAbstractFactory;
 import agents.AliveAgent;
 import biogenesis.Utils;
+import geneticcodes.GeneticCode;
 import world.World;
 
 /**

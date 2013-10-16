@@ -12,7 +12,12 @@ public enum Pigment {
 	CYAN (Color.CYAN),
 	WHITE (Color.WHITE),
 	GRAY (Color.GRAY),
-	YELLOW (Color.YELLOW);
+	YELLOW (Color.YELLOW),
+        BCYAN (Color.CYAN.brighter()),
+        
+        SUPERMAGENTA (Color.MAGENTA),
+        EYE (Color.GRAY.brighter());
+
 	
 	
 	private Color color;

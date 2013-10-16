@@ -12,13 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biogenesis.Utils;
+import geneticcodes.GeneticCode;
 
 import segments.Segment;
 import world.World;
 
 public abstract class SegmentBasedOrganism extends BaseOrganism {
 	private static final long serialVersionUID = 1L;
-	private Segment[] segments;
+	protected Segment[] segments;
 	private int numSegmentsPerAppendage;
 	/**
 	 * Last frame angle, used to avoid calculating point rotations when the angle doesn't
@@ -56,6 +57,11 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 	public Segment[] getSegments() {
 		return segments;
 	}
+        
+        public Segment getSegment(int i) {
+		return segments[i];
+	}
+        
 	@Override
 	public void revive() {
 		super.revive();
@@ -106,7 +112,7 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 	public void draw(Graphics g) {
 		super.draw(g);
 		boolean showColor = getColor()==null;
-		
+			
 		for (Segment s : segments)
 			s.draw(g, showColor);
 	}

@@ -1,6 +1,6 @@
 package auxiliar;
 
-import organisms.GeneticCode;
+import geneticcodes.GeneticCode;
 
 public class Clipboard {
 	private static Clipboard clipboard = null;

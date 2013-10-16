@@ -18,6 +18,7 @@
 package organisms;
 
 
+import genes.Gene;
 import java.awt.Graphics;
 import java.awt.geom.*;
 
@@ -26,6 +27,7 @@ import segments.YellowSegment;
 import world.World;
 import auxiliar.Vector2D;
 import biogenesis.Utils;
+import geneticcodes.GeneticCode;
 
 /**
  * This class implements an organism.
@@ -36,23 +38,23 @@ public class Organism extends SegmentBasedOrganism {
 	 * The version of this class
 	 */
 	private static final long serialVersionUID = Utils.FILE_VERSION;
-	private static transient Vector2D v = new Vector2D();
+	protected static transient Vector2D v = new Vector2D();
 	/**
 	 * Growth ratio of the organism. Used to calculate segments when the organism is not
 	 * fully grown.
 	 */
-	private int growthRatio = 16;
+	protected int growthRatio = 16;
 	/**
 	 * Indicates if the organism has grown at the last frame. If it has grown it is
 	 * necessary to recalculate its segments. Can be 1, -1 or 0.
 	 */
-	private int hasGrown;
+	protected int hasGrown;
 	
-	private int symmetry;
+	protected int symmetry;
 	
-	private boolean mirror;
+	protected boolean mirror;
 	
-	private int nChildren = 1;
+	protected int nChildren = 1;
 	
 	public Organism(SegmentBasedOrganism parent) {
 		super(parent);
@@ -95,7 +97,7 @@ public class Organism extends SegmentBasedOrganism {
 	
 	@Override
 	public void draw(Graphics g, int width, int height) {
-		getGeneticCode().draw(g, width, height);
+	//	getGeneticCode().draw(g, width, height);
 	}
 	/**
 	 * If its the time for this organism to grow, calculates its new segments and speed.
@@ -297,7 +299,7 @@ public class Organism extends SegmentBasedOrganism {
 	 * inherit, randomCreate and pasteOrganism are the standard ways to add an organism to a world
 	 * and they already call this method.
 	 */
-	private void updateBody() {
+	protected void updateBody() {
 		int i,j,segment=0;
 		GeneticCode geneticCode = getGeneticCode();
 		Segment[] segments = getSegments();

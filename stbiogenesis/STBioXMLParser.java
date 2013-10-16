@@ -34,16 +34,17 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import organisms.Gene;
-import organisms.GeneticCode;
+import genes.Gene;
+import geneticcodes.GeneticCode;
+import geneticcodes.NeuralGeneticCode;
 import organisms.Pigment;
 
 
-public class BioXMLParser implements ErrorHandler {
+public class STBioXMLParser implements ErrorHandler {
 	protected DocumentBuilder builder = null;
 	protected Document doc = null;
 	
-	public BioXMLParser() {
+	public STBioXMLParser() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(true);
 		try {
@@ -121,7 +122,7 @@ public class BioXMLParser implements ErrorHandler {
 				genes.add(parseGene((Element)gene));
 				gene = getNextElement(gene.getNextSibling());
 			}
-			return new GeneticCode(genes, symmetry, mirror, disperse);
+			return new NeuralGeneticCode(genes, symmetry, mirror, eyeGenes, segmentEyeSymmetry, segmentEyeMirror, brainGene, disperse);
 		}
 		throw new SAXException("This file does not contain a genetic_code."); //$NON-NLS-1$
 	}

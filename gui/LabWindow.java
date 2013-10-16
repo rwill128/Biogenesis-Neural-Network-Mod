@@ -23,8 +23,8 @@ import javax.swing.event.ChangeListener;
 
 import org.xml.sax.SAXException;
 
-import organisms.Gene;
-import organisms.GeneticCode;
+import genes.Gene;
+import geneticcodes.GeneticCode;
 import organisms.Pigment;
 import biogenesis.Utils;
 import auxiliar.BioFileChooser;
