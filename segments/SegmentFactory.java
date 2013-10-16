@@ -37,9 +37,7 @@ public class SegmentFactory {
 			segment = new BCyanSegment(agent);
                 if (pigment == Pigment.EYE)
 			segment = new SegmentEye(agent);
-                if (pigment == Pigment.SUPERMAGENTA)
-			segment = new SegmentEye(agent);
-		return segment;
+                return segment;
 	}
 
 }

@@ -38,7 +38,7 @@ public class STOrganismFactory implements AliveAgentAbstractFactory {
 	 */
 	public AliveAgent createAliveAgent(World world, GeneticCode gc) {
             //TODO: create a method that takes a GeneticCode and appends the information for a NeuralGeneticCode. This might be most appropriate in the STOrganism constructors?
-            return new STOrganism(world, gc);
+            return createAliveAgent(world, new NeuralGeneticCode());
 	}
         
         

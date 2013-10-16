@@ -8,14 +8,12 @@ import java.io.Serializable;
  */
 public class EyeGene extends Gene implements Cloneable, Serializable
 {
-    
     protected EyeType eyeType;
     
-    public EyeGene() {
-        
-    }
+    public EyeGene() { }
     
-    public EyeGene(EyeType eyeType) {
+    public EyeGene(EyeType eyeType) 
+    {
             this.eyeType = eyeType;
     }
 

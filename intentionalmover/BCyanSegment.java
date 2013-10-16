@@ -5,18 +5,19 @@ import segments.*;
 import agents.AliveAgent;
 import brains.Output;
 import brains.RegressiveTripletOutput;
+import java.awt.Color;
 import organisms.Pigment;
 import stbiogenesis.STUtils;
 
 public class BCyanSegment extends Segment implements IntentionalMover{
 	private static final long serialVersionUID = 1L;
         
-        double brainXAccelMod = 0;
-        double brainYAccelMod = 0;
-        double brainThetaAccelMod = 0;
+        double brainXAccelMod = 1;
+        double brainYAccelMod = 1;
+        double brainThetaAccelMod = 1;
 
 	public BCyanSegment(AliveAgent thisAgent) {
-		super(thisAgent, Pigment.BCYAN.getColor());
+		super(thisAgent, Color.PINK);
 	}
         
 	@Override

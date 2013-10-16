@@ -9,30 +9,20 @@ import stbiogenesis.STUtils;
  */
 public class SegmentEyeGene extends EyeGene
 {
-    
-        /**
-	 * Total segment length
-	 */
-	protected double length = 0;
-	/**
-	 * Inclination degree
-	 */
-	protected double theta = 0;
-        
         private Pigment pigment;
 
-        
-        
         public SegmentEyeGene() {
+            this.pigment = Pigment.EYE;
         }
 
         public SegmentEyeGene(int length , int theta)
         {
             this.length = length;
             this.theta = theta;
-            this.pigment = Pigment.SUPERMAGENTA;
+            this.pigment = Pigment.EYE;
         }
         
+        @Override
         public void randomize() 
         {
             randomizeLength();
@@ -41,6 +31,7 @@ public class SegmentEyeGene extends EyeGene
         /**
 	 * Chooses a random segment length.
 	 */
+        @Override
 	public void randomizeLength() 
         {
 		length = 2.0 + STUtils.random.nextDouble() * 16.0;
@@ -49,6 +40,7 @@ public class SegmentEyeGene extends EyeGene
 	/**
 	 * Chooses a random segment inclination degree.
 	 */
+        @Override
 	public void randomizeTheta() 
         {
 		theta = STUtils.random.nextDouble() * 2.0 * Math.PI;
@@ -60,6 +52,7 @@ public class SegmentEyeGene extends EyeGene
 	 * 
 	 * @return  The length of this segment.
 	 */
+        @Override
 	public double getLength() {
 		return length;
 	}
@@ -69,14 +62,17 @@ public class SegmentEyeGene extends EyeGene
 	 * 
 	 * @return The inclination of this segment.
 	 */
+        @Override
 	public double getTheta() {
 		return theta;
 	}
         
+        @Override
         public Pigment getPigment() {
 		return pigment;
 	}
 	
+        @Override
 	public Color getColor() {
 		return pigment.getColor();
 	}

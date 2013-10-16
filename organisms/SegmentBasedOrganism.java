@@ -20,12 +20,12 @@ import world.World;
 public abstract class SegmentBasedOrganism extends BaseOrganism {
 	private static final long serialVersionUID = 1L;
 	protected Segment[] segments;
-	private int numSegmentsPerAppendage;
+	protected int numSegmentsPerAppendage;
 	/**
 	 * Last frame angle, used to avoid calculating point rotations when the angle doesn't
 	 * change between two consecutive frames.
 	 */
-	private double lastTheta = -1;
+	protected double lastTheta = -1;
 	/**
 	 * Angular speed. Organism angle variation at every frame.
 	 */
@@ -108,14 +108,14 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 	 * 
 	 * @param g  The graphics context to draw to.
 	 */
-	@Override
-	public void draw(Graphics g) {
-		super.draw(g);
-		boolean showColor = getColor()==null;
-			
-		for (Segment s : segments)
-			s.draw(g, showColor);
-	}
+//	@Override
+//	public void draw(Graphics g) {
+//		super.draw(g);
+//		boolean showColor = getColor()==null;
+//			
+//		for (Segment s : segments)
+//			s.draw(g, showColor);
+//	}
 	
 	public List<Segment> findPossibleContactingSegments(BaseOrganism otherAgent) {
 		List<Segment> contactingSegments = new ArrayList<Segment>(segments.length);

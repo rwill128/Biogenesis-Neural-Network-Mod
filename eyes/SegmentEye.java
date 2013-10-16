@@ -3,6 +3,7 @@ package eyes;
 import segments.*;
 
 import agents.AliveAgent;
+import java.awt.Color;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import organisms.Pigment;
@@ -16,7 +17,7 @@ public class SegmentEye extends Segment implements Eye {
         MLData eyeInput;
 
 	public SegmentEye(AliveAgent thisAgent) {
-		super(thisAgent, Pigment.SUPERMAGENTA.getColor());
+		super(thisAgent, Pigment.EYE.getColor());
                 eyeInput = new BasicMLData(7);
 	}
         

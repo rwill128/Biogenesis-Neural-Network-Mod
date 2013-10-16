@@ -3,6 +3,7 @@ package brains;
 import agents.AliveAgent;
 import eyes.SegmentEye;
 import intentionalmover.BCyanSegment;
+import java.util.List;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
@@ -52,7 +53,7 @@ public class StandardNNBrain extends Brain
         
         //Grab input data for each eye.
         for(int i = 0; i < numInputEyes; i++) {
-           nextInputData = new BasicMLData(((SegmentEye) thisOrganism.getEye(i)).getEyeFeedback());
+           nextInputData = new BasicMLData(((SegmentEye) thisOrganism.getEyeSegment(i)).getEyeFeedback());
            numInputNodes += nextInputData.size();
         }
         
@@ -143,11 +144,12 @@ public class StandardNNBrain extends Brain
         
        MLData outputData = network.compute(inputData);
        
-       Segment[] legs = thisOrganism.getLegs();
+       List<Segment> legs = thisOrganism.getLegs();
        
        //For every leg, take 3 inputs and send a command.
-       for (int j = 0; j < legs.length; j++) {
-           BCyanSegment nextLeg = (BCyanSegment) legs[j];
+       int j = 0;
+       for (Segment leg : legs) {
+           BCyanSegment nextLeg = (BCyanSegment) leg;
            nextLeg.setBrainOutputs(outputData.getData((j * 3)), outputData.getData((j * 3) + 1), outputData.getData((j * 3) +  2));
        }
 //       double[] outputArray = outputData.getData();

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package geneticcodes;
 
 import genes.EyeGene;
@@ -39,14 +35,24 @@ public class NeuralGeneticCode extends GeneticCode
         protected int eyeSymmetry;
 	protected boolean eyeMirror;
         
+        protected void randomSegmentEyeSymmetry() { eyeSymmetry = STUtils.random.nextInt(8)+1; } 
+        protected void randomSegmentEyeMirror() { mirror = Utils.random.nextBoolean(); }
+        private void randomBrainGene()
+        {
+            brainGene = new BrainGene();
+            brainGene.randomize();
+        }
+        
+        
+        public int getNSegmentEyeGenes() { return segmentEyeGenes.length; }
+        public boolean getEyeMirror() { return eyeMirror; }
+        public SegmentEyeGene getSegmentEyeGene (int i) { return segmentEyeGenes[i]; }
         
         public int getEyeSymmetry() { return eyeSymmetry; }
         public void setEyeSymmetry(int eyeSymmetry) { this.eyeSymmetry = eyeSymmetry; }
         
-       // public void setRandomEyeSymmetry() { randomEyeSymmetry(); }
-        protected void randomSegmentEyeSymmetry() { eyeSymmetry = STUtils.random.nextInt(8)+1; }
-        protected void randomSegmentEyeMirror() { mirror = Utils.random.nextBoolean(); }
-        
+        public BrainGene getBrainGene() { return brainGene; }
+
 //        public int getNumBrainSegments() 
 //        {
 //            int numBrainSegments = 0;
@@ -70,7 +76,7 @@ public class NeuralGeneticCode extends GeneticCode
                 randomSegmentEyeSymmetry();
                 randomSegmentEyeGenes();
                 
-                randomBrainGenes();
+                randomBrainGene();
 
 		randomDisperseChildren();
 		calculateReproduceEnergy();
@@ -99,7 +105,25 @@ public class NeuralGeneticCode extends GeneticCode
 	}
     
 	public NeuralGeneticCode(NeuralGeneticCode parentCode) {
-		int i,j;
+                reproduceBodySegmentsWithMutations(parentCode);
+                reproduceEyeSegmentsWithMutations(parentCode);
+                
+                if (Utils.randomMutation()) {
+                    brainGene.randomize();
+                }
+                
+                if (Utils.randomMutation())
+			randomDisperseChildren();
+		else
+			disperseChildren = parentCode.getDisperseChildren();
+		calculateReproduceEnergy();
+                adjustReproduceEnergy();
+		maxAge = Utils.getMAX_AGE();
+	}
+        
+        protected void reproduceBodySegmentsWithMutations(NeuralGeneticCode parentCode) 
+        {
+                int i,j;
 		int addedGene = -1;
 		int removedGene = -1;
 		int nGenes;
@@ -107,25 +131,17 @@ public class NeuralGeneticCode extends GeneticCode
 		boolean randomTheta;
 		boolean randomColor;
 		boolean randomBack;
-                
-                //Brain code. The same principle of applying random mutations should happen here as well.
-               // brain = parentCode.getBrain().clone();
-               // brain.randomMutate();
-                
-                //Put an Eye out in front, since we don't have genetic code that describes that yet, either.
-               	
-
-                
-		if (STUtils.randomMutation())
+            //Create new segments from parent genetic code.
+		if (Utils.randomMutation())
 			randomMirror();
 		else
 			mirror = parentCode.getMirror();
-		if (STUtils.randomMutation()) {
+		if (Utils.randomMutation()) {
 			// change symmetry
-			if (STUtils.random.nextInt(10) < 2)
+			if (Utils.random.nextInt(10) < 2)
 				randomSymmetry();
 			else
-				symmetry = STUtils.between(symmetry+STUtils.randomSign(), 1, 8);
+				symmetry = Utils.between(symmetry+Utils.randomSign(), 1, 8);
 			nGenes = parentCode.getNGenes();
 			if (nGenes * symmetry > MAX_SEGMENTS) {
 				symmetry = parentCode.getSymmetry();
@@ -133,15 +149,15 @@ public class NeuralGeneticCode extends GeneticCode
 		} else {
 			// keep symmetry
 			symmetry = parentCode.getSymmetry();
-			if (STUtils.randomMutation()) {
+			if (Utils.randomMutation()) {
 			// change number of segments
-				if (STUtils.random.nextBoolean()) {
+				if (Utils.random.nextBoolean()) {
 				// increase segments
 					if (parentCode.getNGenes() * parentCode.getSymmetry() >= MAX_SEGMENTS)
 						nGenes = parentCode.getNGenes();
 					else {
 						nGenes = parentCode.getNGenes() + 1;
-						addedGene = STUtils.random.nextInt(nGenes);
+						addedGene = Utils.random.nextInt(nGenes);
 					}
 				} else {
 				// decrease segments
@@ -149,7 +165,7 @@ public class NeuralGeneticCode extends GeneticCode
 						nGenes = parentCode.getNGenes();
 					else {
 						nGenes = parentCode.getNGenes() - 1;
-						removedGene = STUtils.random.nextInt(parentCode.getNGenes());
+						removedGene = Utils.random.nextInt(parentCode.getNGenes());
 					}
 				}
 			} else {
@@ -158,29 +174,29 @@ public class NeuralGeneticCode extends GeneticCode
 			}
 		}
 		// Create genes
-		genes = new NeuralGene[nGenes];
+		genes = new Gene[nGenes];
 		for (i=0,j=0; i<nGenes; i++,j++) {
 			if (removedGene == j) {
 				i--;
 				continue;
 			}
 			if (addedGene == i) {
-				genes[i] = new NeuralGene();
+				genes[i] = new Gene();
 				genes[i].randomize();
 				j--;
 				continue;
 			}
 			randomLength = randomTheta = randomColor = randomBack = false;
-			if (STUtils.randomMutation())
+			if (Utils.randomMutation())
 				randomLength = true;
-			if (STUtils.randomMutation())
+			if (Utils.randomMutation())
 				randomTheta = true;
-			if (STUtils.randomMutation())
+			if (Utils.randomMutation())
 				randomColor = true;
-			if (STUtils.randomMutation())
+			if (Utils.randomMutation())
 				randomBack = true;
 			if (randomLength || randomTheta || randomColor || randomBack) {
-				genes[i] = new NeuralGene();
+				genes[i] = new Gene();
 				if (randomLength)
 					genes[i].randomizeLength();
 				else
@@ -197,25 +213,107 @@ public class NeuralGeneticCode extends GeneticCode
 				genes[i] = parentCode.getGene(j);
 		}
 
-		if (STUtils.randomMutation())
-			randomDisperseChildren();
+		
+        }
+        
+        protected void reproduceEyeSegmentsWithMutations(NeuralGeneticCode parentCode) 
+        {
+                int i,j;
+		int addedGene = -1;
+		int removedGene = -1;
+		int nGenes;
+		boolean randomLength;
+		boolean randomTheta;
+		boolean randomColor;
+		boolean randomBack;
+            //Create new segments from parent genetic code.
+		if (Utils.randomMutation())
+			randomMirror();
 		else
-			disperseChildren = parentCode.getDisperseChildren();
-		calculateReproduceEnergy();
-		maxAge = STUtils.getMAX_AGE();
-	}
+			eyeMirror = parentCode.getEyeMirror();
+		if (Utils.randomMutation()) {
+			// change symmetry
+			if (Utils.random.nextInt(10) < 2)
+				randomSegmentEyeSymmetry();
+			else
+				eyeSymmetry = Utils.between(eyeSymmetry+Utils.randomSign(), 1, 8);
+			nGenes = parentCode.getNGenes();
+			if (nGenes * eyeSymmetry > MAX_SEGMENTS) {
+				eyeSymmetry = parentCode.getSymmetry();
+			}
+		} else {
+			// keep symmetry
+			eyeSymmetry = parentCode.getEyeSymmetry();
+			if (Utils.randomMutation()) {
+			// change number of segments
+				if (Utils.random.nextBoolean()) {
+				// increase segments
+					if (parentCode.getNSegmentEyeGenes() * parentCode.getEyeSymmetry() >= MAX_SEGMENTS)
+						nGenes = parentCode.getNSegmentEyeGenes();
+					else {
+						nGenes = parentCode.getNSegmentEyeGenes() + 1;
+						addedGene = Utils.random.nextInt(nGenes);
+					}
+				} else {
+				// decrease segments
+					if (parentCode.getNSegmentEyeGenes() * parentCode.getEyeSymmetry() <= MIN_SEGMENTS)
+						nGenes = parentCode.getNSegmentEyeGenes();
+					else {
+						nGenes = parentCode.getNSegmentEyeGenes() - 1;
+						removedGene = Utils.random.nextInt(parentCode.getNSegmentEyeGenes());
+					}
+				}
+			} else {
+			// keep number of segments
+				nGenes = parentCode.getNSegmentEyeGenes();
+			}
+		}
+		// Create genes
+		segmentEyeGenes = new SegmentEyeGene[nGenes];
+		for (i=0,j=0; i<nGenes; i++,j++) {
+			if (removedGene == j) {
+				i--;
+				continue;
+			}
+			if (addedGene == i) {
+				segmentEyeGenes[i] = new SegmentEyeGene();
+				segmentEyeGenes[i].randomize();
+				j--;
+				continue;
+			}
+			randomLength = randomTheta =  randomBack = false;
+			if (Utils.randomMutation())
+				randomLength = true;
+			if (Utils.randomMutation())
+				randomTheta = true;
+			if (Utils.randomMutation())
+				randomBack = true;
+			if (randomLength || randomTheta || randomBack) {
+				segmentEyeGenes[i] = new SegmentEyeGene();
+				if (randomLength)
+					segmentEyeGenes[i].randomizeLength();
+				else
+					segmentEyeGenes[i].setLength(parentCode.getGene(j).getLength());
+				if (randomTheta)
+					segmentEyeGenes[i].randomizeTheta();
+				else
+					segmentEyeGenes[i].setTheta(parentCode.getGene(j).getTheta());
+				segmentEyeGenes[i].setPigment(parentCode.getGene(j).getPigment());
+			} else
+				segmentEyeGenes[i] = parentCode.getSegmentEyeGene(j);
+		}
+        }
         
         /**
 	 * Calculates the energy required to reproduce this genetic code.
 	 * This energy is 40 plus 3 for each segment.
 	 */
-        @Override
-	protected void calculateReproduceEnergy() {
-		reproduceEnergy = 40 + 3 * genes.length * symmetry * segmentEyeGenes.length * eyeSymmetry;
+	protected void adjustReproduceEnergy() {
+		reproduceEnergy += segmentEyeGenes.length * eyeSymmetry;
 	}
         
         @Override
-         protected void randomGenes() {
+        protected void randomGenes() {
 		int nSegments = MIN_SEGMENTS + STUtils.random.nextInt(MAX_SEGMENTS-MIN_SEGMENTS+1); // 4 - 64
 		if (nSegments % symmetry != 0)
 		    nSegments += (symmetry - (nSegments % symmetry));
@@ -226,50 +324,10 @@ public class NeuralGeneticCode extends GeneticCode
 			genes[i].randomize();
 		}
 	}
-         
-     public SegmentEye[] synthesizeEyes(AliveAgent agent) 
+        
+        private void randomSegmentEyeGenes()
         {
-                SegmentEye[] eyes = new SegmentEye[getNEyeGenes() * getEyeSymmetry()];
-		SegmentFactory factory = SegmentFactory.getInstance();
-		
-		for (int i = 0; i < eyes.length; i++)
-			eyes[i] = (SegmentEye) factory.createSegment(agent, Pigment.SUPERMAGENTA);
-		return eyes;
-        }
-     
-     public Brain synthesizeBrain(AliveAgent agent)
-     {
-         Brain brain;
-         BrainFactory factory = BrainFactory.getInstance();
-         
-         brain = factory.createBrain(agent, getBrainGene().getBrainType());
-         return brain;
-     }
-
-//    public void randomEyes()
-//    {
-//     //   eyes.add(new SegmentEye());
-//    }
-
-    public int getNEyeGenes()
-    {
-        return segmentEyeGenes.length;
-    }
-
-    public EyeGene getEyeGene(int i)
-    {
-        return segmentEyeGenes[i];
-    }
-    
-    public BrainGene getBrainGene()
-    {
-        return brainGene;
-    }
-
-    //TODO: create random number of eye genes, and ask each eye to randomize itself, following the same model as random genes.
-    private void randomSegmentEyeGenes()
-    {
-       int nSegments = MIN_SEGMENTS + STUtils.random.nextInt(MAX_SEGMENTS-MIN_SEGMENTS+1); // 4 - 64
+            int nSegments = MIN_SEGMENTS + STUtils.random.nextInt(MAX_SEGMENTS-MIN_SEGMENTS+1); // 4 - 64
 		if (nSegments % eyeSymmetry != 0)
 		    nSegments += (eyeSymmetry - (nSegments % eyeSymmetry));
 		int nGenes = nSegments / eyeSymmetry;
@@ -278,14 +336,33 @@ public class NeuralGeneticCode extends GeneticCode
 			segmentEyeGenes[i] = new SegmentEyeGene();
 			segmentEyeGenes[i].randomize();
 		}
-    }
+        }
+                 
+        public SegmentEye[] synthesizeEyes(AliveAgent agent) 
+        {
+                SegmentEye[] eyes = new SegmentEye[getNSegmentEyeGenes() * getEyeSymmetry()];
+		SegmentFactory factory = SegmentFactory.getInstance();
+		
+		for (int i = 0; i < eyes.length; i++)
+			eyes[i] = (SegmentEye) factory.createSegment(agent, Pigment.EYE);
+		return eyes;
+        }
+     
+        public Brain synthesizeBrain(AliveAgent agent)
+        {
+            Brain brain;
+            BrainFactory factory = BrainFactory.getInstance();
+         
+            brain = factory.createBrain(agent, getBrainGene().getBrainType());
+            return brain;
+        }
 
-    //TODO: create brain gene, and ask it to randomize itself, following the same model as randomGenes.
-    private void randomBrainGenes()
-    {
-        brainGene = new BrainGene();
-        brainGene.randomize();
-    }
+//    public void randomEyes()
+//    {
+//     //   eyes.add(new SegmentEye());
+//    }
+
+   
     
     
     @Override
@@ -350,56 +427,66 @@ public class NeuralGeneticCode extends GeneticCode
 			}
 		}
                 
-//                
-//                
-//                for (int i=0; i<symmetry; i++) {
-//			for (int j=0; j<eyeGenes.length; j++) {
-//				v.setModulus(((SegmentEyeGene) eyeGenes[j]).getLength());
-//				if (j==0) {
-//					x0[i][j]=y0[i][j]=0;
-//					if (!mirror || i%2==0)
-//						v.setTheta(((SegmentEyeGene)eyeGenes[j]).getTheta()+i*2*Math.PI/symmetry);
-//					else {
-//						v.setTheta(((SegmentEyeGene)eyeGenes[j]).getTheta()+(i-1)*2*Math.PI/symmetry);
-//						v.invertX();
-//					}
-//				} else {
-//					x0[i][j] = x1[i][j-1];
-//					y0[i][j] = y1[i][j-1];
-//					if (!mirror || i%2==0)
-//						v.addDegree(((SegmentEyeGene)eyeGenes[j]).getTheta());
-//					else
-//						v.addDegree(-((SegmentEyeGene)eyeGenes[j]).getTheta());
-//				}
-//				
-//				x1[i][j] = (int) Math.round(v.getX() + x0[i][j]);
-//				y1[i][j] = (int) Math.round(v.getY() + y0[i][j]);
-//				
-//				maxX = Math.max(maxX, Math.max(x0[i][j], x1[i][j]));
-//				maxY = Math.max(maxY, Math.max(y0[i][j], y1[i][j]));
-//				minX = Math.min(minX, Math.min(x0[i][j], x1[i][j]));
-//				minY = Math.min(minY, Math.min(y0[i][j], y1[i][j]));
-//			}
-//		}
-//		
-//		g2.translate(width/2, height/2);
-//		if (maxX-minX > width)
-//			scale = (double)width/(double)(maxX-minX);
-//		if (maxY-minY > height)
-//			scale = Math.min(scale, (double)height/(double)(maxY-minY));
-//		g2.scale(scale, scale);
-//		
-//		for (int i=0; i<symmetry; i++) {
-//			for (int j=0; j<eyeGenes.length; j++) {
-//				x0[i][j]+=(-minX-maxX)/2;
-//				x1[i][j]+=(-minX-maxX)/2;
-//				y0[i][j]+=(-minY-maxY)/2;
-//				y1[i][j]+=(-minY-maxY)/2;
-//				g2.setColor(((SegmentEyeGene)eyeGenes[j]).getColor());
-//				g2.drawLine(x0[i][j],y0[i][j],x1[i][j],y1[i][j]);
-//			}
-//		}
-              
+
+            x0 = new int[eyeSymmetry][segmentEyeGenes.length];
+            y0 = new int[eyeSymmetry][segmentEyeGenes.length];
+            x1 = new int[eyeSymmetry][segmentEyeGenes.length];
+            y1 = new int[eyeSymmetry][segmentEyeGenes.length];
+            maxX = 0;
+            minX = 0;
+            maxY = 0;
+            minY = 0;
+            scale = 1.0;
+            v = new Vector2D();
+            g2 = (Graphics2D) g;
+
+		for (int i=0; i<eyeSymmetry; i++) {
+			for (int j=0; j<segmentEyeGenes.length; j++) {
+				v.setModulus(segmentEyeGenes[j].getLength());
+				if (j==0) {
+					x0[i][j]=y0[i][j]=0;
+					if (!eyeMirror || i%2==0)
+						v.setTheta(segmentEyeGenes[j].getTheta()+i*2*Math.PI/eyeSymmetry);
+					else {
+						v.setTheta(segmentEyeGenes[j].getTheta()+(i-1)*2*Math.PI/eyeSymmetry);
+						v.invertX();
+					}
+				} else {
+					x0[i][j] = x1[i][j-1];
+					y0[i][j] = y1[i][j-1];
+					if (!eyeMirror || i%2==0)
+						v.addDegree(segmentEyeGenes[j].getTheta());
+					else
+						v.addDegree(-segmentEyeGenes[j].getTheta());
+				}
+				
+				x1[i][j] = (int) Math.round(v.getX() + x0[i][j]);
+				y1[i][j] = (int) Math.round(v.getY() + y0[i][j]);
+				
+				maxX = Math.max(maxX, Math.max(x0[i][j], x1[i][j]));
+				maxY = Math.max(maxY, Math.max(y0[i][j], y1[i][j]));
+				minX = Math.min(minX, Math.min(x0[i][j], x1[i][j]));
+				minY = Math.min(minY, Math.min(y0[i][j], y1[i][j]));
+			}
+		}
+		
+		g2.translate(width/2, height/2);
+		if (maxX-minX > width)
+			scale = (double)width/(double)(maxX-minX);
+		if (maxY-minY > height)
+			scale = Math.min(scale, (double)height/(double)(maxY-minY));
+		g2.scale(scale, scale);
+		
+		for (int i=0; i<eyeSymmetry; i++) {
+			for (int j=0; j<segmentEyeGenes.length; j++) {
+				x0[i][j]+=(-minX-maxX)/2;
+				x1[i][j]+=(-minX-maxX)/2;
+				y0[i][j]+=(-minY-maxY)/2;
+				y1[i][j]+=(-minY-maxY)/2;
+				g2.setColor(segmentEyeGenes[j].getColor());
+				g2.drawLine(x0[i][j],y0[i][j],x1[i][j],y1[i][j]);
+			}
+		}
 	}
 }
     

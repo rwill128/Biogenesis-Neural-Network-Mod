@@ -51,7 +51,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 	/**
 	 * A reference to the genetic code of this organism
 	 */
-	private GeneticCode geneticCode;
+	protected GeneticCode geneticCode;
 	/**
 	 * If this organism has been infected by a white segment, here we have the
 	 * genetic code that this organism will reproduce.

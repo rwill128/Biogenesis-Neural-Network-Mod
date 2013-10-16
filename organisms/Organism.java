@@ -83,7 +83,7 @@ public class Organism extends SegmentBasedOrganism {
 		initialize();
 	}
 	
-	private void initialize() {
+	public void initialize() {
 		symmetry = getGeneticCode().getSymmetry();
 		mirror = getGeneticCode().getMirror();
 		updateBody();
@@ -97,7 +97,7 @@ public class Organism extends SegmentBasedOrganism {
 	
 	@Override
 	public void draw(Graphics g, int width, int height) {
-	//	getGeneticCode().draw(g, width, height);
+                getGeneticCode().draw(g, width, height);
 	}
 	/**
 	 * If its the time for this organism to grow, calculates its new segments and speed.
@@ -277,7 +277,7 @@ public class Organism extends SegmentBasedOrganism {
 		return false;
 	}
 	
-	private void recalculateSize() {
+	protected void recalculateSize() {
 		double newMass = 0;
 		double inertia = 0;
 		for (Segment s : getSegments()) {
