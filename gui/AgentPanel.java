@@ -35,6 +35,7 @@ import agents.AliveAgent;
 import biogenesis.Utils;
 import auxiliar.Clipboard;
 import auxiliar.Messages;
+import geneticcodes.NeuralGeneticCode;
 
 public class AgentPanel extends JPanel {
 	private static final long serialVersionUID = Utils.FILE_VERSION;

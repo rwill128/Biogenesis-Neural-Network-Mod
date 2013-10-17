@@ -6,17 +6,19 @@ import biogenesis.Utils;
 import brains.Brain;
 import eyes.SegmentEye;
 import genes.SegmentEyeGene;
+import geneticcodes.GeneticCode;
 import geneticcodes.NeuralGeneticCode;
 import intentionalmover.BCyanSegment;
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.geom.Point2D;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import organisms.BaseOrganism;
 import organisms.Organism;
 import organisms.SegmentBasedOrganism;
 import segments.Segment;
-import stbiogenesis.STUtils;
 import world.World;
 
 /**
@@ -32,9 +34,13 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
     private int numLegs;
     private int eyeSymmetry;
     private boolean eyeMirror;
-    private Vector2D sightV = new Vector2D();
+    
+    private Rectangle eyeBox = new Rectangle();
+    private Rectangle lastEyeFrame = new Rectangle();
+    protected static transient Vector2D sightV = new Vector2D();
     
     public int getNumEyes() { return segmentEyes.length; }
+    public Rectangle getEyeBox() { return eyeBox; }
     
     public SegmentEye getEyeSegment(int i) { return segmentEyes[i]; }
     public SegmentEye[] getEyeSegments() { return segmentEyes; }
@@ -47,25 +53,118 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 	this(world, new NeuralGeneticCode());
     }
     
-        
+    public STOrganism(SegmentBasedOrganism parent) {
+		super(parent);
+                segmentEyes = ((NeuralGeneticCode) geneticCode).synthesizeEyes(this);
+                numSegmentEyesPerEyeAppendage = segmentEyes.length / ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
+                 brain = ((NeuralGeneticCode) geneticCode).synthesizeBrain(this);
+                   initEyesAndLegs();
+	}
+    
     public STOrganism(World world, NeuralGeneticCode nGeneticCode) 
     {
 	super(world, nGeneticCode);
-        segmentEyes = nGeneticCode.synthesizeEyes(this);
-        numSegmentEyesPerEyeAppendage = segmentEyes.length / nGeneticCode.getEyeSymmetry();
+        
+        segmentEyes = ((NeuralGeneticCode) geneticCode).synthesizeEyes(this);
+        eyeSymmetry = ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
+        eyeMirror = ((NeuralGeneticCode) geneticCode).getEyeMirror();
+        updateEyes();
+        
+        numSegmentEyesPerEyeAppendage = segmentEyes.length / ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
 
         brain = nGeneticCode.synthesizeBrain(this);
         initEyesAndLegs();
     }
     
+    @Override
+    public void segmentsFrameEffects() {
+		if (isAlive()) {
+			for (Segment s : segments)
+				s.frameEffects();
+                        for (Segment s : segmentEyes)
+				s.frameEffects();
+		}
+	}
+    
+    @Override
+	public BufferedImage getImage() {
+		BufferedImage image = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		g.setBackground(Color.BLACK);
+		g.clearRect(0,0,width,height);
+		for (Segment s : getSegments())
+			s.draw(g, -x + getPosX(), -y + getPosY(), true);
+                for (Segment s : getEyeSegments())
+			s.draw(g, -x + getPosX(), -y + getPosY(), true);
+		return image;
+	}
+    
+    @Override
+	public boolean reproduce() {
+		boolean hasReproduced = false;
+		Organism newOrg;
+		double reproduceEnergy = getInfectedGeneticCode() != null ? getInfectedGeneticCode().getReproduceEnergy() : 
+				getGeneticCode().getReproduceEnergy();
+		
+		for (int i=0; i < nChildren; i++) {
+			newOrg = new STOrganism(this);
+			newOrg.setEnergy(Math.min(reproduceEnergy / (nChildren+1), getEnergy()));
+			
+			if (getEnergy() >= newOrg.getEnergy()+Utils.getYELLOW_ENERGY_CONSUMPTION() &&
+					newOrg.placeNear(this)) {
+				// It can be created
+				increaseChildren();
+				setEnergy(getEnergy() - newOrg.getEnergy());
+				if (i!=0)
+					useEnergy(Utils.getYELLOW_ENERGY_CONSUMPTION());
+				getWorld().addAgent(newOrg,this);
+				setInfectedGeneticCode(null);
+			}
+			hasReproduced = true;
+			
+		}
+		return hasReproduced;
+	}
+    
+    protected boolean placeNear(SegmentBasedOrganism parent) {
+		int nPos = Utils.random.nextInt(8);
+		// Try to put it in any possible position, starting from a randomly chosen one.
+		for (int nSide = 0; nSide < 8; nSide++) {
+			// Calculate candidate position
+			setPosition(parent.getPosX() + (parent.width / 2 + width / 2+ 1) * Utils.side[nPos][0],
+					parent.getPosY() + (parent.height / 2 + height / 2 + 1) * Utils.side[nPos][1]);
+			// Check this position is inside the world.
+			if (getWorld().isInsideWorld(this) == World.INSIDE_WORLD) {
+				// Check that it doesn't overlap with other organisms.
+				if (getWorld().fastCheckHit(this) == null) {
+					if (parent.getGeneticCode().getDisperseChildren()) {
+						setDx(Utils.side[nPos][0]);
+						setDy(Utils.side[nPos][1]);
+					} else {
+						setDx(parent.getDx());
+						setDy(parent.getDy());
+					}
+					return true;
+				}
+			}
+			nPos = (nPos + 1) % 8;
+		}
+		// It can't be placed.
+		return false;
+	}
+    
+    @Override
+    public void initUpdate() {
+		moved = false;
+		lastFrame.setBounds(this);
+	}
+    
+    
     public void initEyesAndLegs() 
     {
-		eyeSymmetry = ((NeuralGeneticCode) getGeneticCode()).getEyeSymmetry();
-                eyeMirror = ((NeuralGeneticCode) getGeneticCode()).getEyeMirror();
-                
+		
                 updateEyes();
                 
-                recalculateSize();
 		for (Segment s : getSegments())
                 {
 			if (s instanceof BCyanSegment) {
@@ -73,7 +172,6 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
                                 legs.add(s);
                         }
                 }
-		nChildren = Utils.between(nChildren, 1, 8);
 	}
     
     @Override
@@ -84,20 +182,18 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
     protected void updateEyes() 
     {
 	int i,j,segment=0;
-	NeuralGeneticCode geneticCode = (NeuralGeneticCode) getGeneticCode();
-	SegmentEye[] eyeSegments = getEyeSegments();
+	segmentEyes = getEyeSegments();
 	SegmentEyeGene gene;
-	int sequence = eyeSegments.length / eyeSymmetry;
-		
+	int sequence = segmentEyes.length / eyeSymmetry;
 	for (i=0; i<eyeSymmetry; i++) {
             for (j=0; j<sequence; j++,segment++) {
             // Here, we take the vector that forms the segment, scale it depending on
             // the relative size of the organism and rotate it depending on the
             // symmetry and mirroring.
-            gene = geneticCode.getSegmentEyeGene(j);
-            sightV.setModulus(gene.getLength()/STUtils.scale[growthRatio-1]);
+            gene = ((NeuralGeneticCode) geneticCode).getSegmentEyeGene(j);
+            sightV.setModulus(gene.getLength()/Utils.scale[growthRatio-1]);
             if (j==0) {
-                eyeSegments[segment].setStartingPoint(0, 0);
+                segmentEyes[segment].setStartingPoint(0, 0);
 		if (!eyeMirror || i%2==0) {
                     sightV.setTheta(gene.getTheta()+i*2*Math.PI/eyeSymmetry);
                 } else {
@@ -105,48 +201,109 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
                     sightV.invertX();
 		}
             } else {
-                eyeSegments[segment].setStartingPoint(eyeSegments[segment-1].getEndingPoint());
+                segmentEyes[segment].setStartingPoint(segmentEyes[segment-1].getEndingPoint());
 		if (!eyeMirror || i%2==0)
                     sightV.addDegree(gene.getTheta());
                 else
                     sightV.addDegree(-gene.getTheta());
             }
             // Apply the vector to the starting point to get the ending point.
-            eyeSegments[segment].setEndingPoint((int) Math.round(sightV.getX() +
-            eyeSegments[segment].getStartingPoint().x),
-            (int) Math.round(sightV.getY() + eyeSegments[segment].getStartingPoint().y));
+            segmentEyes[segment].setEndingPoint((int) Math.round(sightV.getX() +
+            segmentEyes[segment].getStartingPoint().x),
+            (int) Math.round(sightV.getY() + segmentEyes[segment].getStartingPoint().y));
             }
         }
     }
     
+    @Override
+    public boolean spin() {
+		if (growthRatio < 16) {
+			growthRatio++;
+			setTheta(getTheta() + (Math.PI / 6));
+			updateBody();
+                        updateEyes();
+			calculateBounds(true);
+                        
+			return true;
+		}
+		return false;
+	}
+    
+    
+    @Override
+    public void grow() {
+		double energy = getEnergy();
+		if (growthRatio > 1 && (getAge() & 0x07) == 0x07 && isAlive() && energy >= getMass()/10) {
+			growthRatio--;
+			double m = getMass();
+			double I = getInertia();
+			updateBody();
+                        updateEyes();
+			// Cynetic energy is constant. If mass changes, speed must also change.
+			m = Math.sqrt(m/getMass());
+			setDx(getDx() * m);
+			setDy(getDy() * m);
+			setDtheta(getDtheta() * Math.sqrt(I/getInertia()));
+			hasGrown = 1;
+		} else {
+			if (growthRatio < 15 && energy < getMass()/12) {
+				growthRatio++;
+				double m = getMass();
+				double I = getInertia();
+				updateBody();
+                                updateEyes();
+				// Cynetic energy is constant. If mass changes, speed must also change.
+				m = Math.sqrt(m/getMass());
+				setDx(getDx() * m);
+				setDy(getDy() * m);
+				setDtheta(getDtheta() * Math.sqrt(I/getInertia()));
+				hasGrown = -1;
+			} else
+				hasGrown = 0;
+		}
+	}
+    
     /**
      *
      */
+    
     @Override
-        protected void recalculateSize() 
-    {
-		double newMass = 0;
-		double inertia = 0;
-		for (Segment s : getSegments()) {
-			// calculate points distance of the origin and modulus
-			s.updateMass();
-			newMass += s.getMass();
-			// add the effect of this segment, following the parallel axis theorem
-			inertia += s.getInertia();
-		}
-		setInertia(inertia);
-		setMass(newMass);
-}
+	public void revive() {
+		super.revive();
+		for (int i = 0; i < segments.length; i++)
+			segments[i].setAlive(true);
+                for (int i = 0; i < segmentEyes.length; i++)
+			segmentEyes[i].setAlive(true);
+	}
+    
+        protected NeuralGeneticCode createChildGeneticCode() {
+		NeuralGeneticCode inheritGeneticCode;
+		
+		// Create the inherited genetic code
+		if (infectedGeneticCode != null)
+			inheritGeneticCode = (NeuralGeneticCode) infectedGeneticCode;
+		else
+			inheritGeneticCode = (NeuralGeneticCode) geneticCode;
+		return new NeuralGeneticCode(inheritGeneticCode);
+	}    /**
+	 * Kills the organism. Sets its segments to brown and tells the world
+	 * about the event.
+	 * 
+	 * @param killingOrganism  The organism that has killed this organism,
+	 * or null if it has died of natural causes.
+	 */
+	@Override
+	public void die(Agent killingOrganism) {
+		super.die(killingOrganism);
+		for (Segment s : segmentEyes)
+			s.setAlive(false);
+	}
     
     @Override
     public void draw(Graphics g) 
     {
-	super.draw(g);
-        boolean showColor = getColor()==null;
-		
-        for (Segment s : segments)
-            s.draw(g, showColor);
-  
+            super.draw(g);
+		boolean showColor = getColor()==null;
          for (SegmentEye s : segmentEyes)
              s.draw(g, showColor);
     }
@@ -179,35 +336,16 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 		return breath();
 	}
    
-   @Override
-	public boolean contact(Agent agent) 
-   {
+	public boolean eyeContact(Agent agent) {
 		if (agent instanceof SegmentBasedOrganism) {
 			SegmentBasedOrganism org = (SegmentBasedOrganism) agent;
-			List<Segment> contactingSegments = findPossibleContactingSegments(org);
-			List<Segment> otherContactingSegments = org.findPossibleContactingSegments(this);
+			List<SegmentEye> contactingSegments = findPossibleSeenSegments(org);
+			List<Segment> otherContactingSegments = org.findPossibleContactingSegments(this.eyeBox);
 			
-			for (Segment s : contactingSegments) {
+			for (SegmentEye s : contactingSegments) {
 				for (Segment sorg : otherContactingSegments) {
 					if (s.intersectsLine(sorg)) {
-						// If we found two intersecting segments, apply effects
-						touchEffects(s, sorg);
-						// Intersection point
-						Point2D intersec= s.getIntersection(sorg);
-						/* touchMove needs to know which is the line that collides from the middle (not
-						 * from a vertex). Try to guess it by finding the vertex nearest to the
-						 * intersection point.
-						 */
-						double dl1, dl2, dbl1, dbl2;
-						dl1 = intersec.distanceSq(s.getP1());
-						dl2 = intersec.distanceSq(s.getP2());
-						dbl1 = intersec.distanceSq(sorg.getP1());
-						dbl2 = intersec.distanceSq(sorg.getP2());
-						// Use this to send the best choice to touchMove
-						if (Math.min(dl1, dl2) < Math.min(dbl1, dbl2))
-							org.touchMove(this, intersec, sorg);
-						else
-							touchMove(org, intersec, s);
+                                                s.touchEffects(sorg);
 						// Find only one collision to speed up.
 						return true;
 					}
@@ -216,21 +354,22 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 		}
 		return false;
 	}
-   
-    @Override
-   public List<Segment> findPossibleContactingSegments(BaseOrganism otherAgent) {
-		List<Segment> contactingSegments = new ArrayList<Segment>(segments.length);
+
+
+        
+        public List<SegmentEye> findPossibleSeenSegments(Rectangle otherAgentRectangle) {
+		List<SegmentEye> seenSegments = new ArrayList<SegmentEye>(segmentEyes.length);
 		// Check collisions for all segments
-		for (Segment s : segments) {
+		for (SegmentEye s : segmentEyes) {
 			// Consider only segments with modulus greater than 1
 			// First check if the line intersects the bounding box of the other organism
-			if (s.getMass() >= 1 && otherAgent.intersectsLine(s)) {
-				contactingSegments.add(s);
+			if (s.getMass() >= 1 && otherAgentRectangle.intersectsLine(s)) {
+				seenSegments.add(s);
 			}
 		}
-		return contactingSegments;
+		return seenSegments;
 	}
-   
+        
    @Override
    protected void calculateBounds(boolean force) {
 		double left=java.lang.Double.MAX_VALUE, right=java.lang.Double.MIN_VALUE, 
@@ -242,7 +381,7 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 			 * don't calculate points again.
 			 */
 			if (lastTheta != getTheta() || force)
-				if (STUtils.isEFFICIENCY_MODE()) {
+				if (Utils.isEFFICIENCY_MODE()) {
 					/* Save results internal to recalculate for reuse in the next segment
 					 */
 					if (segmentNum % numSegmentsPerAppendage == 0)
@@ -256,35 +395,40 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 			else
 				s.setCenter(getPosX(), getPosY());
 			// Finds the rectangle that comprises the organism
-			left = STUtils.min(left, s.getX1(), s.getX2());
-			right = STUtils.max(right, s.getX1(), s.getX2());
-			top = STUtils.min(top, s.getY1(), s.getY2());
-			bottom = STUtils.max(bottom, s.getY1(), s.getY2());
+			left = Utils.min(left, s.getX1(), s.getX2());
+			right = Utils.max(right, s.getX1(), s.getX2());
+			top = Utils.min(top, s.getY1(), s.getY2());
+			bottom = Utils.max(bottom, s.getY1(), s.getY2());
 		}
                 
-                for (Segment s : getEyeSegments()) {
+                double eyeLeft=java.lang.Double.MAX_VALUE, eyeRight=java.lang.Double.MIN_VALUE, 
+		eyeTop=java.lang.Double.MAX_VALUE, eyeBottom=java.lang.Double.MIN_VALUE;
+                double lastEyeCalc=0;
+                int eyeSegmentNum=0;
+
+                for (SegmentEye s : getEyeSegments()) {
 			/* Save calculation: if rotation hasn't changed and it is not forced,
 			 * don't calculate points again.
 			 */
 			if (lastTheta != getTheta() || force)
-				if (STUtils.isEFFICIENCY_MODE()) {
+				if (Utils.isEFFICIENCY_MODE()) {
 					/* Save results internal to recalculate for reuse in the next segment
 					 */
-					if (segmentNum % numSegmentEyesPerEyeAppendage == 0)
-						lastCalc = s.recalculate(getTheta(), getPosX(), getPosY(), 0.0);
+					if (eyeSegmentNum % numSegmentEyesPerEyeAppendage == 0)
+						lastEyeCalc = s.recalculate(getTheta(), getPosX(), getPosY(), 0.0);
 					else
-						lastCalc = s.recalculate(getTheta(), getPosX(), getPosY(), lastCalc);
-					segmentNum++;
+						lastEyeCalc = s.recalculate(getTheta(), getPosX(), getPosY(), lastEyeCalc);
+					eyeSegmentNum++;
 				} else {
 					s.recalculate(getTheta(), getPosX(), getPosY());
 				}
 			else
 				s.setCenter(getPosX(), getPosY());
 			// Finds the rectangle that comprises the organism
-			left = STUtils.min(left, s.getX1(), s.getX2());
-			right = STUtils.max(right, s.getX1(), s.getX2());
-			top = STUtils.min(top, s.getY1(), s.getY2());
-			bottom = STUtils.max(bottom, s.getY1(), s.getY2());
+			eyeLeft = Utils.min(eyeLeft, s.getX1(), s.getX2());
+			eyeRight = Utils.max(eyeRight, s.getX1(), s.getX2());
+			eyeTop = Utils.min(eyeTop, s.getY1(), s.getY2());
+			eyeBottom = Utils.max(eyeBottom, s.getY1(), s.getY2());
 		}
                 
 		left = Math.round(left);
@@ -292,8 +436,38 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 		top = Math.round(top);
 		bottom = Math.round(bottom);
 		setBounds((int)left, (int)top, (int)(right-left+1)+1, (int)(bottom-top+1)+1);
+                
+                eyeLeft = Math.round(eyeLeft);
+		eyeRight = Math.round(eyeRight);
+		eyeTop = Math.round(eyeTop);
+		eyeBottom = Math.round(eyeBottom);
+		eyeBox.setBounds((int)eyeLeft, (int)eyeTop, (int)(eyeRight-eyeLeft+1)+1, (int)(eyeBottom-eyeTop+1)+1);
 	}
-
+   
+    @Override
+    public boolean move() {
+		// Movement
+		boolean moved = false;
+		double dx=getDx(), dy=getDy(), dtheta=getDtheta();
+		offset(dx, dy, dtheta);
+		calculateBounds(hasGrown!=0);
+		
+		if (hasGrown!=0 || dx!=0 || dy!=0 || dtheta!=0) {
+			moved = true;
+			if (collisionDetection()) {
+				// If there is a collision, undo movement.
+				moved = false;
+				offset(-dx, -dy, -dtheta);
+				if (hasGrown!=0) {
+					growthRatio+=hasGrown;
+					updateBody();
+                                        updateEyes();
+				}
+				calculateBounds(hasGrown!=0);
+			}
+		}
+		return moved;
+	}
     
 
 //    private int countLegs()

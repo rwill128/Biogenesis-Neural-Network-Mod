@@ -108,7 +108,7 @@ public class STBiogenesis {
 		netServer = new NetServerThread(currentWorld);
 		currentWorld.addListener(netServer);
 		// sets net server
-		if (STUtils.ACCEPT_CONNECTIONS) {
+		if (Utils.ACCEPT_CONNECTIONS) {
 			netServer.setAcceptConnections(true);
 			netServer.startServer();
 		}
@@ -117,7 +117,7 @@ public class STBiogenesis {
 		process.addTimeListener(mainWindow);
 		process.addTimeListener(currentWorld);
 		// starts timer
-		process.startLifeProcess(STUtils.DELAY);
+		process.startLifeProcess(Utils.DELAY);
 		// initialize actions
 		ActionFactory.init(mainWindow, process, currentWorld, visibleWorld, netServer);
 		actionFactory = ActionFactory.getInstance();

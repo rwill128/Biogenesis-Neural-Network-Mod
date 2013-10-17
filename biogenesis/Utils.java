@@ -389,7 +389,7 @@ public final class Utils {
 	/**
 	 * This is the number of miliseconds that pas between frames.
 	 */
-	static int DELAY = DEF_DELAY;
+	public static int DELAY = DEF_DELAY;
 	/**
 	 * This is the value for running in efficiency mode or not.
 	 */
@@ -405,7 +405,7 @@ public final class Utils {
 	/**
 	 * This is the value for accepting or not new connections from other hosts.
 	 */
-	static boolean ACCEPT_CONNECTIONS = DEF_ACCEPT_CONNECTIONS;
+	public static boolean ACCEPT_CONNECTIONS = DEF_ACCEPT_CONNECTIONS;
 	/**
 	 * This is the value for using or not a meta-server to find other instances
 	 * of biogenesis running. At the moment it is not used.

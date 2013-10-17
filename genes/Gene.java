@@ -48,7 +48,7 @@ public class Gene implements Cloneable, Serializable {
 	/**
 	 * Segment's color
 	 */
-	private Pigment pigment;
+	protected Pigment pigment;
 
 	/**
 	 * Void constructor. Creates the gene but leave it uninitialized.

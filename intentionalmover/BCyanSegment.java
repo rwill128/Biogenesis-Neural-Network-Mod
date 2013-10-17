@@ -3,11 +3,9 @@ package intentionalmover;
 import segments.*;
 
 import agents.AliveAgent;
+import biogenesis.Utils;
 import brains.Output;
-import brains.RegressiveTripletOutput;
 import java.awt.Color;
-import organisms.Pigment;
-import stbiogenesis.STUtils;
 
 public class BCyanSegment extends Segment implements IntentionalMover{
 	private static final long serialVersionUID = 1L;
@@ -17,13 +15,13 @@ public class BCyanSegment extends Segment implements IntentionalMover{
         double brainThetaAccelMod = 1;
 
 	public BCyanSegment(AliveAgent thisAgent) {
-		super(thisAgent, Color.PINK);
+		super(thisAgent, Color.CYAN);
 	}
         
 	@Override
 	public void frameEffects() {
 		AliveAgent thisAgent = getThisAgent();
-		if (isAlive() && thisAgent.useEnergy(STUtils.getCYAN_ENERGY_CONSUMPTION())) {
+		if (isAlive() && thisAgent.useEnergy(Utils.getCYAN_ENERGY_CONSUMPTION())) {
 			double dx = thisAgent.getDx();
 			double dy = thisAgent.getDy();
 			double dtheta = thisAgent.getDtheta();
@@ -32,12 +30,12 @@ public class BCyanSegment extends Segment implements IntentionalMover{
                                                 
                         //For a thinking creature, the 12D multiplier would possibly be a modifier I use for acceleration, etc. Actually, no. I would simply have another variable that swings between -1 and 1 to scale the acceleration / momentum.
                         //I have to look at physics equations again.
-			thisAgent.setDx(STUtils.between(dx+brainXAccelMod*12d*(getX2()-getX1())/mass,
-					-STUtils.getMAX_VEL(), STUtils.getMAX_VEL()));
-			thisAgent.setDy(STUtils.between(dy+brainYAccelMod*12d*(getY2()-getY1())/mass,
-					-STUtils.getMAX_VEL(), STUtils.getMAX_VEL()));
-			thisAgent.setDtheta(STUtils.between(dtheta+brainThetaAccelMod*getMass()*Math.PI/i,
-					-STUtils.getMAX_ROT(), STUtils.getMAX_ROT()));
+			thisAgent.setDx(Utils.between(dx+brainXAccelMod*12d*(getX2()-getX1())/mass,
+					-Utils.getMAX_VEL(), Utils.getMAX_VEL()));
+			thisAgent.setDy(Utils.between(dy+brainYAccelMod*12d*(getY2()-getY1())/mass,
+					-Utils.getMAX_VEL(), Utils.getMAX_VEL()));
+			thisAgent.setDtheta(Utils.between(dtheta+brainThetaAccelMod*getMass()*Math.PI/i,
+					-Utils.getMAX_ROT(), Utils.getMAX_ROT()));
 		}
 	}
 

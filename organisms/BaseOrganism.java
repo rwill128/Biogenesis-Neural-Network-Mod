@@ -56,7 +56,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 	 * If this organism has been infected by a white segment, here we have the
 	 * genetic code that this organism will reproduce.
 	 */
-	private GeneticCode infectedGeneticCode = null;
+	protected GeneticCode infectedGeneticCode = null;
 	/**
 	 * Chemical energy stored by this organism
 	 */
@@ -70,7 +70,7 @@ public abstract class BaseOrganism extends Rectangle implements Agent, Statistic
 	 * The place that this organism occupies at the last frame. If the organism
 	 * moves, this rectangle must be painted too.
 	 */
-	private Rectangle lastFrame = new Rectangle();
+	protected Rectangle lastFrame = new Rectangle();
 	/**
 	 * Identification number of this organism.
 	 */

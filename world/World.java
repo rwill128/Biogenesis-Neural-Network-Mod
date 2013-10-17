@@ -36,6 +36,7 @@ import agents.MovingAgent;
 import agents.StatisticalAgent;
 
 import biogenesis.Utils;
+import smartorganisms.STOrganism;
 
 /**
  * This class contains all the information needed to run a world:
@@ -519,6 +520,27 @@ public class World implements Serializable {
 				if (agent.getCurrentFrame().intersects(ag.getCurrentFrame())) {
 					// Check if they are touching
 					if (agent.contact(ag))
+						return ag;
+				}
+			}
+		}
+		return null;
+	}
+        
+        /**
+	 * Checks if an agent sees another agent.
+	 * 
+	 * @param agent  The agent to check.
+	 * @return  The agent that is touching {@code agent} or null if not such
+	 * agent exists. 
+	 */
+	public Agent checkSees(STOrganism organism) {
+		for (Agent ag : agents) {
+			if (organism != ag) {
+				// First check if the bounding boxes intersect
+				if (organism.getEyeBox().intersects(ag.getCurrentFrame())) {
+					// Check if they are touching
+					if (organism.eyeContact(ag))
 						return ag;
 				}
 			}

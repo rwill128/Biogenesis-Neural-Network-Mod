@@ -3,13 +3,14 @@ package eyes;
 import segments.*;
 
 import agents.AliveAgent;
+import biogenesis.Utils;
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import organisms.Pigment;
-import stbiogenesis.STUtils;
 
-public class SegmentEye extends Segment implements Eye {
+public class SegmentEye extends Segment {
 	private static final long serialVersionUID = 1L;
 
        // SevenDoubleInput eyeFeedback = new SevenDoubleInput();
@@ -18,7 +19,7 @@ public class SegmentEye extends Segment implements Eye {
 
 	public SegmentEye(AliveAgent thisAgent) {
 		super(thisAgent, Pigment.EYE.getColor());
-                eyeInput = new BasicMLData(7);
+                eyeInput = new BasicMLData(Pigment.values().length);
 	}
         
         public MLData getEyeFeedback()
@@ -39,12 +40,17 @@ public class SegmentEye extends Segment implements Eye {
         @Override
 	public void touchEffectsOneWay(Segment otherSegment) {
 		AliveAgent thisAgent = getThisAgent();
-                
                 eyeInput.clear();
                 
+                // Intersection point
+		Point2D intersec= this.getIntersection(otherSegment);
 		
-		if (isAlive() && thisAgent.useEnergy(STUtils.getEYE_ENERGY_CONSUMPTION())) {
+		if (isAlive() && thisAgent.useEnergy(Utils.getGREEN_ENERGY_CONSUMPTION())) {
 			AliveAgent otherAgent = otherSegment.getThisAgent();
+                        
+                         // For now, don't see parents or dead organisms.
+			if ((thisAgent.getParentId() == otherAgent.getId() || thisAgent.getId() == otherAgent.getParentId()) && otherAgent.isAlive())
+                               return;
                         
                         for (int i = 0; i < Pigment.values().length; i++)
                         if (otherSegment.getColor() == Pigment.values()[i].getColor()) {

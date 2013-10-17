@@ -31,7 +31,6 @@ import biogenesis.Utils;
 import auxiliar.BioXMLParser;
 import auxiliar.Vector2D;
 import auxiliar.Writeable;
-import eyes.Eye;
 
 /**
  * This class implements a full organism's genetic code. A genetic code is
@@ -123,9 +122,7 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 	 * 
 	 * @return  0 if no mirroring is applied, 1 if mirroring is applied.
 	 */
-	public boolean getMirror() {
-		return mirror;
-	}
+	public boolean getMirror() { return mirror; }
 //        
 //        public void setRandomMirror() {
 //		randomMirror();

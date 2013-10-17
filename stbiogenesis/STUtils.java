@@ -629,7 +629,7 @@ public final class STUtils {
 	 */
 	public static final void savePreferences() {
 		try {
-			Preferences prefs = Preferences.userNodeForPackage(STUtils.class);
+			Preferences prefs = Preferences.userNodeForPackage(Utils.class);
 			prefs.putInt("VERSION",FILE_VERSION); //$NON-NLS-1$
 			prefs.putInt("INITIAL_ORGANISMS",INITIAL_ORGANISMS); //$NON-NLS-1$
 			prefs.putDouble("INITIAL_O2",INITIAL_O2); //$NON-NLS-1$
@@ -753,7 +753,7 @@ public final class STUtils {
 	}
 	public static void quitProgram(MainWindow window) {
 		try {
-			Preferences prefs = Preferences.userNodeForPackage(STUtils.class);
+			Preferences prefs = Preferences.userNodeForPackage(Utils.class);
 			if (HARDWARE_ACCELERATION == 2 || HARDWARE_ACCELERATION == 5) {
 				String[] options = {Messages.getInstance().getString("T_YES"), Messages.getInstance().getString("T_NO")}; //$NON-NLS-1$ //$NON-NLS-2$
 				int answer = JOptionPane.showOptionDialog(null, Messages.getInstance().getString("T_DID_OPENGL_WORK_WELL"), Messages.getInstance().getString("T_OPENGL_CONFIRMATION"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);  //$NON-NLS-1$//$NON-NLS-2$

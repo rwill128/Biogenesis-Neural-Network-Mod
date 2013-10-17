@@ -3,7 +3,6 @@ package organisms;
 import agents.Agent;
 import agents.AliveAgent;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -13,6 +12,8 @@ import java.util.List;
 
 import biogenesis.Utils;
 import geneticcodes.GeneticCode;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import segments.Segment;
 import world.World;
@@ -47,8 +48,8 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 		this(parent.getWorld(), parent.createChildGeneticCode(), parent);
 	}
 	
-	public SegmentBasedOrganism(World world, GeneticCode geneticCode, SegmentBasedOrganism parent) {
-		super(world, geneticCode, parent);
+	public SegmentBasedOrganism(World world, GeneticCode givenGeneticCode, SegmentBasedOrganism parent) {
+		super(world, givenGeneticCode, parent);
 		// initialize body
 		segments = geneticCode.synthesize(this);
 		numSegmentsPerAppendage = segments.length / geneticCode.getSymmetry();
@@ -108,22 +109,22 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 	 * 
 	 * @param g  The graphics context to draw to.
 	 */
-//	@Override
-//	public void draw(Graphics g) {
-//		super.draw(g);
-//		boolean showColor = getColor()==null;
-//			
-//		for (Segment s : segments)
-//			s.draw(g, showColor);
-//	}
+	@Override
+	public void draw(Graphics g) {
+		super.draw(g);
+		boolean showColor = getColor()==null;
+			
+		for (Segment s : segments)
+			s.draw(g, showColor);
+	}
 	
-	public List<Segment> findPossibleContactingSegments(BaseOrganism otherAgent) {
+	public List<Segment> findPossibleContactingSegments(Rectangle otherAgentRectangle) {
 		List<Segment> contactingSegments = new ArrayList<Segment>(segments.length);
 		// Check collisions for all segments
 		for (Segment s : segments) {
 			// Consider only segments with modulus greater than 1
 			// First check if the line intersects the bounding box of the other organism
-			if (s.getMass() >= 1 && otherAgent.intersectsLine(s)) {
+			if (s.getMass() >= 1 && otherAgentRectangle.intersectsLine(s)) {
 				contactingSegments.add(s);
 			}
 		}
@@ -188,6 +189,7 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 		setBounds((int)left, (int)top, (int)(right-left+1)+1, (int)(bottom-top+1)+1);
 	}
 
+        @Override
 	public void initUpdate() {
 		super.initUpdate();
 		lastTheta = getTheta();
@@ -344,10 +346,9 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 				}
 			}
 		}
-		
 		return false;
 	}
-
+        
 	public void rubbingFrameEffects() {
 		double rubbing = Utils.getRUBBING();
 		dx *= rubbing;

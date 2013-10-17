@@ -6,7 +6,6 @@ import biogenesis.Utils;
 import geneticcodes.NeuralGeneticCode;
 import geneticcodes.GeneticCode;
 import organisms.Organism;
-import stbiogenesis.STUtils;
 import world.World;
 
 /**
@@ -54,7 +53,7 @@ public class STOrganismFactory implements AliveAgentAbstractFactory {
 	 * @return  an array of new Organisms.
 	 */
 	public AliveAgent[] initialPopulation(World world) {
-		AliveAgent[] agents = new AliveAgent[STUtils.getINITIAL_ORGANISMS()];
+		AliveAgent[] agents = new AliveAgent[Utils.getINITIAL_ORGANISMS()];
 		for (int i=0; i<agents.length; i++)
 			agents[i] = createAliveAgent(world);
 		return agents;

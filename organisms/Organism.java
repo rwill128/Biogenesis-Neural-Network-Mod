@@ -17,7 +17,6 @@
  */
 package organisms;
 
-
 import genes.Gene;
 import java.awt.Graphics;
 import java.awt.geom.*;
@@ -161,6 +160,7 @@ public class Organism extends SegmentBasedOrganism {
 	}
 	
 	
+        @Override
 	public boolean move() {
 		// Movement
 		boolean moved = false;
@@ -203,7 +203,7 @@ public class Organism extends SegmentBasedOrganism {
 	 * 
 	 * @return  true if a suitable place has been found, false if not.
 	 */
-	private boolean placeNear(SegmentBasedOrganism parent) {
+	protected boolean placeNear(SegmentBasedOrganism parent) {
 		int nPos = Utils.random.nextInt(8);
 		// Try to put it in any possible position, starting from a randomly chosen one.
 		for (int nSide = 0; nSide < 8; nSide++) {
@@ -302,7 +302,7 @@ public class Organism extends SegmentBasedOrganism {
 	protected void updateBody() {
 		int i,j,segment=0;
 		GeneticCode geneticCode = getGeneticCode();
-		Segment[] segments = getSegments();
+		segments = getSegments();
 		Gene gene;
 		int sequence = segments.length / symmetry;
 		
@@ -335,7 +335,6 @@ public class Organism extends SegmentBasedOrganism {
 			}
 		}
 		recalculateSize();
-		
 	}
 	@Override
 	protected double pushX(Point2D p) {

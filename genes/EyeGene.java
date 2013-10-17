@@ -6,11 +6,13 @@ import java.io.Serializable;
 /**
  *
  */
-public class EyeGene extends Gene implements Cloneable, Serializable
+public class EyeGene extends NeuralGene implements Cloneable, Serializable
 {
     protected EyeType eyeType;
     
-    public EyeGene() { }
+    public EyeGene() {
+    
+    }
     
     public EyeGene(EyeType eyeType) 
     {

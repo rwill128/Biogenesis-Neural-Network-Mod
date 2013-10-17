@@ -23,14 +23,17 @@ import javax.swing.event.ChangeListener;
 
 import org.xml.sax.SAXException;
 
-import genes.Gene;
-import geneticcodes.GeneticCode;
 import organisms.Pigment;
 import biogenesis.Utils;
 import auxiliar.BioFileChooser;
 import auxiliar.BioXMLParser;
 import auxiliar.Clipboard;
 import auxiliar.Messages;
+import genes.EyeGene;
+import genes.Gene;
+import genes.NeuralGene;
+import geneticcodes.GeneticCode;
+import geneticcodes.NeuralGeneticCode;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -44,7 +47,11 @@ import java.util.List;
 
 public class LabWindow extends JDialog implements ActionListener, ChangeListener {
 	private static final long serialVersionUID = Utils.FILE_VERSION;
-	protected List<Gene> genesList;
+        
+        
+	protected List<Gene> genesList = new ArrayList<>();
+        protected List<EyeGene> eyeGenesList = new ArrayList<>();
+        
 	protected JButton cancelButton;
 	protected JButton okButton;
 	protected JPanel genesPanel;
@@ -57,8 +64,14 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 	protected JComboBox disperseCombo;
 	
 	protected int symmetry=2;
+        protected int eyeSymmetry = 2;
+        
 	protected int energy=40;
+        
+       
 	protected boolean mirror=false;
+        protected boolean eyeMirror=false;
+
 	protected boolean disperseChildren = false;
 	
 	public LabWindow(Frame parent, GeneticCode gc) {
@@ -71,8 +84,7 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 		init(Clipboard.getInstance().getClippedGeneticCode());
 	}
 	
-	private void init(GeneticCode gc) {
-		genesList = new ArrayList<Gene>();
+	private void init(final GeneticCode gc) {
 		if (gc != null)
 			importGeneticCode(gc);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);	
@@ -89,7 +101,12 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
             @Override
 			public void actionPerformed(ActionEvent evt) {
             	if (genesList.size() > 0)
-            		Clipboard.getInstance().setClippedGeneticCode(new GeneticCode(genesList,symmetry, mirror, disperseChildren));
+                    if (gc instanceof NeuralGeneticCode) {
+                        if (eyeGenesList.size() > 0)
+                            Clipboard.getInstance().setClippedGeneticCode(new NeuralGeneticCode(genesList, symmetry, mirror, eyeGenesList, eyeSymmetry, eyeMirror, disperseChildren));
+                    } else {
+                            Clipboard.getInstance().setClippedGeneticCode(new GeneticCode(genesList, symmetry, mirror, disperseChildren));
+                    }
             	dispose();
             }
             });
@@ -103,7 +120,12 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 		mirror = g.getMirror();
 		symmetry = g.getSymmetry();
 		for (int i=0; i<g.getNGenes(); i++)
-			genesList.add((Gene)g.getGene(i).clone());
+			genesList.add((Gene) g.getGene(i).clone());
+                if (g instanceof NeuralGeneticCode) {
+                    for (int j=0; j < ((NeuralGeneticCode) g).getNSegmentEyeGenes(); j++){
+                         eyeGenesList.add((EyeGene) ((NeuralGeneticCode) g).getSegmentEyeGene(j).clone());
+                    }
+              }
 	}
 	
 	/* Initialize all the components of the dialog */
@@ -362,8 +384,14 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 	}
 	
 	protected void draw(Graphics g) {
-		GeneticCode code = new GeneticCode(genesList, symmetry, mirror, false);
-		code.draw(g, drawPanel.getSize().width, drawPanel.getSize().height);
+            if (genesList.get(0) instanceof NeuralGene) {
+                NeuralGeneticCode code = new NeuralGeneticCode(genesList, symmetry, mirror, eyeGenesList, eyeSymmetry, eyeMirror, false);
+                code.draw(g, drawPanel.getSize().width, drawPanel.getSize().height);
+            } else {
+                GeneticCode code = new GeneticCode(genesList, symmetry, mirror, false);
+                code.draw(g, drawPanel.getSize().width, drawPanel.getSize().height);
+            }
+		
 	}
 
 	@Override

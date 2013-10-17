@@ -38,6 +38,8 @@ public class ColorComboBox extends JComboBox {
 		case 4: return Color.WHITE;
 		case 5: return Color.GRAY;
 		case 6: return Color.YELLOW;
+                case 7: return Pigment.BCYAN.getColor();
+                case 8: return Pigment.EYE.getColor();
 		default: return Utils.ColorBROWN;
 		}
 	}
@@ -54,5 +56,9 @@ public class ColorComboBox extends JComboBox {
 		if (c.equals(Color.WHITE)) setSelectedIndex(4);
 		if (c.equals(Color.GRAY)) setSelectedIndex(5);
 		if (c.equals(Color.YELLOW)) setSelectedIndex(6);
+                if (c.equals(Pigment.EYE.getColor())) setSelectedIndex(7);
+                if (c.equals(Pigment.EYE.getColor())) setSelectedIndex(8);
+
+
 	}
 }
