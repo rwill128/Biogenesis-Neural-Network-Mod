@@ -30,7 +30,7 @@ public class NeuralGeneticCode extends GeneticCode
         private SegmentEyeGene[] segmentEyeGenes;
         
         
-        protected int eyeSymmetry;
+        public int eyeSymmetry;
 	protected boolean eyeMirror;
         
         protected void randomSegmentEyeMirror() { eyeMirror = Utils.random.nextBoolean(); }
@@ -76,19 +76,14 @@ public class NeuralGeneticCode extends GeneticCode
                 randomBrainGene();
 	}
         
-        public NeuralGeneticCode(List<NeuralGene> genes, int symmetry, boolean mirror, boolean disperseChildren) {
-		int nGenes = genes.size();
-		this.genes = new NeuralGene[nGenes];
-		genes.toArray(this.genes);
-		this.maxAge = Utils.getMAX_AGE();
-		this.mirror = mirror;
-		this.symmetry = symmetry;
-		this.disperseChildren = disperseChildren;
-		calculateReproduceEnergy();
+        public NeuralGeneticCode(List<Gene> genes, int symmetry, boolean mirror, boolean disperseChildren) 
+        {
+		super(genes, symmetry, mirror, disperseChildren);
+		
 	}
         
-        public NeuralGeneticCode(List<Gene> genes, int symmetry, boolean mirror, List<EyeGene> eyeGenes, int eyeSymmetry, boolean eyeMirror, boolean disperseChildren) {
-		
+        public NeuralGeneticCode(List<Gene> genes, int symmetry, boolean mirror, List<EyeGene> eyeGenes, int eyeSymmetry, boolean eyeMirror, boolean disperseChildren) 
+        {
             super(genes, symmetry, mirror, disperseChildren);
                
                 int nSegmentEyeGenes = eyeGenes.size();
@@ -199,9 +194,14 @@ public class NeuralGeneticCode extends GeneticCode
                 
                 reproduceEyeSegmentsWithMutations(parentCode);
                 
-//                if (Utils.randomMutation()) {
-//                    brainGene.randomize();
-//                }
+                if (Utils.randomMutation()) {
+                    if (brainGene != null)
+                    brainGene.randomize();
+                    else {
+                        brainGene = new BrainGene();
+                        brainGene.randomize();
+                    }
+                }
                 adjustReproduceEnergy();
 	}
         
@@ -220,7 +220,6 @@ public class NeuralGeneticCode extends GeneticCode
 		}
 	}
        
-   
         protected void reproduceEyeSegmentsWithMutations(NeuralGeneticCode parentCode) 
         {
                 int i,j;
@@ -363,7 +362,7 @@ public class NeuralGeneticCode extends GeneticCode
             Brain brain;
             BrainFactory factory = BrainFactory.getInstance();
          
-            brain = factory.createBrain(agent, getBrainGene().getBrainType());
+            brain = factory.createBrain(agent, new BrainGene().getBrainType());
             return brain;
         }
 

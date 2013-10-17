@@ -203,7 +203,7 @@ public class Organism extends SegmentBasedOrganism {
 	 * 
 	 * @return  true if a suitable place has been found, false if not.
 	 */
-	protected boolean placeNear(SegmentBasedOrganism parent) {
+	public boolean placeNear(SegmentBasedOrganism parent) {
 		int nPos = Utils.random.nextInt(8);
 		// Try to put it in any possible position, starting from a randomly chosen one.
 		for (int nSide = 0; nSide < 8; nSide++) {

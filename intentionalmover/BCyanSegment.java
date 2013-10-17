@@ -10,9 +10,8 @@ import java.awt.Color;
 public class BCyanSegment extends Segment implements IntentionalMover{
 	private static final long serialVersionUID = 1L;
         
-        double brainXAccelMod = 1;
-        double brainYAccelMod = 1;
-        double brainThetaAccelMod = 1;
+        double thrustAccelMod = 0;
+        double turnAccelMod = 0;
 
 	public BCyanSegment(AliveAgent thisAgent) {
 		super(thisAgent, Color.CYAN);
@@ -21,6 +20,9 @@ public class BCyanSegment extends Segment implements IntentionalMover{
 	@Override
 	public void frameEffects() {
 		AliveAgent thisAgent = getThisAgent();
+                if ( thrustAccelMod < -0.1d || thrustAccelMod > 0.1d || turnAccelMod > 0.05 || turnAccelMod < -0.05) {
+                    
+                
 		if (isAlive() && thisAgent.useEnergy(Utils.getCYAN_ENERGY_CONSUMPTION())) {
 			double dx = thisAgent.getDx();
 			double dy = thisAgent.getDy();
@@ -30,22 +32,22 @@ public class BCyanSegment extends Segment implements IntentionalMover{
                                                 
                         //For a thinking creature, the 12D multiplier would possibly be a modifier I use for acceleration, etc. Actually, no. I would simply have another variable that swings between -1 and 1 to scale the acceleration / momentum.
                         //I have to look at physics equations again.
-			thisAgent.setDx(Utils.between(dx+brainXAccelMod*12d*(getX2()-getX1())/mass,
+			thisAgent.setDx(Utils.between(dx+thrustAccelMod*12d*(getX2()-getX1())/mass,
 					-Utils.getMAX_VEL(), Utils.getMAX_VEL()));
-			thisAgent.setDy(Utils.between(dy+brainYAccelMod*12d*(getY2()-getY1())/mass,
+			thisAgent.setDy(Utils.between(dy+thrustAccelMod*12d*(getY2()-getY1())/mass,
 					-Utils.getMAX_VEL(), Utils.getMAX_VEL()));
-			thisAgent.setDtheta(Utils.between(dtheta+brainThetaAccelMod*getMass()*Math.PI/i,
+			thisAgent.setDtheta(Utils.between(dtheta+turnAccelMod*getMass()*Math.PI/i,
 					-Utils.getMAX_ROT(), Utils.getMAX_ROT()));
 		}
+                }
 	}
 
     
-    public void setBrainOutputs(double brainX, double brainY, double brainTheta)
+    public void setBrainOutputs(double brainThrust, double brainTurn)
     {
         //RegressiveTripletOutput myDirection = (RegressiveTripletOutput) myDirections;
-        brainXAccelMod = brainX;
-        brainYAccelMod = brainY;
-        brainThetaAccelMod = brainTheta;
+        thrustAccelMod = brainThrust;
+        turnAccelMod = brainTurn;
         
     }
 

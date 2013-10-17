@@ -4,9 +4,9 @@ import agents.Agent;
 import auxiliar.Vector2D;
 import biogenesis.Utils;
 import brains.Brain;
+import brains.StandardNNBrain;
 import eyes.SegmentEye;
 import genes.SegmentEyeGene;
-import geneticcodes.GeneticCode;
 import geneticcodes.NeuralGeneticCode;
 import intentionalmover.BCyanSegment;
 import java.awt.Color;
@@ -56,9 +56,13 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
     public STOrganism(SegmentBasedOrganism parent) {
 		super(parent);
                 segmentEyes = ((NeuralGeneticCode) geneticCode).synthesizeEyes(this);
+                eyeSymmetry = ((NeuralGeneticCode) geneticCode).eyeSymmetry;
+        eyeMirror = ((NeuralGeneticCode) geneticCode).getEyeMirror();
                 numSegmentEyesPerEyeAppendage = segmentEyes.length / ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
-                 brain = ((NeuralGeneticCode) geneticCode).synthesizeBrain(this);
-                   initEyesAndLegs();
+                         updateEyes();
+
+                brain = ((NeuralGeneticCode) geneticCode).synthesizeBrain(this);
+                 initLegs();
 	}
     
     public STOrganism(World world, NeuralGeneticCode nGeneticCode) 
@@ -66,14 +70,14 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 	super(world, nGeneticCode);
         
         segmentEyes = ((NeuralGeneticCode) geneticCode).synthesizeEyes(this);
-        eyeSymmetry = ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
+        eyeSymmetry = ((NeuralGeneticCode) geneticCode).eyeSymmetry;
         eyeMirror = ((NeuralGeneticCode) geneticCode).getEyeMirror();
+        numSegmentEyesPerEyeAppendage = segmentEyes.length / eyeSymmetry;
         updateEyes();
         
-        numSegmentEyesPerEyeAppendage = segmentEyes.length / ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
 
         brain = nGeneticCode.synthesizeBrain(this);
-        initEyesAndLegs();
+        initLegs();
     }
     
     @Override
@@ -126,7 +130,8 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 		return hasReproduced;
 	}
     
-    protected boolean placeNear(SegmentBasedOrganism parent) {
+    @Override
+    public boolean placeNear(SegmentBasedOrganism parent) {
 		int nPos = Utils.random.nextInt(8);
 		// Try to put it in any possible position, starting from a randomly chosen one.
 		for (int nSide = 0; nSide < 8; nSide++) {
@@ -154,17 +159,14 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 	}
     
     @Override
-    public void initUpdate() {
+    public void initUpdate() 
+    {
 		moved = false;
 		lastFrame.setBounds(this);
 	}
     
-    
-    public void initEyesAndLegs() 
-    {
-		
-                updateEyes();
-                
+    public void initLegs() 
+    {                
 		for (Segment s : getSegments())
                 {
 			if (s instanceof BCyanSegment) {
@@ -208,13 +210,26 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
                     sightV.addDegree(-gene.getTheta());
             }
             // Apply the vector to the starting point to get the ending point.
-            segmentEyes[segment].setEndingPoint((int) Math.round(sightV.getX() +
+             segmentEyes[segment].setEndingPoint((int) Math.round(sightV.getX() +
             segmentEyes[segment].getStartingPoint().x),
             (int) Math.round(sightV.getY() + segmentEyes[segment].getStartingPoint().y));
             }
         }
+        recalculateEyeSize();
     }
-    
+    protected void recalculateEyeSize() {
+		double newMass = 0;
+		double inertia = 0;
+		for (Segment s : getEyeSegments()) {
+			// calculate points distance of the origin and modulus
+			s.updateMass();
+			newMass += s.getMass();
+			// add the effect of this segment, following the parallel axis theorem
+			inertia += s.getInertia();
+		}
+		//setInertia(inertia);
+		//setMass(newMass);
+	}
     @Override
     public boolean spin() {
 		if (growthRatio < 16) {
@@ -270,8 +285,6 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
     @Override
 	public void revive() {
 		super.revive();
-		for (int i = 0; i < segments.length; i++)
-			segments[i].setAlive(true);
                 for (int i = 0; i < segmentEyes.length; i++)
 			segmentEyes[i].setAlive(true);
 	}
@@ -316,10 +329,13 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
     
     
    @Override
-	public boolean update() 
+   public boolean update() 
    {
 		initUpdate();
                 //Think about self and world.
+                if (brain == null) {
+                    brain = new StandardNNBrain(this);
+                }
                 brain.think(this, world);
 		// Apply segment effects for this frame.
 		segmentsFrameEffects();
@@ -337,37 +353,43 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 	}
    
 	public boolean eyeContact(Agent agent) {
+            boolean seenSomething = false;
 		if (agent instanceof SegmentBasedOrganism) {
 			SegmentBasedOrganism org = (SegmentBasedOrganism) agent;
-			List<SegmentEye> contactingSegments = findPossibleSeenSegments(org);
+			List<SegmentEye> possibleSeeingEyes = findPossibleSeeingEyes(org);
 			List<Segment> otherContactingSegments = org.findPossibleContactingSegments(this.eyeBox);
 			
-			for (SegmentEye s : contactingSegments) {
+                        int seenSegments = 0;
+                        
+			for (Segment s : possibleSeeingEyes) {
 				for (Segment sorg : otherContactingSegments) {
 					if (s.intersectsLine(sorg)) {
-                                                s.touchEffects(sorg);
-						// Find only one collision to speed up.
+                                            seenSomething = true;
+                                            seenSegments++;
+                                            s.touchEffects(sorg);
+                                            // Find up to 5 collisions
+                                            if (seenSegments >= 5)
 						return true;
 					}
 				}
 			}
 		}
-		return false;
+		return seenSomething;
 	}
 
 
         
-        public List<SegmentEye> findPossibleSeenSegments(Rectangle otherAgentRectangle) {
-		List<SegmentEye> seenSegments = new ArrayList<SegmentEye>(segmentEyes.length);
+        public List<SegmentEye> findPossibleSeeingEyes(Rectangle otherAgentRectangle) {
+		List<SegmentEye> seeingEyes = new ArrayList<SegmentEye>();
 		// Check collisions for all segments
 		for (SegmentEye s : segmentEyes) {
 			// Consider only segments with modulus greater than 1
 			// First check if the line intersects the bounding box of the other organism
 			if (s.getMass() >= 1 && otherAgentRectangle.intersectsLine(s)) {
-				seenSegments.add(s);
+				seeingEyes.add(s);
 			}
 		}
-		return seenSegments;
+		return seeingEyes;
 	}
         
    @Override
@@ -444,6 +466,8 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 		eyeBox.setBounds((int)eyeLeft, (int)eyeTop, (int)(eyeRight-eyeLeft+1)+1, (int)(eyeBottom-eyeTop+1)+1);
 	}
    
+   
+   
     @Override
     public boolean move() {
 		// Movement
@@ -465,8 +489,18 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 				}
 				calculateBounds(hasGrown!=0);
 			}
+                        if (seesSomething()) {
+                            //Where braii messages should acctually, instead of in the damn legs and eyes. Or in the seesSomething method.
+                        }
 		}
 		return moved;
+	}
+    
+    public boolean seesSomething() {
+		// Collision detection with other organisms.
+		if (getWorld().checkSees(this) != null)
+			return true;
+		return false;
 	}
     
 

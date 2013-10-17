@@ -20,7 +20,10 @@ public class StandardNNBrain extends Brain
 {
        
     MLData inputData;
+    MLData outputData;
     BasicNetwork network;
+    
+    double[] inputDataArray;
     
    
     int numOutputNodes = 0;
@@ -49,31 +52,38 @@ public class StandardNNBrain extends Brain
         int nextInputCounter = 0;
         
         //For every eye.
-        for (int j = 0; j < numInputEyes; j++)
+       // for (int j = 0; j < numInputEyes; j++)
         
         //Grab input data for each eye.
         for(int i = 0; i < numInputEyes; i++) {
-           nextInputData = new BasicMLData(((SegmentEye) thisOrganism.getEyeSegment(i)).getEyeFeedback());
-           numInputNodes += nextInputData.size();
+           numInputNodes++;
         }
         
-        inputData = new BasicMLData(numInputNodes);
+        inputDataArray = new double[numInputNodes];
+        for(int i = 0; i < numInputEyes; i++) {
+             inputDataArray[i] = ((SegmentEye) thisOrganism.getEyeSegment(i)).getEyeFeedback();
+        }
+
+        
+        inputData = new BasicMLData(inputDataArray);
         
         //Copy that data into larger MLData.
-        for (int k = 0; k < nextInputData.size(); k++) {
-            inputData.add(nextInputCounter, nextInputData.getData(k));
-            nextInputCounter++;
-        }
+//        for (int k = 0; k < nextInputData.size(); k++) {
+//            inputData.add(nextInputCounter, nextInputData.getData(k));
+//            nextInputCounter++;
+//        }
         
         
         
         //Do same thing for outputs.
         int numOutputLegs = thisOrganism.getNumLegs();
-        numOutputNodes = 3 * numOutputLegs;
+        numOutputNodes = 2 * numOutputLegs;
         
         if (numInputNodes >= 1 && numOutputNodes >= 1) {
             network = new BasicNetwork();
             network.addLayer(new BasicLayer(numInputNodes));
+            network.addLayer(new BasicLayer(numInputNodes/2));
+
             network.addLayer(new BasicLayer(numOutputNodes));
             network.getStructure().finalizeStructure();
 
@@ -99,7 +109,7 @@ public class StandardNNBrain extends Brain
     @Override
     public Brain clone()
     {
-        StandardNNBrain newBrain = new StandardNNBrain(this);
+        StandardNNBrain newBrain = new StandardNNBrain(this.thisOrganism);
         return newBrain;
     }
 
@@ -142,7 +152,7 @@ public class StandardNNBrain extends Brain
 //            }
 ////        }
         
-       MLData outputData = network.compute(inputData);
+       outputData = network.compute(inputData);
        
        List<Segment> legs = thisOrganism.getLegs();
        
@@ -150,7 +160,7 @@ public class StandardNNBrain extends Brain
        int j = 0;
        for (Segment leg : legs) {
            BCyanSegment nextLeg = (BCyanSegment) leg;
-           nextLeg.setBrainOutputs(outputData.getData((j * 3)), outputData.getData((j * 3) + 1), outputData.getData((j * 3) +  2));
+           nextLeg.setBrainOutputs(outputData.getData((j * 2)), outputData.getData((j * 2) + 1));
        }
 //       double[] outputArray = outputData.getData();
 //       
