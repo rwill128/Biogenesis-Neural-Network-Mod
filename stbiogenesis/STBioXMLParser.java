@@ -122,9 +122,7 @@ public class STBioXMLParser implements ErrorHandler {
 				genes.add(parseGene((Element)gene));
 				gene = getNextElement(gene.getNextSibling());
 			}
-			//return new NeuralGeneticCode(genes, symmetry, mirror, eyeGenes, segmentEyeSymmetry, segmentEyeMirror, brainGene, disperse);
-                        return new GeneticCode(genes, symmetry, mirror, disperse);
-
+//			return new NeuralGeneticCode(genes, symmetry, mirror, eyeGenes, segmentEyeSymmetry, segmentEyeMirror, brainGene, disperse);
 		}
 		throw new SAXException("This file does not contain a genetic_code."); //$NON-NLS-1$
 	}
