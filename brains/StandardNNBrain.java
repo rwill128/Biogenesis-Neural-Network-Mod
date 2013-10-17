@@ -69,7 +69,7 @@ public class StandardNNBrain extends Brain
         
         //Do same thing for outputs.
         int numOutputLegs = thisOrganism.getNumLegs();
-        numOutputNodes = 3 * numOutputLegs;
+        numOutputNodes = 2 * numOutputLegs;
         
         if (numInputNodes >= 1 && numOutputNodes >= 1) {
             network = new BasicNetwork();
@@ -150,7 +150,7 @@ public class StandardNNBrain extends Brain
        int j = 0;
        for (Segment leg : legs) {
            BCyanSegment nextLeg = (BCyanSegment) leg;
-           nextLeg.setBrainOutputs(outputData.getData((j * 3)), outputData.getData((j * 3) + 1), outputData.getData((j * 3) +  2));
+           nextLeg.setBrainOutputs(outputData.getData((j * 2)), outputData.getData((j * 2) + 1));
        }
 //       double[] outputArray = outputData.getData();
 //       

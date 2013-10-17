@@ -27,4 +27,18 @@ public class SegmentEyeGene extends EyeGene
             randomizeLength();
             randomizeTheta();
         }
+        
+        /**
+	 * Chooses a random segment length.
+	 */
+	public void randomizeLength() {
+		length = 2.0 + Utils.random.nextDouble() * 64.0;
+	}
+
+	/**
+	 * Chooses a random segment inclination degree.
+	 */
+	public void randomizeTheta() {
+		theta = Utils.random.nextDouble() * 2.0 * Math.PI;
+	}
 }

@@ -41,10 +41,10 @@ public abstract class Segment extends Line2D.Double {
 	/**
 	 * Effective segment colors, taken from the genetic code if alive or brown if dead.
 	 */
-	private final Color _segColor;
-	private boolean alive = true;
+	protected final Color _segColor;
+	protected boolean alive = true;
 	
-	private double centerX, centerY;
+	protected double centerX, centerY;
 	
 	private static Point2D.Double intersectionPoint = new Point2D.Double();
 	
