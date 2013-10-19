@@ -61,8 +61,9 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
                 numSegmentEyesPerEyeAppendage = segmentEyes.length / ((NeuralGeneticCode) geneticCode).getEyeSymmetry();
                          updateEyes();
 
-                brain = ((NeuralGeneticCode) geneticCode).synthesizeBrain(this);
+                brain = ((STOrganism) parent).brain.clone();
                  initLegs();
+                 
 	}
     
     public STOrganism(World world, NeuralGeneticCode nGeneticCode) 

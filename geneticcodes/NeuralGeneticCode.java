@@ -76,11 +76,10 @@ public class NeuralGeneticCode extends GeneticCode
                 randomBrainGene();
 	}
         
-        public NeuralGeneticCode(List<Gene> genes, int symmetry, boolean mirror, boolean disperseChildren) 
-        {
-		super(genes, symmetry, mirror, disperseChildren);
-		
-	}
+//        public NeuralGeneticCode(List<Gene> genes, int symmetry, boolean mirror, boolean disperseChildren) 
+//        {
+//		super(genes, symmetry, mirror, disperseChildren);
+//	}
         
         public NeuralGeneticCode(List<Gene> genes, int symmetry, boolean mirror, List<EyeGene> eyeGenes, int eyeSymmetry, boolean eyeMirror, boolean disperseChildren) 
         {
@@ -202,7 +201,7 @@ public class NeuralGeneticCode extends GeneticCode
                         brainGene.randomize();
                     }
                 }
-                adjustReproduceEnergy();
+    //            adjustReproduceEnergy();
 	}
         
         
@@ -285,14 +284,12 @@ public class NeuralGeneticCode extends GeneticCode
 				j--;
 				continue;
 			}
-			randomLength = randomTheta =  randomBack = false;
+			randomLength = randomTheta =   false;
 			if (Utils.randomMutation())
 				randomLength = true;
 			if (Utils.randomMutation())
 				randomTheta = true;
-			if (Utils.randomMutation())
-				randomBack = true;
-			if (randomLength || randomTheta || randomBack) {
+			if (randomLength || randomTheta) {
 				segmentEyeGenes[i] = new SegmentEyeGene();
 				if (randomLength)
 					segmentEyeGenes[i].randomizeLength();
@@ -318,14 +315,13 @@ public class NeuralGeneticCode extends GeneticCode
         
         @Override
 	public Object clone() {
-		NeuralGeneticCode newCode = null;
+              
+                NeuralGeneticCode newCode = (NeuralGeneticCode) super.clone();
                 
-                newCode = (NeuralGeneticCode) super.clone();
+                newCode.setEyeMirror(this.eyeMirror);
                 
-                newCode.genes = new Gene[genes.length];
-		for (int i=0; i<genes.length; i++) {
-                    newCode.genes[i] = (NeuralGene) genes[i].clone();
-                }
+                newCode.setEyeSymmetry(this.eyeSymmetry);
+                
                 newCode.segmentEyeGenes = new SegmentEyeGene[segmentEyeGenes.length];
 		for (int i=0; i<segmentEyeGenes.length; i++) {
                     newCode.segmentEyeGenes[i] = (SegmentEyeGene) segmentEyeGenes[i].clone();
@@ -376,6 +372,8 @@ public class NeuralGeneticCode extends GeneticCode
     
     @Override
     public void draw(Graphics g, int width, int height) {
+                        drawEyes(g, width, height);
+
 		int[][] x0 = new int[symmetry][genes.length];
 		int[][] y0 = new int[symmetry][genes.length];
 		int[][] x1 = new int[symmetry][genes.length];
@@ -418,12 +416,12 @@ public class NeuralGeneticCode extends GeneticCode
 			}
 		}
 		
-		g2.translate(width/2, height/2);
+		//g2.translate(width/2, height/2);
 		if (maxX-minX > width)
 			scale = (double)width/(double)(maxX-minX);
 		if (maxY-minY > height)
 			scale = Math.min(scale, (double)height/(double)(maxY-minY));
-		g2.scale(scale, scale);
+		//g2.scale(scale, scale);
 		
 		for (int i=0; i<symmetry; i++) {
 			for (int j=0; j<genes.length; j++) {
@@ -435,8 +433,6 @@ public class NeuralGeneticCode extends GeneticCode
 				g2.drawLine(x0[i][j],y0[i][j],x1[i][j],y1[i][j]);
 			}
 		}
-                
-                drawEyes(g, width, height);
 	}
     
     public void drawEyes(Graphics g, int width, int height) 

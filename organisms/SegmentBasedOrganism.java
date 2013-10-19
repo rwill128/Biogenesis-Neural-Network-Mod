@@ -113,7 +113,6 @@ public abstract class SegmentBasedOrganism extends BaseOrganism {
 	public void draw(Graphics g) {
 		super.draw(g);
 		boolean showColor = getColor()==null;
-			
 		for (Segment s : segments)
 			s.draw(g, showColor);
 	}

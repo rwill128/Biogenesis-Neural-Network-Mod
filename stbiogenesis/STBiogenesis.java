@@ -29,6 +29,7 @@ import net.NetServerThread;
 import smartorganisms.STOrganismFactory;
 import world.CurrentWorld;
 import world.World;
+import zephyr.plugin.core.api.synchronization.Clock;
 
 
 /**
@@ -46,6 +47,8 @@ public class STBiogenesis {
 	/**
 	 * The main application window
 	 */
+        
+        public Clock clock;
 	private MainWindow mainWindow;
 	/**
 	 * The frame in the MainWindow where the world is drawn.
@@ -85,6 +88,7 @@ public class STBiogenesis {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+                
             	new STBiogenesis().start(); 
 			}
 		});
