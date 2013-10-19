@@ -41,14 +41,20 @@ public class SegmentEye extends Segment {
 	@Override
 	public void frameEffects() {
 		eyeInput.clear();
-                AliveAgent thisAgent = getThisAgent();
-                thisAgent.useEnergy(.001d);
+          //      AliveAgent thisAgent = getThisAgent();
+             //   thisAgent.useEnergy(.001d);
                 frameCounter--;
                 if (frameCounter == 0) {
                     seeingSomething = false;
-                    inputs = new double[Pigment.values().length];
+                  //  inputs = new double[Pigment.values().length];
                 }
-                eyeInput.setData(inputs);
+                
+                for (int i = 0; i < Pigment.values().length; i++)
+                        {
+                            inputs[i] = 1.0;
+                        }
+                        eyeInput.setData(inputs);
+            
 	}
         
         @Override
@@ -64,9 +70,9 @@ public class SegmentEye extends Segment {
                 // Intersection point
 		Point2D intersec= this.getIntersection(otherSegment);
 		
-		if (isAlive()) {
+		if (isAlive() && thisAgent.useEnergy(Utils.getCYAN_ENERGY_CONSUMPTION()) && otherSegment.getThisAgent().getId() != thisAgent.getParentId()) {
                     
-                        thisAgent.setEnergy(thisAgent.getEnergy() + 0.001d);
+                //        thisAgent.setEnergy(thisAgent.getEnergy() + 0.001d);
                         
                         frameCounter = 5;
                         seeingSomething = true; 
@@ -87,12 +93,12 @@ public class SegmentEye extends Segment {
         
         @Override
         public void draw(Graphics g, boolean showColor) {
-                if (seeingSomething)
-                    g.setColor(Color.YELLOW);
-                else
-                    if (showColor) 
-			g.setColor(alive?_segColor:deadColor);
-                g.drawLine((int)Math.round(x1), (int)Math.round(y1), (int)Math.round(x2), (int)Math.round(y2));
+//                if (seeingSomething)
+//                        g.setColor(Color.YELLOW);
+//                else
+//                    if (showColor) 
+//			g.setColor(alive?_segColor:deadColor);
+//                g.drawLine((int)Math.round(x1), (int)Math.round(y1), (int)Math.round(x2), (int)Math.round(y2));
 	}
         @Override
         public void draw(Graphics g, double centerX, double centerY, boolean showColor) 

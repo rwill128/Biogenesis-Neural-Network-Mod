@@ -11,6 +11,9 @@ import org.encog.neural.networks.layers.BasicLayer;
 import segments.Segment;
 import smartorganisms.STOrganism;
 import world.World;
+import zephyr.plugin.core.api.Zephyr;
+import zephyr.plugin.core.api.monitoring.annotations.Monitor;
+import zephyr.plugin.core.api.synchronization.Clock;
 
 
 /**
@@ -18,11 +21,12 @@ import world.World;
  */
 public class StandardNNBrain extends Brain
 {
-       
+    @Monitor
     MLData inputData;
+    @Monitor
     MLData outputData;
     BasicNetwork network;
-    
+   // Clock clock = new Clock("Simple");
     double[] inputDataArray;
     
    
@@ -41,8 +45,13 @@ public class StandardNNBrain extends Brain
 
     public StandardNNBrain(AliveAgent thisAgent)
     {
-        thisOrganism = (STOrganism) thisAgent;
         
+//        Zephyr.advertise(clock, inputData);
+//        Zephyr.advertise(clock, outputData);
+//        
+//        while (clock.tick()) {
+
+        thisOrganism = (STOrganism) thisAgent;
         int numInputEyes = thisOrganism.getNumEyes();
         numInputNodes = 0;
         
@@ -82,16 +91,15 @@ public class StandardNNBrain extends Brain
         if (numInputNodes >= 1 && numOutputNodes >= 1) {
             network = new BasicNetwork();
             network.addLayer(new BasicLayer(numInputNodes));
-            network.addLayer(new BasicLayer(numInputNodes/2));
-
             network.addLayer(new BasicLayer(numOutputNodes));
             network.getStructure().finalizeStructure();
 
-            
+                        
+
         } else {
                     noNetwork = true;
         }
-        
+     //   }
     }
 
     @Override
@@ -109,8 +117,8 @@ public class StandardNNBrain extends Brain
     @Override
     public Brain clone()
     {
-        StandardNNBrain newBrain = new StandardNNBrain(this.thisOrganism);
-        return newBrain;
+     //   StandardNNBrain newBrain = new StandardNNBrain(this.thisOrganism);
+        return this;
     }
 
 //    @Override
@@ -130,7 +138,7 @@ public class StandardNNBrain extends Brain
     {
 //        input.clear();
 //        output.clear();
-        
+  //      while (clock.tick()) {
         if (!noNetwork){
         
 //        for (SegmentEye eye : eyeSegs) {
@@ -151,9 +159,7 @@ public class StandardNNBrain extends Brain
 //                inputData.add(k, in.getInputAtIndex(i));
 //            }
 ////        }
-        
        outputData = network.compute(inputData);
-       
        List<Segment> legs = thisOrganism.getLegs();
        
        //For every leg, take 3 inputs and send a command.
@@ -162,6 +168,7 @@ public class StandardNNBrain extends Brain
            BCyanSegment nextLeg = (BCyanSegment) leg;
            nextLeg.setBrainOutputs(outputData.getData((j * 2)), outputData.getData((j * 2) + 1));
        }
+     //   }
 //       double[] outputArray = outputData.getData();
 //       
 ////       RegressiveTripletOutput singleOutput = new RegressiveTripletOutput();

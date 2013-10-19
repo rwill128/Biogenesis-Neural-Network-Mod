@@ -1,9 +1,6 @@
 package brains;
 
 import agents.AliveAgent;
-import eyes.SegmentEye;
-import intentionalmover.BCyanSegment;
-import organisms.Pigment;
 
 public class BrainFactory {
 	private static BrainFactory segmentFactory = new BrainFactory();

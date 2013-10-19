@@ -20,10 +20,10 @@ public class BCyanSegment extends Segment implements IntentionalMover{
 	@Override
 	public void frameEffects() {
 		AliveAgent thisAgent = getThisAgent();
-                if ( thrustAccelMod < -0.1d || thrustAccelMod > 0.1d || turnAccelMod > 0.05 || turnAccelMod < -0.05) {
+                
                     
                 
-		if (isAlive() && thisAgent.useEnergy(Utils.getCYAN_ENERGY_CONSUMPTION())) {
+		if (isAlive()  && thisAgent.useEnergy(Utils.getCYAN_ENERGY_CONSUMPTION()) ) {
 			double dx = thisAgent.getDx();
 			double dy = thisAgent.getDy();
 			double dtheta = thisAgent.getDtheta();
@@ -39,7 +39,7 @@ public class BCyanSegment extends Segment implements IntentionalMover{
 			thisAgent.setDtheta(Utils.between(dtheta+turnAccelMod*getMass()*Math.PI/i,
 					-Utils.getMAX_ROT(), Utils.getMAX_ROT()));
 		}
-                }
+                
 	}
 
     

@@ -50,7 +50,6 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
         
         
 	protected List<Gene> genesList = new ArrayList<>();
-        protected List<EyeGene> eyeGenesList = new ArrayList<>();
         
 	protected JButton cancelButton;
 	protected JButton okButton;
@@ -62,17 +61,17 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 	protected JComboBox symmetryCombo;
 	protected JComboBox mirrorCombo;
 	protected JComboBox disperseCombo;
-	
+	protected boolean disperseChildren = false;
+        protected boolean mirror=false;
 	protected int symmetry=2;
-        protected int eyeSymmetry = 2;
-        
 	protected int energy=40;
         
-       
-	protected boolean mirror=false;
+        protected List<EyeGene> eyeGenesList = new ArrayList<>();
+        protected JLabel eyeSegmentsLabel;
+	protected JComboBox eyeSymmetryCombo;
+	protected JComboBox eyeMirrorCombo;
         protected boolean eyeMirror=false;
-
-	protected boolean disperseChildren = false;
+        protected int eyeSymmetry = 2;
 	
 	public LabWindow(Frame parent, GeneticCode gc) {
 		super(parent, Messages.getInstance().getString("T_GENETIC_LABORATORY")); //$NON-NLS-1$
@@ -123,6 +122,8 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 			genesList.add((Gene) g.getGene(i).clone());
                 if (g instanceof NeuralGeneticCode) {
                     for (int j=0; j < ((NeuralGeneticCode) g).getNSegmentEyeGenes(); j++){
+                         eyeMirror = ((NeuralGeneticCode) g).getEyeMirror();
+                         eyeSymmetry = ((NeuralGeneticCode) g).getEyeSymmetry();
                          eyeGenesList.add((EyeGene) ((NeuralGeneticCode) g).getSegmentEyeGene(j).clone());
                     }
               }
@@ -134,26 +135,43 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 		JPanel generalPanel = new JPanel();
 		generalPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
+                int numLabels = 0;
+		gridBagConstraints.gridx = numLabels;
+                numLabels++;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.weightx = 1.0;
 		generalPanel.add(new JLabel(Messages.getInstance().getString("T_SEGMENTS"),SwingConstants.CENTER), gridBagConstraints); //$NON-NLS-1$
-		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridx = numLabels;
+                numLabels++;
 		gridBagConstraints.gridy = 0;
 		segmentsLabel = new JLabel(Integer.toString(genesList.size() * symmetry));
 		generalPanel.add(segmentsLabel, gridBagConstraints);
-		gridBagConstraints.gridx = 2;
+                /////////////////////
+                if (eyeGenesList.size() > 0) {
+                    generalPanel.add(new JLabel("Eyes",SwingConstants.CENTER), gridBagConstraints); //$NON-NLS-1$
+                    gridBagConstraints.gridx = numLabels;
+                    numLabels++;
+                    gridBagConstraints.gridy = 0;
+                    eyeSegmentsLabel = new JLabel(Integer.toString(eyeGenesList.size() * eyeSymmetry));
+                    generalPanel.add(eyeSegmentsLabel, gridBagConstraints);
+                }  
+                /////////////////////
+		gridBagConstraints.gridx = numLabels;
+                numLabels++;
 		gridBagConstraints.gridy = 0;
 		generalPanel.add(new JLabel(Messages.getInstance().getString("T_ENERGY_TO_REPRODUCE"),SwingConstants.CENTER), gridBagConstraints); //$NON-NLS-1$
-		gridBagConstraints.gridx = 3;
+		gridBagConstraints.gridx = numLabels;
+                numLabels++;
 		gridBagConstraints.gridy = 0;
 		energyLabel = new JLabel(Integer.toString(energy));
 		generalPanel.add(energyLabel, gridBagConstraints);
-		gridBagConstraints.gridx = 4;
+		gridBagConstraints.gridx = numLabels;
+                numLabels++;
 		gridBagConstraints.gridy = 0;
 		generalPanel.add(new JLabel(Messages.getInstance().getString("T_LIFE_EXPECTANCY"),SwingConstants.CENTER), gridBagConstraints); //$NON-NLS-1$
-		gridBagConstraints.gridx = 5;
+		gridBagConstraints.gridx = numLabels++;
+                numLabels++;
 		gridBagConstraints.gridy = 0;
 		JLabel life = new JLabel(Integer.toString(Utils.getMAX_AGE()));
 		generalPanel.add(life, gridBagConstraints);
@@ -173,6 +191,10 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 					energy = 40 + 3 * symmetry * genesList.size();
 					energyLabel.setText(Integer.toString(energy));
 					segmentsLabel.setText(Integer.toString(genesList.size() * symmetry));
+                                        if (eyeGenesList.size() > 0) {
+                                            eyeSymmetry = Integer.parseInt((String)eyeSymmetryCombo.getSelectedItem());
+                                            eyeSegmentsLabel.setText(Integer.toString(eyeGenesList.size() * eyeSymmetry));
+                                        }
 					drawPanel.repaint();
 				}
 			}
@@ -302,11 +324,24 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 			genesList.remove(deletedGene);
 			refreshGenesPanel();
 		}
+                //////////////////////////////////////////////////////////////////////
+                if (evt.getActionCommand().startsWith("ed")) { //$NON-NLS-1$
+			int deletedGene = Integer.parseInt(evt.getActionCommand().substring(2));
+			eyeGenesList.remove(deletedGene);
+			refreshGenesPanel();
+		}
 		// Insert a new gene before the selected position
 		if (evt.getActionCommand().startsWith("i")) { //$NON-NLS-1$
 			Gene gene = new Gene(2.0,0.0,Pigment.GREEN);
 			int insertPosition = Integer.parseInt(evt.getActionCommand().substring(1));
 			genesList.add(insertPosition, gene);
+			refreshGenesPanel();
+		}
+                /////////////////////////////////////////////////////
+                if (evt.getActionCommand().startsWith("ei")) { //$NON-NLS-1$
+			EyeGene eyeGene = new EyeGene(2.0,0.0);
+			int insertPosition = Integer.parseInt(evt.getActionCommand().substring(2));
+			eyeGenesList.add(insertPosition, eyeGene);
 			refreshGenesPanel();
 		}
 	}
@@ -379,6 +414,63 @@ public class LabWindow extends JDialog implements ActionListener, ChangeListener
 		energyLabel.setText(Integer.toString(energy));
 		segmentsLabel.setText(Integer.toString(genesList.size() * symmetry));
 		
+                int geneCounter = 0;
+                if (eyeGenesList.size() > 0) {
+                    Iterator<EyeGene> it2;
+                    int i2 = i + 1;
+                    EyeGene eyeGene;
+                    constraints.gridx = 0;
+                    constraints.gridy = i2 + 1;
+                    genesPanel.add(new JLabel("Eye Gene"), constraints); //$NON-NLS-1$
+                    constraints.gridx = 2;
+                    genesPanel.add(new JLabel("Length"), constraints); //$NON-NLS-1$
+                    constraints.gridx = 3;
+                    genesPanel.add(new JLabel("Rotation"), constraints); //$NON-NLS-1$
+                    for (it2 = eyeGenesList.iterator(), i2=i+2; it2.hasNext(); i2++) {
+                            eyeGene = it2.next();
+                            constraints.gridx = 0;
+                            constraints.gridy = i2+1;
+                            JLabel label = new JLabel(i2+": "); //$NON-NLS-1$
+                            gridbag.setConstraints(label,constraints);
+                            genesPanel.add(label);
+
+                            constraints.gridx = 2;
+                            LengthSpinner lengthSpinner = new LengthSpinner(eyeGene);
+                            lengthSpinner.addChangeListener(this);
+                            genesPanel.add(lengthSpinner, constraints);
+
+                            constraints.gridx = 3;
+                            ThetaSpinner thetaSpinner = new ThetaSpinner(eyeGene);
+                            thetaSpinner.addChangeListener(this);
+                            genesPanel.add(thetaSpinner, constraints);
+
+                            constraints.gridx = 4;
+                            JButton insertButton = new JButton(Messages.getInstance().getString("T_INSERT")); //$NON-NLS-1$
+                            insertButton.setActionCommand("ei"+geneCounter); //$NON-NLS-1$
+                            gridbag.setConstraints(insertButton,constraints);
+                            genesPanel.add(insertButton);
+                            insertButton.addActionListener(this);
+
+                            constraints.gridx = 5;
+                            JButton deleteButton = new JButton(Messages.getInstance().getString("T_DELETE")); //$NON-NLS-1$
+                            deleteButton.setActionCommand("ed"+geneCounter); //$NON-NLS-1$
+                            gridbag.setConstraints(deleteButton,constraints);
+                            genesPanel.add(deleteButton);
+                            deleteButton.addActionListener(this);
+                            geneCounter++;
+                    }
+                    constraints.gridx = 1;
+                    constraints.gridwidth = 2;
+                    constraints.gridy = i2+1;
+                    JButton addEyeButton = new JButton("Add Eye"); //$NON-NLS-1$
+                    addEyeButton.setActionCommand("addEye"); //$NON-NLS-1$
+                    gridbag.setConstraints(addEyeButton,constraints);
+                    genesPanel.add(addEyeButton);
+                    addEyeButton.addActionListener(this);
+
+                    eyeSegmentsLabel.setText(Integer.toString(eyeGenesList.size() * eyeSymmetry));
+                }
+                
 		validate();
 		repaint();
 	}
@@ -415,7 +507,7 @@ class LengthSpinner extends JSpinner {
 	public LengthSpinner(Gene gene) {
 		super();
 		_gene = gene;
-		setModel(new SpinnerNumberModel(_gene.getLength(), 2.0, 18.0, 0.1));
+		setModel(new SpinnerNumberModel(_gene.getLength(), 2.0, 1000.0, 0.1));
 		setEditor(new JSpinner.NumberEditor(this, "#0.0"));
 	}
 

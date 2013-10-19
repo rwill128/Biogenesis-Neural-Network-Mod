@@ -14,7 +14,7 @@ public class ColorComboBox extends JComboBox {
 	private static final long serialVersionUID = Utils.VERSION;
 	private String[] colorValues = new String[colorStrings.length];
 	private static final String[] colorStrings = {"T_RED", "T_GREEN", "T_BLUE", "T_CYAN",
-		"T_WHITE", "T_GRAY", "T_YELLOW" , "T_BCYAN" , "T_EYE"};
+		"T_WHITE", "T_GRAY", "T_YELLOW" , "Brain Cyan" , "T_EYE"};
 	
 	public void changeLocale() {
 		for (int i=0; i<colorValues.length; i++)

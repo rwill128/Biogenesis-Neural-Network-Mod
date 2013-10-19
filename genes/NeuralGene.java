@@ -30,7 +30,7 @@ public class NeuralGene extends Gene
         @Override
 	public void randomizeColor() {
 		int max_prob = Utils.getRED_PROB() + Utils.getGREEN_PROB() + Utils.getBLUE_PROB()
-				+ Utils.getWHITE_PROB() + Utils.getGRAY_PROB() + Utils.getCYAN_PROB() +
+				+ Utils.getWHITE_PROB() + Utils.getGRAY_PROB() + Utils.getCYAN_PROB() + Utils.getCYAN_PROB()
 				+ Utils.getYELLOW_PROB();
 		int prob = Utils.random.nextInt(max_prob);
 		int ac_prob = Utils.getRED_PROB();
@@ -56,6 +56,11 @@ public class NeuralGene extends Gene
                 ac_prob += Utils.getCYAN_PROB();
 		if (prob < ac_prob) {
 			this.setPigment(Pigment.BCYAN);
+			return;
+		}
+                ac_prob += Utils.getCYAN_PROB();
+		if (prob < ac_prob) {
+			this.setPigment(Pigment.CYAN);
 			return;
 		}
 		ac_prob += Utils.getGRAY_PROB();
