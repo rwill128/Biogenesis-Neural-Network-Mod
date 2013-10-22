@@ -276,7 +276,8 @@ public class GeneticCode implements Cloneable, Serializable, Writeable {
 					}
 				} else {
 				// decrease segments
-					if (parentCode.getNGenes() * parentCode.getSymmetry() <= MIN_SEGMENTS)
+					if (parentCode.getNGenes() * parentCode.getSymmetry() <= MIN_SEGMENTS
+							|| parentCode.getNGenes() <= 1)
 						nGenes = parentCode.getNGenes();
 					else {
 						nGenes = parentCode.getNGenes() - 1;

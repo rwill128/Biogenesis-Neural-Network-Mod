@@ -160,7 +160,7 @@ public class ActionFactory {
 				"T_ZOOM_IN", null, "T_ZOOM_IN"); //$NON-NLS-1$ //$NON-NLS-2$
 		zoomOutAction = new ZoomOutAction(visibleWorld,
 				"T_ZOOM_OUT", null, "T_ZOOM_OUT"); //$NON-NLS-1$ //$NON-NLS-2$
-		toggleEfficiencyModeAction = new ToggleEfficiencyModeAction(visibleWorld, 
+		toggleEfficiencyModeAction = new ToggleEfficiencyModeAction(
 				"T_TURN_ON_EFFICIENCY_MODE", "T_TURN_OFF_EFFICIENCY_MODE", null, //$NON-NLS-1$ //$NON-NLS-2$
 				"T_TURN_ON_EFFICIENCY_MODE", "T_TURN_OFF_EFFICIENCY_MODE"); //$NON-NLS-1$ //$NON-NLS-2$
 

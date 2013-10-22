@@ -72,11 +72,16 @@ public class Process implements Serializable {
 	 */
 	private long nFrames=0;
 	/**
-	 * Number of milliseconds between two invocations to the lifeProcess invocation.
-	 * It starts as the user's preference DELAY but is adapted to the current situation
-	 * in the world and the machine speed.
+	 * Number of milliseconds between two invocations of the lifeProcess invocation.
+	 * It starts as the user's preference (Utils.DELAY) but is adapted to the current 
+	 * situation in the world and the machine speed.
 	 */
 	private int currentDelay = Utils.DELAY;
+	/**
+	 * Number of milliseconds it has been taking recently between two invocations of 
+	 * the lifeProcess invocation.
+	 */
+	private double averageTimePerFrame;
 	/**
 	 * If positive, the consecutive number of frames that haven't accomplished the expected time contract.
 	 * If negative, the consecutive number of frame that have accomplished the expected time contract.
@@ -103,6 +108,8 @@ public class Process implements Serializable {
 	    	}
 	    }
 	};
+	private long timeWhenLastChecked;
+	private long numFramesSinceChecked;
 	/**
 	 * Returns the number of ticks processed.
 	 * 
@@ -144,47 +151,70 @@ public class Process implements Serializable {
 	public void startLifeProcess(int delay) {
 		if (updateTask != null)
 			updateTask.cancel();
-		updateTask = new TimerTask() {
-		    @Override
-			public void run() {
-		    	try {
-					EventQueue.invokeAndWait(lifeProcess);
-					/*
-					 * Checks the actual drawing speed and increases or decreases the speed
-					 * of the program in order to keep it running smoothly.
-					 */
-					long actualTime = System.currentTimeMillis();
-					if (actualTime - lastPaintTime > currentDelay*1.5 || currentDelay < Utils.DELAY) {
-		    			// We can't run so fast
-		    			failedTime=Math.max(failedTime+1, 0);
-		    			if (failedTime >= 2) {
-		    				failedTime = 0;
-		    				currentDelay*=1.5;
-		    				startLifeProcess(currentDelay);
-		    			}
-		    		} else {
-		    			if (actualTime - lastPaintTime < currentDelay*1.2 && currentDelay > Utils.DELAY) {
-		    				// We can run faster
-		    				failedTime=Math.min(failedTime-1, 0);
-		    				if (failedTime <= -10) {
-		    					currentDelay = Math.max(Utils.DELAY, currentDelay-1);
-		    					startLifeProcess(currentDelay);
-		    				}
-		    			} else
-		    				// Normal situation: we run at the expected speed
-		    				failedTime = 0;
-		    		}
-		    		if (currentDelay > 1000)
-		    			setProcessActive(false);
-		    		lastPaintTime = actualTime;
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-		    }
-		};
-		timer.schedule(updateTask, delay, delay);
+		if (Utils.isEFFICIENCY_MODE())
+		{
+			updateTask = new TimerTask() {
+			    @Override
+				public void run() {
+			    	try {
+						EventQueue.invokeAndWait(lifeProcess);
+						long actualTime = System.currentTimeMillis();
+						numFramesSinceChecked++;
+						averageTimePerFrame = (averageTimePerFrame + actualTime - lastPaintTime) / 2;
+	    				failedTime = 0;
+    					startLifeProcess(currentDelay);
+    					lastPaintTime = actualTime;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+			    }
+			};
+			timer.schedule(updateTask, 0);
+		} else {
+			updateTask = new TimerTask() {
+			    @Override
+				public void run() {
+			    	try {
+						EventQueue.invokeAndWait(lifeProcess);
+						/*
+						 * Checks the actual drawing speed and increases or decreases the speed
+						 * of the program in order to keep it running smoothly.
+						 */
+						long actualTime = System.currentTimeMillis();
+						numFramesSinceChecked++;
+						if (actualTime - lastPaintTime > currentDelay*1.5 || currentDelay < Utils.DELAY) {
+			    			// We can't run so fast
+			    			failedTime=Math.max(failedTime+1, 0);
+			    			if (failedTime >= 2) {
+			    				failedTime = 0;
+			    				currentDelay*=1.5;
+			    			}
+			    		} else {
+			    			if (actualTime - lastPaintTime < currentDelay*1.2 && currentDelay > Utils.DELAY) {
+			    				// We can run faster
+			    				failedTime=Math.min(failedTime-1, 0);
+			    				if (failedTime <= -10) {
+			    					currentDelay = Math.max(Utils.DELAY, currentDelay-1);
+			    				}
+			    			} else
+			    				// Normal situation: we run at the expected speed
+			    				failedTime = 0;
+			    		}
+    					startLifeProcess(currentDelay);
+			    		if (currentDelay > 1000)
+			    			setProcessActive(false);
+			    		lastPaintTime = actualTime;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+			    }
+			};
+			timer.schedule(updateTask, delay, delay);
+		}
 	}
 
 	/**
@@ -193,7 +223,17 @@ public class Process implements Serializable {
 	 * @return  The actual FPS.
 	 */
 	public int getFPS() {
-		return 1000/currentDelay;
+		if (numFramesSinceChecked > 0) {
+			long currentTime = System.currentTimeMillis();
+			averageTimePerFrame = (averageTimePerFrame + 
+					(currentTime - timeWhenLastChecked) / numFramesSinceChecked) / 2;
+			timeWhenLastChecked = currentTime;
+			numFramesSinceChecked = 0;
+		}
+		if (averageTimePerFrame > 0)
+			return (int) (1000.0/averageTimePerFrame + 0.5);
+		else
+			return 99999;
 	}
 	/**
 	 * Returns if the process is currently active or not.
