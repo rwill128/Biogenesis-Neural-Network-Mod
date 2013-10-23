@@ -13,8 +13,8 @@ public class BrainFactory {
 		return segmentFactory;
 	}
 	
-	public Brain createBrain(AliveAgent agent, BrainType brainType) {
-		Brain brain = null;
+	public RLMethod createBrain(AliveAgent agent, BrainType brainType) {
+		RLMethod brain = null;
 		
 		if (brainType == BrainType.STANDARD_NN_BRAIN)
 			brain = new StandardNNBrain(agent);

@@ -5,7 +5,7 @@ import genes.NeuralGene;
 import agents.AliveAgent;
 import auxiliar.Vector2D;
 import biogenesis.Utils;
-import brains.Brain;
+import brains.RLMethod;
 import brains.BrainFactory;
 import eyes.SegmentEye;
 import genes.BrainGene;
@@ -353,23 +353,15 @@ public class NeuralGeneticCode extends GeneticCode
 		return eyes;
         }
      
-        public Brain synthesizeBrain(AliveAgent agent)
+        public RLMethod synthesizeBrain(AliveAgent agent)
         {
-            Brain brain;
+            RLMethod brain;
             BrainFactory factory = BrainFactory.getInstance();
          
             brain = factory.createBrain(agent, new BrainGene().getBrainType());
             return brain;
         }
 
-//public void randomEyes()
-//    {
-//       eyes.add(new SegmentEye());
-//    }
-
-   
-    
-    
     @Override
     public void draw(Graphics g, int width, int height) {
                         drawEyes(g, width, height);
@@ -416,12 +408,12 @@ public class NeuralGeneticCode extends GeneticCode
 			}
 		}
 		
-		//g2.translate(width/2, height/2);
-		if (maxX-minX > width)
-			scale = (double)width/(double)(maxX-minX);
-		if (maxY-minY > height)
-			scale = Math.min(scale, (double)height/(double)(maxY-minY));
-		//g2.scale(scale, scale);
+//		//g2.translate(width/2, height/2);
+//		if (maxX-minX > width)
+//			scale = (double)width/(double)(maxX-minX);
+//		if (maxY-minY > height)
+//			scale = Math.min(scale, (double)height/(double)(maxY-minY));
+//		//g2.scale(scale, scale);
 		
 		for (int i=0; i<symmetry; i++) {
 			for (int j=0; j<genes.length; j++) {

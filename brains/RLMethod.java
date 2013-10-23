@@ -8,7 +8,7 @@ import world.World;
 /**
  *
  */
-public abstract class Brain implements Cloneable, Serializable
+public abstract class RLMethod implements Cloneable, Serializable
 {
     
      public BrainType brainType;
@@ -17,10 +17,10 @@ public abstract class Brain implements Cloneable, Serializable
     
      public abstract void randomMutate();
      
-     public abstract Brain getThisBrain();
+     public abstract RLMethod getThisBrain();
      
      @Override
-     public abstract Brain clone();
+     public abstract RLMethod clone();
      
 //     public abstract void receiveNextInput(Input input);
 //     

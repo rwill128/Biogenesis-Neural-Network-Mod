@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import auxiliar.Messages;
+import brains.BrainType;
 
 /**
  * This class contains all global program parameters and a few useful methods for
@@ -988,5 +989,10 @@ public final class Utils {
 		EFFICIENCY_MODE = !EFFICIENCY_MODE;
 		return EFFICIENCY_MODE;
 	}
+
+    public static int getBrainTypeProb(BrainType brainType)
+    {
+        return 5;
+    }
 
 }

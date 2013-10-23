@@ -3,7 +3,7 @@ package smartorganisms;
 import agents.Agent;
 import auxiliar.Vector2D;
 import biogenesis.Utils;
-import brains.Brain;
+import brains.RLMethod;
 import brains.StandardNNBrain;
 import eyes.SegmentEye;
 import genes.SegmentEyeGene;
@@ -27,7 +27,7 @@ import world.World;
 public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
 {
     
-    Brain brain;
+    RLMethod brain;
     SegmentEye[] segmentEyes;
     private int numSegmentEyesPerEyeAppendage;
     List<Segment> legs = new ArrayList<>();
@@ -76,7 +76,6 @@ public class STOrganism extends Organism implements SeeingAgent, ThinkingAgent
         numSegmentEyesPerEyeAppendage = segmentEyes.length / eyeSymmetry;
         updateEyes();
         
-
         brain = nGeneticCode.synthesizeBrain(this);
         initLegs();
     }
